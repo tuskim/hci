@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/activation.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-fileupload-1.1.1.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-io-1.2.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/devon-core.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/devon-framework.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jxl.jar"/>
+	<classpathentry kind="lib" path="C:/DevOnStudio/bin/wls1036_dev/wlserver/server/lib/weblogic.jar"/>
+	<classpathentry kind="lib" path="C:/DevOnStudio/bin/wls1036_dev/wlserver/server/lib/webservices.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/gauce4044.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/axis.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/sapjco.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/scsl.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="output" path="web/WEB-INF/classes"/>
+</classpath>

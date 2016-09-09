@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!--Cement Packing  -->
+
+
+
+   	<!--Cement Packing  -->  
+	<action-name name="cementPacking">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/ps/pk/cementPacking.jsp</return-url>
+   	</action-name>
+
+
+
+
+
+   	
+   	<!--Cement Packing Retrieve -->  
+	<action-name name="ps.pk.retrieveCementPackingMasterList">
+    	<command>ps.pk.cmd.RetrieveCementPackingMasterListCmd</command> 
+   	</action-name>   
+
+	<action-name name="ps.pk.retrieveCementPackingExcelList">
+    	<command>ps.pk.cmd.RetrieveCementPackingExcelListCmd</command> 
+   	</action-name>   
+
+	<action-name name="ps.pk.retrieveCementPackingAddRow">
+    	<command>ps.pk.cmd.RetrieveCementPackingAddRowCmd</command> 
+   	</action-name>   
+   	
+	<action-name name="ps.pk.retrieveCementPackingDetailList">
+    	<command>ps.pk.cmd.RetrieveCementPackingDetailListCmd</command> 
+   	</action-name> 
+   	
+	<action-name name="ps.pk.retrieveCementPackingResultList">
+    	<command>ps.pk.cmd.RetrieveCementPackingResultListCmd</command> 
+   	</action-name> 
+
+
+   	
+
+
+   	
+   	<!--Cement Packing Cud -->  
+	<action-name name="ps.pk.cudCementPacking">
+    	<command>ps.pk.cmd.CudCementPackingCmd</command> 
+   	</action-name>       
+
+	<action-name name="ps.pk.cudCementPackingStatus">
+    	<command>ps.pk.cmd.CudCementPackingStatusCmd</command> 
+   	</action-name>       
+
+	<action-name name="ps.pk.cudCementPackingSap">
+    	<command>ps.pk.cmd.CudCementPackingSapCmd</command> 
+   	</action-name>       
+   	
+	<action-name name="ps.pk.cudCementPackingSapSend">
+    	<command>ps.pk.cmd.CudCementPackingSapSendCmd</command> 
+   	</action-name>       	 
+
+
+
+   	   	    
+</navigation-mapper>

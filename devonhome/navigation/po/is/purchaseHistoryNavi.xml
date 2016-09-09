@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+    <!-- P/O History-->
+   	<action-name name="purchOrderHistory"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/oc/purchOrderHistory.jsp</return-url>
+   	</action-name>
+  	
+  	<!-- P/O 입력 현황조회 -->
+   	<action-name name="po.oc.cmd.retrievePurchOrderHistoryList"> 
+    	<command>po.oc.cmd.RetrievePurchOrderHistoryListCmd</command>
+   	</action-name>
+   
+   
+    <!-- stock Issue History--> 
+   	<action-name name="stockIssueHistory"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/stockIssueHistory.jsp</return-url>
+   	</action-name>
+  	
+  	<!-- 출고현황조회 -->
+   	<action-name name="rfc.cmd.retrieveStockIssueHistoryList"> 
+    	<command>rfc.cmd.RetrieveStockIssueHistoryListCmd</command>
+   	</action-name>
+   	
+
+
+    <!-- Invoice History-->
+   	<action-name name="invoiceHistory"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/invoiceHistory.jsp</return-url>
+   	</action-name>
+  	
+  	<!-- 이고현황조회 -->
+   	<action-name name="rfc.cmd.retrieveInvoiceHistoryList"> 
+    	<command>rfc.cmd.RetrieveInvoiceHistoryListCmd</command>
+   	</action-name>
+   	
+
+
+</navigation-mapper>

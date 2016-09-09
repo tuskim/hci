@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource>
+<!--
+    devonframework.sample.front.paging.LWSGPageNavigationByPost에서 사용하는 설정 파일이다.    
+    LDefaultPageNavigation의 setImageSpec 메서드를 호출하여, 페이지에서 사용할 이미지를 스펙 단위로 변경할 수 있다. (e.g., pageNavi.setImageSpec( "webPage" ))
+        만약, 스펙을 지정하지 않았다면(setImageSpec을 호출하지 않았다면) 사용중인 페이지 스펙이 기본으로 적용된다.
+        즉, 페이지 스펙이 "webPage" 였다면, setImageSpec( "webPage" ) 를 호출하지 않아도, <image name="webPage">...</image>의 설정이 기본으로 적용된다.
+-->
+  <image name="default">
+  
+    <!-- 오름차순으로 정렬, 지정하지 않을 시 "▲&nbsp;" -->
+    <order-by-asc></order-by-asc>
+
+    <!-- 내림차순으로 정렬, 지정하지 않을 시 "▼&nbsp;" -->
+    <order-by-desc></order-by-desc>
+
+    <!-- 정렬하지 않음, 지정하지 않을 시 "" -->
+    <order-by-none></order-by-none>
+
+    <!-- 첫 페이지로 이동, 지정하지 않을 시 "[첫 페이지]" -->
+    <move-first-page></move-first-page>
+
+    <!-- 끝 페이지로 이동, 지정하지 않을 시 "[끝 페이지]" -->
+    <move-end-page></move-end-page>
+
+    <!-- 이전 페이지로 이동, 지정하지 않을 시 "[이전 페이지]" -->
+    <move-before-page></move-before-page>
+
+    <!-- 다음 페이지로 이동, 지정하지 않을 시 "[다음 페이지]" -->
+    <move-next-page></move-next-page>
+
+    <!-- 이전 인덱스로 이동, 지정하지 않을 시 "[이전 인덱스]" -->
+    <move-before-index></move-before-index>
+
+    <!-- 다음 인덱스로 이동, 지정하지 않을 시 "[다음 인덱스]" -->
+    <move-next-index></move-next-index>
+
+    <!-- 인덱스간의 구분자, 지정하지 않을 시 " | " -->
+    <index-separator></index-separator>
+  </image>
+
+  <image name="webPage">
+    <move-before-page>images/paging_prv.gif</move-before-page>
+    <move-next-page>images/paging_next.gif</move-next-page>
+    <move-before-index>images/paging_prv10.gif</move-before-index>
+    <move-next-index>images/paging_next10.gif</move-next-index>
+    <index-separator>images/bar_page.gif</index-separator>
+  </image>
+</resource>

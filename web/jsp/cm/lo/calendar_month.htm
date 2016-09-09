@@ -1,0 +1,561 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title> ------------- Calendar -------------</title>
+    <style type="text/css">
+
+.cal_table{ background-color:#D4D4D4; border-width:1px; width:260px;}
+.cal_table_day
+{
+    width:100%;
+    background-color:#CCCCCC;
+    border-width:1px;
+}
+
+.cal_tr_week
+{
+    background-color:#F7F7F7;
+    height:21px;
+}
+
+.cal_tr_day
+{
+    background-color:#FFFFFF;
+    height:18px;
+}
+
+.cal_td_space
+{
+    height:5px;
+    background-color:#FFFFFF;
+}
+
+.cal_td_month{ FONT-SIZE:15px;font-weight:bold; FONT-FAMILY:arial;text-align:center; cursor:hand;width:17px;background-color:#FFFFFF;
+
+.cal_td_month2{ FONT-SIZE:15px;font-weight:bold; FONT-FAMILY:arial;text-align:center;letter-spacing:-0.5px; cursor:hand; width:21px;background-color:#FFFFFF;}
+
+.cal_td_month_today
+{
+    FONT-SIZE: 11px;
+    FONT-FAMILY:tahoma;
+    TEXT-ALIGN: center;
+    cursor:hand;
+    width:20px;
+    FONT-WEIGHT: bold;
+    COLOR: #173452;
+    TEXT-DECORATION: underline;
+    background-color:#FFFFFF;
+}
+
+.cal_td_month_today A:link
+{
+    COLOR: #173452;
+    TEXT-DECORATION: none;
+}
+.cal_td_month_today A:visited
+{
+    COLOR: #173452;
+    TEXT-DECORATION: none;
+}
+.cal_td_month_today A:active
+{
+    COLOR: #173452;
+    TEXT-DECORATION: none;
+}
+.cal_td_month_today A:hover
+{
+    COLOR: #173452;
+    TEXT-DECORATION: none;
+}
+
+
+.cal_td_year
+{
+    background-color:#FFFFFF;
+    vertical-align:top;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12px;
+    COLOR: #555555;
+    PADDING-BOTTOM: 5px;
+    FONT-FAMILY: verdana;
+    TEXT-ALIGN: center;
+}
+
+.cal_td_sunday
+{
+    FONT-SIZE: 11px;
+    COLOR: #ba5045;
+    FONT-FAMILY: tahoma;
+    TEXT-ALIGN: center;
+    width:28px;
+    cursor:hand;
+}
+
+.cal_td_sunday A:link
+{
+    COLOR: #ba5045;
+    TEXT-DECORATION: none
+}
+.cal_td_sunday A:visited
+{
+    COLOR: #ba5045;
+    TEXT-DECORATION: none
+}
+.cal_td_sunday A:active
+{
+    COLOR: #ba5045;
+    TEXT-DECORATION: none
+}
+.cal_td_sunday A:hover
+{
+    COLOR: #ba5045;
+    TEXT-DECORATION: none
+}
+
+.cal_td_day
+{
+    FONT-SIZE: 11px;
+    FONT-FAMILY:tahoma;
+    TEXT-ALIGN: center;
+    cursor:hand;
+    width:28px;
+    TEXT-DECORATION: none;
+    color:#000000;
+}
+
+
+.cal_td_day A:link
+{
+    color:#000000;
+    TEXT-DECORATION: none;
+}
+.cal_td_day A:visited
+{
+    color:#000000;
+    TEXT-DECORATION: none;
+}
+.cal_td_day A:active
+{
+    color:#000000;
+    TEXT-DECORATION: none;
+}
+.cal_td_day A:hover
+{
+    color:#000000;
+    TEXT-DECORATION: none;
+}
+
+.cal_img
+{
+    cursor:hand;vertical-align:middle;border-width:0px;
+}
+
+.cal_line_dot
+{
+    BACKGROUND-IMAGE: url(/sys/images/line_dot.gif);
+    HEIGHT: 1px;
+    background-color:#FFFFFF;
+}
+
+.cal_td_today
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 11px;
+    COLOR: #173452;
+    FONT-FAMILY: "tahoma";
+    TEXT-ALIGN: center;
+    TEXT-DECORATION: underline;
+    cursor:hand;
+}
+.cal_td_today A:link
+{
+    COLOR: #173452;
+    TEXT-DECORATION: underline;
+}
+.cal_td_today A:visited
+{
+    COLOR: #173452;
+    TEXT-DECORATION: underline;
+}
+.cal_td_today A:active
+{
+    COLOR: #173452;
+    TEXT-DECORATION: underline;
+}
+.cal_td_today A:hover
+{
+    COLOR: #173452;
+    TEXT-DECORATION: underline;
+}
+
+.cal_td_saturday
+{
+    FONT-SIZE: 11px;
+    COLOR: #4582ba;
+    FONT-FAMILY: "tahoma";
+    TEXT-ALIGN: center;
+    width:28px;
+    cursor:hand;
+}
+.cal_td_saturday A:link
+{
+    COLOR: #4582ba;
+    TEXT-DECORATION: none
+}
+.cal_td_saturday A:visited
+{
+    COLOR: #4582ba;
+    TEXT-DECORATION: none
+}
+.cal_td_saturday A:active
+{
+    COLOR: #4582ba;
+    TEXT-DECORATION: none
+}
+.cal_td_saturday A:hover
+{
+    COLOR: #4582ba;
+    TEXT-DECORATION: none
+}
+
+    </style>
+    
+    <script language="javascript" type="text/javascript">
+
+    function removeDash( str , strDel )
+    {
+    	var len = str.length;
+    	var replace_chr;
+    	var cur_chr;
+    	var replace_str = '';
+    
+    	for(var i=0; i < len; i++) {
+    		cur_chr = str.charAt(i);
+    
+    		if( cur_chr == strDel ) {
+    		  replace_chr = '';
+    		} else {
+    		  replace_chr = cur_chr;
+    		}
+    		replace_str += replace_chr;
+    	}
+    
+    	return replace_str;
+    }
+
+    var Args = window.dialogArguments;
+    var Today;
+    var Today_d;
+
+    // 선택일자 입력 2009.10.22 jdi
+    //Today = GetDate(Args[0]);
+    Args[0] = removeDash(Args[0],"/");
+    Today = new Date(Args[0].substring(0,4), Args[0].substring(4, 6)-1, Args[0].substring(6, 8));   
+    
+    if(Today == null)
+    {
+        Today = new Date();
+    }
+
+    Today_d = Today.getDate();
+
+    function GetObj(objectId)
+    {
+        if (document.all && document.all(objectId))
+        {
+            return document.all(objectId);
+        }
+        else if(document.getElementById && document.getElementById(objectId))
+        {
+            return document.getElementById(objectId);
+        }
+        else if (document.layers && document.layers[objectId])
+        {
+            return document.layers[objectId];
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    function CheckDate(year, month, day)
+    {
+        var dat_option = year % 4;
+        year = parseInt(year, 10);
+        month = parseInt(month, 10);
+        day = parseInt(day, 10);
+
+        if (isNaN(year) == true) { return 1; }
+        if (year < 1970) { return 1; }
+        if (isNaN(month) == true) { return 2; }
+        if (isNaN(day) == true) { return 3; }
+        if (day < 1 || day > 31) { return 3; }
+
+        if (month == 2)
+        {
+            if (((dat_option == 0) && (day > 29)) || ((dat_option != 0) && (day > 28)) ) { return 3; }
+        }
+        else if ((month == 4) || (month == 6) || (month == 9) || (month == 11))
+        {
+            if (day > 30) { return 3; }
+        }
+        else if ((month == 1) || (month == 3) || (month == 5) || (month == 7) || (month == 8) || (month == 10) || (month == 12))
+        {
+            if (day > 31) { return 3; }
+        }
+        else
+        {
+            return 2;
+        }
+
+        return 0;
+    }
+
+    function GetDate(sDT)
+    {
+        var rtnDate;
+        var year;
+        var month;
+        var day;
+
+        
+        if(typeof(sDT) == "string" && sDT.length == 10 && sDT.charAt(4) == "." && sDT.charAt(7) == ".")
+        {
+            var arrDT = sDT.split(".");
+            if(arrDT.length != 3 || isNaN(arrDT[0]) == true || isNaN(arrDT[1]) == true || isNaN(arrDT[2]) == true)
+                return null;
+            year = arrDT[0];
+            month = arrDT[1];
+            day = arrDT[2];
+        }
+        else
+        {
+            return null;
+        }
+
+        if(CheckDate(year, month, day) > 0)
+            return null;
+
+        rtnDate = new Date(year, month-1, day);
+
+        return rtnDate;
+    }
+
+    function AddDay(addDayNum)
+    {
+        if(addDayNum == null)
+            addDayNum = 1;
+        var ms = Today.getTime() + 24 * 3600 * 1000 * addDayNum;
+        Today.setTime(ms);
+    }
+
+    function SetMonthToday()
+    {
+        var tbl = GetObj("tblMonth");
+        for(var i=0;i<tbl.rows[0].cells.length;i++)
+        {
+            if(Today.getMonth() != i)
+            {
+                tbl.rows[0].cells[i].className="cal_td_month";
+            }
+            else
+            {
+                tbl.rows[0].cells[i].className="cal_td_month_today";
+            }
+        }
+
+    }
+
+    function SetTblDay()
+    {
+        var sy = GetObj("spYear");
+        sy.innerText = Today.getFullYear();
+
+
+
+        SetMonthToday();
+
+        Today.setDate(1);//1~31
+        var start_wd = Today.getDay();
+
+        var tbl = GetObj("tblDay");
+ 
+
+         
+        while(1==1)
+        {
+            if(tbl.rows.length != 0)
+                tbl.deleteRow(-1);
+            else
+                break;
+        }
+
+        var w = new Array();
+        var isNextMonth = false;
+
+        while(1==1)
+        {
+            for(var i=0;i<7;i++)
+            {
+                if(i < start_wd)
+                {
+                    w[i] = 0;
+                }
+                else
+                {
+                    if(!isNextMonth)
+                    {
+                        w[i] = Today.getDate();
+                    }
+                    else
+                    {
+                        w[i] = 0;
+                    }
+
+                    AddDay();
+
+                    if(Today.getDate() == 1)
+                    {
+                        AddDay(-10);
+                        isNextMonth = true;
+                    }
+                }
+            }
+
+            Table_AddRow(tbl,w);
+            start_wd = -1;
+
+            if(isNextMonth)
+            {
+                if(tbl.rows.length == 5)
+                {
+                    Table_AddRow(tbl,new Array(0,0,0,0,0,0,0));
+                }
+
+                break;
+            }
+        }
+    }
+
+    function Table_AddRow(tbl, itemArrays)
+    {
+        var tr = tbl.insertRow(-1);
+        tr.className = "cal_tr_day";
+
+        var td;
+
+        for (var i=0;i<itemArrays.length;i++)
+        {
+            td = tr.insertCell();
+
+            if(i == 0)
+                td.className = "cal_td_sunday";
+            else if(i == 6)
+                td.className = "cal_td_saturday";
+            else
+                td.className = "cal_td_day";
+
+            if(itemArrays[i] == Today_d)
+            {
+                td.className = "cal_td_today";
+            }
+
+            td.innerHTML = (itemArrays[i]==0)?"":"<div width='100%' onclick='Day_Click(" + itemArrays[i] + ");'>" + itemArrays[i] + "</div>";
+        }
+    }
+
+    function Year_Click(i)
+    {
+        var y = Today.getFullYear();
+        y = y+i;
+        Today.setFullYear(y);
+        SetTblDay();
+    }
+
+    function Month_Click(obj)
+    {
+        var m = eval(obj.innerText);
+        Today.setMonth(m-1);
+        SetTblDay();
+    }
+
+    function Day_Click(d)
+    {
+        var sel_date = "";
+        var MM = "";
+        var M = Today.getMonth() + 1;
+        if (M < 10)
+            MM = "0"+ M;
+        else
+            MM = M;
+        if (eval(d) < 10)
+            d = '0' + d;
+
+        sel_date = Today.getFullYear() + "/" + MM ;
+
+        Args[0] = sel_date;
+        
+        self.close();
+    }
+
+    </script>
+</head>
+<body style="margin:0px;">
+<div style="text-align:center;">
+<table cellpadding="0" cellspacing="0" class="cal_table" width="240">
+    <tr>
+        <td class="cal_td_year">
+            <img src="/sys/images/btn_cal_pre.gif" alt="prev Year" class="cal_img" onclick="Year_Click(-1);"/><span id="spYear"></span><img src="/sys/images/btn_cal_next.gif" alt="next Year" class="cal_img" onclick="Year_Click(+1);"/>
+        </td>
+    </tr>
+    <tr>
+        <td class="cal_line_dot"></td>
+    </tr>
+    <tr>
+        <td align="center">
+            <table id="tblMonth" border="0" cellspacing="0" cellpadding="0" width="100%">
+                <tr>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>1</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>2</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>3</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>4</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>5</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>6</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>7</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>8</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>9</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>10</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>11</td>
+                    <td class="cal_td_month" onclick='Month_Click(this);'>12</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="cal_td_space"></td>
+    </tr>
+    <tr>
+        <td>
+            <table id="tblWeek" class="cal_table_day" cellspacing="1" cellpadding="0" width="100%">
+            <tr class="cal_tr_week">
+                <td class="cal_td_sunday"  ><img src="/sys/images/datepicker_sun.gif"/></td>
+                <td class="cal_td_day"     ><img src="/sys/images/datepicker_mon.gif"/></td>
+                <td class="cal_td_day"     ><img src="/sys/images/datepicker_tue.gif"/></td>
+                <td class="cal_td_day"     ><img src="/sys/images/datepicker_wed.gif"/></td>
+                <td class="cal_td_day"     ><img src="/sys/images/datepicker_thu.gif"/></td>
+                <td class="cal_td_day"     ><img src="/sys/images/datepicker_fri.gif"/></td>
+                <td class="cal_td_saturday"><img src="/sys/images/datepicker_sat.gif"/></td>
+            </tr>
+            </table>
+            <table id="tblDay" class="cal_table_day" cellspacing="1" cellpadding="0" width="100%">
+            </table>
+        </td>
+    </tr>
+</table>
+</div>
+<script language="javascript" type="text/javascript">
+SetTblDay();
+</script>
+</body>
+</html>

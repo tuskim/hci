@@ -1,0 +1,149 @@
+* {margin: 0; padding: 0;}
+ul {list-style: none;}
+img {border: none;}
+
+body {
+	font: 75%/1.5em Dotum, sans-serif;
+	color: #333;
+	background: #FFF;
+}
+a:link, a:visited {
+	color: #21528D;
+	text-decoration: none;
+}
+a:hover, a:active {
+	color: #0770FF;
+	text-decoration: underline;
+}
+.Lnodisplay {
+	display:none;
+}
+
+/* sidebar --------------- */
+#Lsidebar {
+	float: left;
+	width: 181px;
+	margin: 0 0 8px 10px;
+	background: #F7F7F7;
+}
+
+#Lsidebar h1 {
+	color:#fff;
+	font-size: 1.2em;
+	text-align : center;
+	border : solid 1px #cecece;
+	width: 170px;
+	margin: 0 0 0 0px;
+	padding: 12px 0 11px 10px;
+	background-color:#5D5D5D;
+}
+
+/* submenu --------------- */
+#LblockLeftMenu {
+	background:url("/sys/images/tree/leftMenu_bottom.gif") no-repeat left bottom;
+	padding-bottom:10px;
+}
+#LblockLeftMenu li {
+	background:url("/sys/images/tree/leftMenu_bg.gif") repeat-x left top;
+}
+#LblockLeftMenu li span {
+	display:block;
+	font-weight:bold;
+	padding: 4px 0 2px 10px;
+	_height:1%;
+}
+#LblockLeftMenu li.LhasChild span {
+    background: url("/sys/images/tree/submenu_closed.gif") no-repeat 93% 50%;
+}
+#LblockLeftMenu li.Lopen span {
+    background: url("/sys/images/tree/submenu_open.gif") no-repeat 93% 50%;
+}
+#LblockLeftMenu li span a {
+	color:#555555;
+	font-weight:bold;
+	line-height:20px;
+}
+#LblockLeftMenu li.Lcurrent span a {
+	color:#0770FF;
+}
+#LblockLeftMenu li span a:hover,
+#LblockLeftMenu li span a:active {
+	color:#0770FF;
+}
+
+/* 2 depth */
+#LblockLeftMenu li ul {
+	display:none;
+	width:180px;
+}
+#LblockLeftMenu li li span a {
+	color:#000000;
+	padding:0 0 0 8px;
+	font-weight:normal;
+}
+#LblockLeftMenu li.Lopen ul {
+	display:block;
+}
+#LblockLeftMenu li li {
+	background:none;
+	padding:0;
+}
+#LblockLeftMenu li li span {
+	padding:0 0 0 10px;
+	font-weight:normal;
+    background: none;
+}
+#LblockLeftMenu li.Lopen li ul {
+	display:none;
+	width:100%;
+}
+#LblockLeftMenu li.Lopen li.Lopen ul{
+	display:block;
+}
+#LblockLeftMenu li.Lcurrent li span a {
+	color:#555555;;
+}
+#LblockLeftMenu li li.LhasChild span a {
+	background:url("/sys/images/tree/leftMenu_blt.gif") no-repeat 0 3px;
+}
+#LblockLeftMenu li.LhasChild li span,
+#LblockLeftMenu li.Lopen li span {
+	background:none;
+}
+#LblockLeftMenu li li.Lopen  span a {
+	background:url("/sys/images/tree/leftMenu_blt_on.gif") no-repeat 0 3px;
+}
+#LblockLeftMenu li li.Lcurrent span a {
+	font-weight:bold;
+}
+/* 3 depth */
+#LblockLeftMenu li li li span {
+	padding:0 0 0 32px;
+	font-weight:normal;
+}
+#LblockLeftMenu li li.Lopen li span a,
+#LblockLeftMenu li li li span a {
+	padding:0 0 0 8px;
+	font-weight:normal;
+	background:url("/sys/images/tree/leftMenu_blt_3.gif") no-repeat 0 50%;
+}
+#LblockLeftMenu li li li.Lcurrent span a {
+	font-weight:bold;
+}
+
+/* content --------------- */
+#Lcontent {
+	float: left;
+	width: 780px;
+	margin: 25px 0 0px 25px;
+	padding-bottom:25px;
+}
+#Lcontent ul li {
+	background: url("./images/bullet_submenu.gif") no-repeat 0 5px;
+	padding-left: 10px;
+}
+#Lexample {
+	border:dotted;
+	border-width:1px;
+	background-color:#FFFFCC;
+}

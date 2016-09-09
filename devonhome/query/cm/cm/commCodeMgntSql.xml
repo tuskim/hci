@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>	 
+    
+	<!--  Code Mster조회-->
+    <statement name="retrievecommCodeMgntList">
+        <![CDATA[
+			SELECT '0' CHK,
+			       ms.company_cd,
+			       ms.group_cd,
+			       ms.group_nm,
+			       ms.remark ms_remark,
+			       ms.useyn ms_yn,
+			       ms.regid ms_regid,
+			       (SELECT tu.user_nm FROM tb_user tu WHERE tu.company_cd = ms.company_cd and tu.user_id = ms.regid) ms_regnm,
+			       ms.regdate ms_regdate,
+			       ms.modid ms_modid,
+                      ms.moddate ms_moddate
+			  FROM tb_comm_cd_master ms
+			 WHERE ms.company_cd   = ${companyCd} 
+			   AND ms.group_cd   = NVL(${group_cd},ms.group_cd)     
+			       {#1}
+			 ORDER BY ms.group_cd
+			 
+        ]]> 
+        <append where="false" condition="${group_nm}.NOTEMPTY" id="#1">
+             AND ms.group_nm   LIKE '%'||NVL(${group_nm},'')||'%'
+	    </append>        
+    </statement>
+    
+ 
+    <!-- Code Mster master  추가 -->
+    <statement name="insertMsCommCodeMgnt">
+        <![CDATA[
+			INSERT INTO tb_comm_cd_master
+			      (
+			       company_cd,
+			       group_cd,
+			       group_nm,
+			       remark,
+			       useyn,
+			       regid,
+			       regdate,
+			       regtime
+			      )
+			      values
+			      (
+			       ${companyCd},
+			       ${groupCd},
+			       ${groupNm},
+			       ${msRemark},
+			       ${msYn},
+			       ${userId},
+			       TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       TO_CHAR(SYSDATE,'HH24MISS')
+			      )
+        ]]> 
+    </statement>
+    
+    <!-- Code Mster Detail  추가 -->
+    <statement name="insertDtCommCodeMgnt">
+        <![CDATA[
+			INSERT INTO tb_comm_cd_detail
+			      (
+			       company_cd,
+			       group_cd,
+			       detail_cd,
+			       detail_cd_nm_kr,
+			       detail_cd_nm_en,
+			       detail_cd_nm_lo,
+			       sort,
+			       attr1,
+			       attr2,
+			       attr3,
+			       attr4,
+			       attr5,
+			       attr6,
+			       attr7,
+			       attr8,
+			       attr9,
+			       attr10,                            
+			       remark,
+			       useyn,
+			       regid,
+			       regdate,
+			       regtime      
+			      )
+			      values
+			      (
+			       ${companyCd},
+			       ${groupCd},
+			       ${detailCd},
+			       ${detailCdNmKr},
+			       ${detailCdNmEn},
+			       ${detailCdNmLo},
+			       ${sort},
+			       ${attr1},
+			       ${attr2},
+			       ${attr3},
+			       ${attr4},
+			       ${attr5},
+			       ${attr6},
+			       ${attr7},
+			       ${attr8},
+			       ${attr9},
+			       ${attr10},
+			       ${remark},
+			       ${useyn},
+			       ${userId},       
+			       TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       TO_CHAR(SYSDATE,'HH24MISS')
+			      )
+      ]]> 
+    </statement>
+    
+    <!-- Code Mster master  수정 -->
+    <statement name="updateMsCommCodeMgnt">
+			UPDATE tb_comm_cd_master
+			   SET group_nm        =  ${groupNm},         
+			       remark          =  ${msRemark},         
+			       useyn           =  ${msYn},         
+			       modid           =  ${userId},                                     
+			       moddate         =  TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       modtime         =  TO_CHAR(SYSDATE,'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = ${groupCd}  
+    </statement>
+    
+    <!-- Code Mster Detail  수정 -->
+    <statement name="updateDtCommCodeMgnt">
+        <![CDATA[
+			UPDATE tb_comm_cd_detail
+			   SET detail_cd_nm_kr =  ${detailCdNmKr},         
+			       detail_cd_nm_en =  ${detailCdNmEn},         
+			       detail_cd_nm_lo =  ${detailCdNmLo},
+			       sort           =  ${sort},           
+			       attr1           =  ${attr1},                   
+			       attr2           =  ${attr2},                   
+			       attr3           =  ${attr3},                   
+			       attr4           =  ${attr4},                   
+			       attr5           =  ${attr5},                   
+			       attr6           =  ${attr6},                   
+			       attr7           =  ${attr7},                   
+			       attr8           =  ${attr8},                   
+			       attr9           =  ${attr9},                   
+			       attr10          =  ${attr10},                            
+			       remark          =  ${remark},                  
+			       useyn           =  ${useyn},                   
+			       modid           =  ${userId},                               
+			       moddate         =  TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       modtime         =  TO_CHAR(SYSDATE,'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = ${groupCd}
+			   AND detail_cd  = ${detailCd}
+      ]]> 
+    </statement>
+        
+     <!-- Code Mster Master  삭제 -->
+    <statement name="deleteMsCommCodeMgnt">
+        <![CDATA[
+			UPDATE tb_comm_cd_master
+			   SET useyn           =  'N',         
+			       modid           =  ${userId},                                     
+			       moddate         =  TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       modtime         =  TO_CHAR(SYSDATE,'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = ${groupCd}
+      ]]> 
+    </statement>           
+        
+    <!-- Code Mster Detail  삭제 -->
+    <statement name="deleteDtCommCodeMgnt">
+            <![CDATA[
+			DELETE tb_comm_cd_detail 
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = ${groupCd}
+			   AND detail_cd  = ${detailCd}
+      ]]> 
+    </statement>
+ 
+    <!-- Dtail inqury condition   -->
+    <statement name="RetrieveCodeMgntDtList">
+            <![CDATA[
+            SELECT '0' CHK,
+                   dt.company_cd,
+                   dt.group_cd,
+                   dt.detail_cd, 
+                   DECODE(${lang},'kr', dt.detail_cd_nm_kr,
+                           'en', dt.detail_cd_nm_en,
+                                 dt.detail_cd_nm_lo) name,   
+                   dt.detail_cd_nm_kr,                               
+                   dt.detail_cd_nm_en,
+                   dt.detail_cd_nm_lo,
+                   dt.sort,
+                   dt.attr1,
+                   dt.attr2,
+                   dt.attr3,
+                   dt.attr4,
+                   dt.attr5, 
+                   dt.attr6,
+                   dt.attr7,
+                   dt.attr8,
+                   dt.attr9,
+                   dt.attr10,                   
+                   dt.remark,
+                   dt.useyn,
+                   dt.regid,
+                   dt.regdate 
+			  FROM tb_comm_cd_detail dt 
+		     WHERE dt.company_cd = ${companyCd}
+		       AND dt.group_cd     = ${group_cd} 
+		     ORDER BY dt.detail_cd		        
+		      
+       ]]>
+    </statement>       
+    
+    <!-- Code Dtail condition   -->
+    <statement name="RetrieveDupCnt">
+      <![CDATA[
+			SELECT COUNT(*) cnt
+			  FROM tb_comm_cd_master 
+			 WHERE company_cd  = ${companyCd}     
+			   AND group_cd = ${groupCd}     
+       ]]>
+    </statement>    
+
+    <!--  Common Code Search -->
+    <statement name="retrieveCommCodeCombo">
+        <![CDATA[
+        	{#1}
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   TO_NUMBER(sort) sort     
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y'
+               AND cd.company_cd = ${companyCd} 
+               AND cd.group_cd   = ${groupCd}
+               AND cd.useyn      = 'Y'
+               {#2}
+			   
+		]]> 
+		<append where="false" condition="${firstVal}.NOTEMPTY" 	id="#1">
+			SELECT 	'' AS  code,
+					'--'||${firstVal}||'--' AS  name,
+					 0 sort
+			  FROM	dual
+			 UNION ALL
+        </append>
+        
+        <append where="false" condition="${attr2}.NOTEMPTY" 	id="#2">
+			AND cd.ATTR2      = ${attr2}
+        </append>
+    </statement>
+     
+      
+	<!-- 농장계정 목록조회 -->
+    <statement name="retrieveAccountManage">
+        <![CDATA[
+			SELECT company_cd,
+			       acct_sap_cd,
+			       acct_nm_kr,
+			       acct_nm_en,
+			       acct_nm_lo,
+			       useyn,
+			       regid,
+			       regdate,
+			       regtime,
+			       modid,
+			       moddate,
+			       modtime,
+			       attr1,
+			       attr2,
+			       attr3,
+			       attr4,
+			       attr5
+			  FROM tb_sap_account                
+			 WHERE company_cd  = ${companyCd}  
+			 AND SUBSTR(acct_sap_cd, 0,1) <> 8
+ 			       {#1}
+			       {#2}
+		     ORDER BY acct_sap_cd
+        ]]> 
+	    <append condition="${acctCd}.NOTEMPTY" id="#1">       
+			    AND acct_sap_cd like '%' || ${acctCd} || '%'
+	    </append>
+	    <append condition="${acctNm}.NOTEMPTY" id="#2">       
+			     AND UPPER( decode(${lang},'kr', acct_nm_kr,
+                             		  'en', acct_nm_en,
+                                 	  'lo', acct_nm_lo)) like '%'|| UPPER(${acctNm}) ||'%'
+	    </append>
+    </statement> 
+        
+	<!-- 신규 농장계정 저장 -->
+    <statement name="createAccount">
+        <![CDATA[
+			INSERT INTO tb_local_account
+		   		  (company_cd,
+  				   acct_cd,
+				   acct_nm_en,
+				   acct_nm_lo,
+				   acct_sap_cd,
+ 				   attr1,
+				   attr2,
+				   attr3,
+				   attr4,
+				   attr5,
+				   attr6,
+				   useyn,
+				   regid,
+				   regdate,
+				   regtime
+				  )
+			VALUES
+ 			 	  (${companyCd},
+				   ${acctCd},
+				   ${acctNmEn},
+				   ${acctNmLo},
+ 	 			   ${acctSapCd},
+ 	 			   ${area},
+				   ${div},
+				   ${block},
+				   ${block},
+				   ${year},
+ 				   ${tm},
+				   ${useyn},
+				   ${userId},
+ 				   to_char(sysdate,'yyyymmdd'),
+				   to_Char(sysdate,'hh24miss')
+				   )
+		
+        ]]> 
+    </statement>  
+    
+   <!-- 농장계정 수정 -->
+    <statement name="updateAccount">
+        <![CDATA[
+			UPDATE tb_local_account
+   			   SET  acct_cd     = ${acctCd},
+			       acct_nm_en 	= ${acctNmEn},
+			       acct_nm_lo   = ${acctNmLo},
+		 	       acct_sap_cd  = ${acctSapCd},
+ 		  	       attr1 		= ${area},
+ 			       attr2 		= ${div},
+			       attr3 		= ${block},
+			       attr4 		= ${block},
+			       attr5 		= ${year},
+			       attr6 		= ${tm},
+ 			       useyn 		= ${useyn},
+			       modid		= ${userId},
+ 			       moddate 		= to_char(sysdate,'yyyymmdd'),
+ 			       modtime 		= to_Char(sysdate,'hh24miss')
+			 WHERE company_cd 	= ${companyCd}
+  			   AND acct_cd	    = ${acctCd}	   		
+        ]]> 
+    </statement>     
+    
+
+     
+    <!--자재코드 필수항목 조회-->
+    <statement name="retrieveMaterialMasterList">
+        <![CDATA[
+			SELECT company_cd,
+       			   mater_cd,
+       			   mater_type mater_type2,
+				   mater_nm_lo,
+       			   mater_nm_en,
+      			   unit,
+       			   area_cd,
+       			   div_cd,
+       			   block_cd,
+       			   block_cd2,
+       		       year_cd,
+       			   ha,
+       			   useyn,
+       			   lgiusf.F_GETCOMMNAME('COMM',${companyCd},${lang},'1102',mater_type)  mater_type    
+ 			  FROM tb_mater_info
+ 			 WHERE company_cd =${companyCd}
+ 			       {#1}
+			       {#2}
+				   {#3}
+			 ORDER BY mater_cd  
+        ]]> 
+	    <append condition="${materType}.NOTEMPTY" id="#1">       
+			   AND mater_type  like '%'||${materType}||'%'
+	    </append>
+	    <append condition="${materCd}.NOTEMPTY" id="#2">       
+ 		       AND UPPER(mater_cd) like '%'||UPPER(${materCd})||'%'
+	    </append>
+	    <append condition="${useyn}.NOTEMPTY" id="#3">       
+			   AND useyn like '%'||${useyn}||'%'
+	    </append>	    
+    </statement> 
+       
+    <!-- 자재코드 필수항목 수정-->
+    <statement name="cudMaterialMasterListt">
+        <![CDATA[
+			UPDATE tb_mater_info
+   			   SET ha			= ${ha},
+       			   modid 		= ${userId},
+       			   moddate 		= to_char(sysdate,'yyyymmdd'),
+       			   modtime 		= to_Char(sysdate,'hh24miss')
+			 WHERE company_cd 	= ${companyCd}
+  			   AND mater_cd 	= ${materCd}
+		
+        ]]> 
+    </statement>    
+       
+    <statement name="retrieveCommComboMaterList">
+
+        <![CDATA[
+		    {#1}
+	        SELECT mater_cd code,
+	               decode(${lang},'kr',mater_nm_kr,
+	                              'en',mater_nm_en,mater_nm_lo) name
+	          FROM lgiusf.tb_mater_info
+	         WHERE company_cd = ${companyCd}
+	           {#2}
+	           AND useyn='Y'
+	         ORDER BY name ASC
+		]]>
+
+		<append where="false" condition="${firstVal}.NOTEMPTY" 	id="#1">
+			SELECT 	'' AS  code,
+					'--'||${firstVal}||'--' AS  name
+			  FROM	dual
+			 UNION ALL
+        </append>
+	    
+	    <append where="false" condition="${materType}.NOTEMPTY" id="#2">
+	          AND mater_type = ${materType}
+	    </append>
+	    
+    </statement>
+    
+    <statement name="retrieveCommComboVendorList">
+        <![CDATA[
+           {#1}
+			SELECT vm.company_cd,
+			       vm.vend_cd code,
+			       DECODE(${lang},'kr',vm.vend_nm_kr
+			                     ,'en',vm.vend_nm_en
+			                     ,'lo',vm.vend_nm_lo) name,
+			       vm.country_cd,
+			       vm.vend_desc,
+			       vm.vend_type,
+			       vm.useyn
+			  FROM lgiusf.tb_vend_master vm
+			 WHERE vm.company_cd = ${companyCd}  
+			   AND vm.useyn='Y' 
+			 ORDER BY name ASC
+		]]>
+		<append where="false" condition="${firstVal}.NOTEMPTY" 	id="#1">
+			SELECT ${companyCd}   AS COMPANY_CD,
+			               '' AS  code,
+					'--'||${firstVal}||'--' AS  name,
+					'' AS COUNTRY_CD,
+					'' AS VEND_DESC,
+					'' AS VEND_TYPE,
+					'Y' AS USEYN
+			  FROM	dual
+			 UNION ALL
+        </append>
+    </statement>    
+
+    <!-- ZXMLDOCNO  -->
+    <statement name="retireveXmlDocNo">
+        <![CDATA[
+			SELECT TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') ZXMLDOCNO, TO_CHAR(SYSDATE, 'YYYYMMDD') TRANS_DATE, TO_CHAR(SYSDATE, 'HH24MISS') TRANS_TIME
+			FROM DUAL
+		]]>     
+    </statement>        
+
+    <!-- SAP계정조회 -->
+        <statement name="retrieveSapAcctCd">
+        <![CDATA[
+      	SELECT acct_sap_cd,
+      	 	   acct_nm_en acct_sap_nm_en,
+      	 	   useyn
+		  FROM tb_sap_account
+		 WHERE company_cd = ${companyCd}
+		  {#1}
+		 ORDER BY acct_sap_cd
+		]]>		
+		<append where="false" condition="${acctSapCd}.NOTEMPTY" id="#1">
+             AND acct_sap_cd   like '%'||${acctSapCd}||'%'
+	    </append>
+
+    </statement>
+    
+    
+    <!-- Cost Center 조회  -->
+    <statement name="retrieveCommComboCostCenterList">
+        <![CDATA[
+			SELECT cc.company_cd,
+			       cc.cost_center_cd code,
+			       DECODE(${lang},'kr',cc.cost_center_nm_kr
+			                     ,'en',cc.cost_center_nm_en
+			                     ,'lo',cc.cost_center_nm_lo) name,
+			       cc.useyn
+			  FROM lgiusf.tb_cost_center cc
+			 WHERE cc.company_cd = ${companyCd}
+			   {#1}
+			   AND cc.useyn='Y' 
+			 ORDER BY name ASC
+		]]>
+
+		<append where="false" condition="${postDate}.NOTEMPTY" id="#1">
+			<![CDATA[  
+			   AND attr1 <= ${postDate} 
+			   AND attr2 >= ${postDate} 
+			]]>
+	    </append>
+
+    </statement>    
+    
+    <!-- Plant 조회  -->
+    <statement name="retrievePlant">
+        <![CDATA[
+			SELECT DETAIL_CD as PLANT_CD
+	        FROM TB_COMM_CD_DETAIL
+	        WHERE  COMPANY_CD = ${companyCd}
+	             AND GROUP_CD = '2008'
+	    ]]>
+    </statement>     
+
+    <!-- 사무소 조회  (MGE :  판매(2001),  구매(2005) -->
+    <statement name="retrieveDeptSales">
+        <![CDATA[
+			SELECT ATTR1 as DEPT_CD
+	        FROM TB_COMM_CD_DETAIL
+	        WHERE  COMPANY_CD = ${companyCd}
+	             AND GROUP_CD = '2001'
+	    ]]>
+    </statement>     
+
+    <!-- 사무소 조회  (MGE :  판매(2001),  구매(2005) -->
+    <statement name="retrieveDeptPurchase">
+        <![CDATA[
+			SELECT ATTR1 as DEPT_CD
+	        FROM TB_COMM_CD_DETAIL
+	        WHERE  COMPANY_CD = ${companyCd}
+	             AND GROUP_CD = '2005'
+	    ]]>
+    </statement>     
+
+    <!-- Check Account Code -->
+    <statement name="retrieveCheckAccountCode">
+        <![CDATA[
+			SELECT attr2 acct_cd
+			  FROM lgiusf.tb_comm_cd_detail
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = '2011'
+	    ]]>
+    </statement>     
+	
+	<!-- Check Account Code -->
+    <statement name="retrieveCheckCostPriceAccountCode">
+        <![CDATA[
+			SELECT attr1 acct_cd
+			  FROM lgiusf.tb_comm_cd_detail
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = '2012'
+	    ]]>
+    </statement>     
+
+	<!-- SAP계정조회 -->
+    <statement name="retrieveSapVatAcctCd">
+        <![CDATA[
+      	SELECT acct_sap_cd
+      	            , attr3
+      	            , attr1 sp
+      	            , attr6 chk_due_date
+		  FROM tb_sap_account
+		 WHERE company_cd = ${companyCd}
+		  {#1}
+		 ORDER BY acct_sap_cd
+		]]>		
+		<append condition="${type}.EQ.v" id="#1">       
+			   AND attr3 in ('Y', 'N')
+	    </append>
+	    <append condition="${type}.EQ.a" id="#1">       
+			   AND attr1 = 'K'
+	    </append>
+    </statement>
+    
+    <!--  Common Code Search -->
+    <statement name="retrieveCostPriceCodeCombo">
+        <![CDATA[
+        	{#1}
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   TO_NUMBER(sort) sort     
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y'
+               AND cd.company_cd = ${companyCd} 
+               AND cd.group_cd   = '2101'
+               AND cd.useyn      = 'Y'
+               AND attr2 = 1
+             ORDER BY SORT
+			   
+		]]> 
+		<append where="false" condition="${firstVal}.NOTEMPTY" 	id="#1">
+			SELECT 	'' AS  code,
+					'--'||${firstVal}||'--' AS  name,
+					 0 sort
+			  FROM	dual
+			 UNION ALL
+        </append>
+    </statement>
+    
+    
+       <!--  Retrieve Comm Default Dept Cd 20140702 -->
+    <statement name="retrieveCommDefaultDeptCd">
+        <![CDATA[--retrieveCommDefaultDeptCd
+            SELECT attr8 as dept_cd
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y'
+               AND cd.company_cd = ${companyCd} 
+               AND cd.group_cd   = ${groupCd}
+               AND cd.detail_cd   = ${deptCd}
+               AND cd.useyn      = 'Y'
+			   	]]> 
+    </statement>
+
+
+</statements>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Vendor Grouping by P/R Manage  -->
+
+   	<!-- Vendor Grouping by P/R Manage  -->  
+	<action-name name="purchOrderGroup">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/po/purchOrderGroup.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- Vendor Grouping by P/R Manage Retrieve -->  
+	<action-name name="po.po.retrievePurchOrderGroup">
+    	<command>po.po.cmd.RetrievePurchOrderGroupCmd</command> 
+   	</action-name>   	
+   	
+   	<!-- Vendor Grouping by P/R Manage Cud -->  
+	<action-name name="po.po.cudPurchOrderGroup">
+    	<command>po.po.cmd.CudPurchOrderGroupCmd</command> 
+   	</action-name>      	
+   	   	    
+</navigation-mapper>

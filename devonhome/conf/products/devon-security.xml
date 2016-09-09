@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<security>
+
+    <sql-injection name="default">
+        <sieve>'";:|#%!$\/*</sieve>
+        <subst>
+            <from>'</from>
+            <to>''</to>
+        </subst>
+        <subst>
+            <from>"</from>
+            <to>""</to>
+        </subst>
+        <subst>
+            <from>\</from>
+            <to>\\</to>
+        </subst>
+        <subst>
+            <from>#</from>
+            <to></to>
+        </subst>
+        <subst>
+            <from>--</from>
+            <to></to>
+        </subst>
+        <subst>
+            <from>;</from>
+            <to></to>
+        </subst>
+    </sql-injection>
+    
+    <xss name="default">
+        <deny-tag>object; script</deny-tag>
+    </xss>
+    
+</security>
+

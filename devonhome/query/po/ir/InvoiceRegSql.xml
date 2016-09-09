@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Invoice Reg Sql -->
+
+    <!--Tax Data Set 조회 쿼리  -->
+    <statement name="retrieveTaxDataSetList">
+        <![CDATA[
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   attr1,
+                   wt_cd tax_code,
+                   wt_rate rate,
+                   wt_base_amt base_amt,
+                   wt_tax_amt tax_amt
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd,
+                   (
+                   SELECT wt_type
+ 		                        ,pt.wt_cd
+		                        ,pt.wt_rate
+		                        ,pt.wt_base_amt
+		                        ,pt.wt_tax_amt 
+		                    FROM tb_po_tax pt
+		                   WHERE pt.company_cd = ${companyCd} 
+		                     AND pt.po_no      =  ${poNo}
+		                     AND pt.tax_seq    = (SELECT MAX(ptt.tax_seq)
+		                                            FROM tb_po_tax ptt
+		                                           WHERE ptt.company_cd = pt.company_cd
+		                                             AND ptt.po_no      = pt.po_no) 
+                   ) ptx
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y'
+               AND cd.company_cd = ${companyCd} 
+               AND cd.group_cd   = ${groupCd}
+               AND cd.useyn      = 'Y'
+               AND cd.detail_cd = ptx.wt_type(+)
+             ORDER BY SORT
+
+		]]>
+    </statement>  
+
+    <!--P/O Master 조회 쿼리  -->
+    <statement name="retrievePoMstList">
+        <![CDATA[
+		      SELECT DISTINCT 
+		      		  'F' chk
+		             ,a.po_no
+		             ,a.regdate
+		             ,a.deli_date         
+		             ,a.currency_cd
+		             ,a.pay_term
+		             ,a.discount_amt
+		             ,a.sap_po_no
+		             ,a.vend_cd
+		             ,DECODE(${lang},'kr',c.vend_nm_kr,'en',c.vend_nm_en, c.vend_nm_lo) vend_nm
+		             ,a.pur_dept_cd
+		             ,f_getcommname('COMM',${companyCd},${lang},'2001',a.PUR_DEPT_CD) pur_dept_name
+		             ,a.deli_loct
+		             ,f_getcommname('COMM',${companyCd},${lang},'2005',a.DELI_LOCT) delivy_pla_name
+		             ,a.attr2 po_type
+		        FROM  tb_po_master a
+		             ,tb_po_detail b
+		             ,tb_vend_master c
+		       WHERE a.company_cd = c.company_cd
+		         AND a.VEND_CD = c.vend_cd
+		         AND a.company_cd = ${companyCd}
+		         AND a.status = '03'
+		         --AND 0 = (SELECT COUNT(*) cnt FROM tb_po_detail i WHERE i.po_no = a.po_no AND i.company_cd = a.company_cd AND NVL(i.receipt_cls_yn, 'N')  = 'N')
+		         AND a.iv_close = 'N'
+				   {#1}
+				   {#2}
+				   {#3}		         
+		         ORDER BY A.PO_NO
+		]]>
+            <append where="false" condition="${fromDate}.NOTEMPTY" id="#1">
+		       AND a.TRANS_DATE >= ${fromDate}
+		    </append>
+            <append where="false" condition="${toDate}.NOTEMPTY" id="#2">
+           	  <![CDATA[ 
+             		and TRANS_DATE	<= ${toDate}
+           	  ]]>       
+		    </append>
+            <append where="false" condition="${poNo}.NOTEMPTY" id="#3">
+		       AND A.PO_NO like '%' ||  ${poNo} || '%'
+		    </append>		
+    </statement>  
+    
+    <!--P/O Dtl 조회 쿼리  -->
+    <statement name="retrievePoDtlList">
+        <![CDATA[
+			SELECT '0' chk,
+			       pd.company_cd,
+			       pd.po_no,
+			       pd.po_seq,
+			       pd.mater_cd, 
+                   (SELECT DECODE(${lang},'kr',mi.mater_nm_kr,
+                                          'en',mi.mater_nm_en,mater_nm_lo)                                                                                    
+                      FROM tb_mater_info mi
+                     WHERE mi.company_cd = pd.company_cd
+                       AND mi.mater_cd   = pd.mater_cd) mater_nm,			       
+			       pd.qty,
+			       pd.unit,
+			       pd.vat_cd,
+			       lgiusf.F_GETCOMMNAME('COMM',pd.company_cd ,${lang},'2007',pd.vat_cd) vat_nm,			       
+			       pd.price,
+			       pd.sap_price, 
+			       pd.amount,
+			       pm.currency_cd,
+			       case when pd.receipt_cls_yn = 'Y' 
+			       	then  pd.receipt_qty 
+			       	else pd.qty
+			       end
+			       as previous_qty,             -- 기존 입고 수량
+			       pd.qty - pd.receipt_qty as  receipt_qty,    -- 입고할 수량
+			       pd.vat_amt, 			 											--to_number(pd.sap_price)*to_number(pd.receipt_qty) as vat_amt,
+			       pd.receipt_cls_yn,
+	               pd.tran_tax_rate,
+	               pd.tran_tax_amt,
+	               pm.iv_close
+			  FROM lgiusf.tb_po_detail pd,
+			       lgiusf.tb_po_master pm
+			 WHERE pm.company_cd = pd.company_cd
+			   AND pm.po_no      = pd.po_no
+			   AND pd.company_cd = ${companyCd}
+			   AND pd.po_no      = ${poNo} 
+			   --AND pd.receipt_cls_yn = 'Y'         -- close가 Y인 아이템만 조회 
+			   AND pm.iv_close != 'Y'              -- invoice가 close 안된 아이템만 조회			  
+			 ORDER BY pd.po_seq ASC 	 			 		
+		]]>
+    </statement>  
+
+
+    <!--Invoice Mst 조회 쿼리  -->
+    <statement name="retrieveInvoiceMstList">
+        <![CDATA[
+          SELECT 'F' as chk
+                ,im.company_cd
+                ,im.po_no
+                ,im.iv_seq
+                ,im.sap_po_no
+                ,im.vend_cd
+                ,im.iv_date
+                ,im.post_date
+                ,im.due_date
+                ,im.iv_amt
+                ,im.currency_cd
+                ,im.vat_amt
+                ,im.vat_cd
+                ,im.plant
+                ,im.stor_loct
+                ,im.sap_iv_do_no
+                ,im.sap_gr_do_no
+                ,im.sap_cancel_iv_do_no
+                ,im.sap_cancel_gr_do_no
+                ,im.status
+                ,im.send_stat
+                ,im.send_date
+                ,im.send_msg
+                ,im.cancel_stat
+                ,im.cancel_date
+                ,im.cancel_msg        
+                ,pm.attr2 po_type
+                ,pm.regdate                        
+            FROM tb_iv_master im
+                ,tb_po_master pm
+           WHERE im.company_cd = pm.company_cd
+             AND im.po_no = pm.po_no
+             AND im.company_cd = ${companyCd}
+               {#1}
+               {#2}
+               {#3}
+               {#4}
+               {#5}			
+			ORDER BY PO_NO, TO_NUMBER(IV_SEQ)
+			
+		]]>
+        <append where="false" condition="${poNo}.NOTEMPTY" id="#1">
+        <![CDATA[
+   			AND im.po_no like  '%'||${poNo}||'%'
+        ]]>
+	    </append>	
+        <append where="false" condition="${fromPoDate}.NOTEMPTY" id="#2">
+        <![CDATA[
+  			AND pm.regdate     >= REPLACE(${fromPoDate},'/','')
+        ]]>
+	    </append>	   
+        <append where="false" condition="${toPoDate}.NOTEMPTY" id="#3">
+        <![CDATA[
+   			AND pm.regdate     <= REPLACE(${toPoDate},'/','')     
+        ]]>
+	    </append>	
+        <append where="false" condition="${fromPostDate}.NOTEMPTY" id="#4">
+        <![CDATA[
+  			AND im.post_date     >= REPLACE(${fromPostDate},'/','')
+        ]]>
+	    </append>	   
+        <append where="false" condition="${toPostDate}.NOTEMPTY" id="#5">
+        <![CDATA[
+   			AND im.post_date     <= REPLACE(${toPostDate},'/','')     
+        ]]>
+	    </append>	
+    </statement>  
+    
+    <!--Invoice Dtl 조회 쿼리  -->
+    <statement name="retrieveInvoiceDtlList">
+        <![CDATA[
+            SELECT 
+				'F' as chk
+				,D.COMPANY_CD
+				,D.PO_NO
+				,D.IV_SEQ
+				,ITEM_SEQ
+				,D.MATER_CD
+				,AMT
+				,PD.QTY
+				,IV_QTY
+				,D.VAT_CD
+		       ,DECODE(${lang},'kr',MI.mater_nm_kr,'en',MI.mater_nm_en, MI.mater_nm_en) mater_nm
+		       ,MI.UNIT
+			   ,D.TRAN_TAX_RATE
+			   ,D.TRAN_TAX_AMT
+            FROM TB_IV_MASTER M,
+                     TB_IV_ITEM D,
+                     TB_MATER_INFO MI,
+                     TB_PO_DETAIL PD
+			WHERE M.company_cd = D.company_cd
+			    AND M.po_no = D.po_no
+			    AND M.iv_seq = D.iv_seq 
+			    AND D.company_cd = PD.company_cd
+			    AND D.po_no = PD.po_no
+			    AND D.item_seq = PD.po_seq
+				AND M.company_cd = ${companyCd}
+				AND D.iv_seq = ${seq}
+				AND D.PO_NO = ${poNo}
+				AND D.company_cd = MI.company_cd
+				AND D.mater_cd = MI.mater_cd 
+			ORDER BY ITEM_SEQ	
+		]]>
+    </statement>  
+
+    <!--Invoice Tax 조회 쿼리  -->
+    <statement name="retrieveInvoiceTaxList">
+        <![CDATA[
+            SELECT 
+            	'F' as chk
+				,T.COMPANY_CD
+				,T.PO_NO
+				,T.IV_SEQ
+				,WT_SEQ
+				,WT_TYPE
+				,WT_CD
+				,WT_RATE
+				,WT_BASE_AMT
+				,WT_TAX_AMT
+				
+            FROM TB_IV_MASTER M,
+                     TB_IV_WT T
+			WHERE M.company_cd = T.company_cd
+			    AND M.po_no = T.po_no
+			    AND M.iv_seq = T.iv_seq 
+				AND M.company_cd = ${companyCd}
+				AND T.iv_seq = ${seq}
+				AND T.PO_NO = ${poNo}
+				
+			ORDER BY WT_SEQ
+		]]>
+    </statement>      
+    
+    <!--Invoice Mst Create  -->
+    <statement name="InsertInvoiceMst">
+        <![CDATA[
+		INSERT INTO TB_IV_MASTER(
+				COMPANY_CD
+				,PO_NO
+				,IV_SEQ
+				,SAP_PO_NO
+				,VEND_CD
+				,IV_DATE
+				,POST_DATE
+				,DUE_DATE
+				,IV_AMT
+				,CURRENCY_CD
+				,VAT_AMT
+				,VAT_CD
+				,PLANT
+				,STOR_LOCT
+				,STATUS
+				,REGID
+				,REGDATE
+				,REGTIME
+		) 
+		VALUES(
+				${companyCd}
+				,${poNo}
+				,${ivSeq}
+				,${sapPoNo}
+				,${vendCd}
+				,${ivDate}
+				,${postDate}
+				,${dueDate}
+				,${ivAmt}
+				,${currencyCd}
+				,${vatAmt}
+				,${vatCd}
+				,${plant}
+				,${storLoct}
+				,${status}
+			    ,${userId}
+			    ,TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    ,TO_CHAR(SYSDATE, 'HH24MISS')
+		
+		)
+				
+		]]>
+    </statement>          
+    
+    <!--Retrieve IV SEQ  -->
+    <statement name="retrieveIvSeq">
+        <![CDATA[
+			SELECT NVL(MAX(TO_NUMBER(IV_SEQ)),0)+1 as IV_SEQ
+			  FROM TB_IV_MASTER
+	  	    WHERE PO_NO = ${poNo}
+				
+		]]>
+    </statement>          
+
+    <!---Retrieve WT SEQ  -->
+    <statement name="retrieveWtSeq">
+        <![CDATA[
+			SELECT LPAD(TO_NUMBER(NVL(MAX(SUBSTR(WT_SEQ,0,4)),0)+1), 4, '0') || '0' as WT_SEQ
+				  FROM TB_IV_WT
+				  WHERE PO_NO = ${poNo}
+				      AND IV_SEQ = (SELECT MAX(TO_NUMBER(IV_SEQ))
+										  FROM TB_IV_MASTER
+				  						WHERE PO_NO = ${poNo})				
+		]]>
+    </statement>          
+    
+   <!--Invoice Dtl Create  -->
+    <statement name="InsertInvoiceDtl">
+        <![CDATA[
+		INSERT INTO TB_IV_ITEM(
+			COMPANY_CD
+			,PO_NO
+			,IV_SEQ
+			,ITEM_SEQ
+			,MATER_CD
+			,AMT
+			,IV_QTY
+			,VAT_CD
+			,TRAN_TAX_RATE
+			,TRAN_TAX_AMT
+			,REGID
+			,REGDATE
+			,REGTIME
+
+		) 
+		VALUES(
+				${companyCd}
+				,${poNo}
+				,${ivSeq}
+				,${poSeq}
+				,${materCd}
+				,${amount}
+				,${receiptQty}
+				,${vatCd}
+				,${tranTaxRate}
+				,${tranTaxAmt}
+			    ,${userId}
+			    ,TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    ,TO_CHAR(SYSDATE, 'HH24MISS')
+		)
+				
+		]]>
+    </statement>              
+
+   <!--Invoice Dtl Create  -->
+    <statement name="InsertInvoiceTax">
+        <![CDATA[
+		INSERT INTO TB_IV_WT(
+			COMPANY_CD
+			,PO_NO
+			,IV_SEQ
+			,WT_SEQ
+			,WT_TYPE
+			,WT_CD
+			,WT_RATE
+			,WT_BASE_AMT
+			,WT_TAX_AMT
+			,REGID
+			,REGDATE
+			,REGTIME
+
+		) 
+		VALUES(
+				${companyCd}
+				,${poNo}
+				,${ivSeq}
+				,${wtSeq}
+				,${code}
+				,${taxCode}
+				,${rate}
+				,${baseAmt}
+				,${taxAmt}
+			    ,${userId}
+			    ,TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    ,TO_CHAR(SYSDATE, 'HH24MISS')
+		)
+				
+		]]>
+    </statement>              
+
+
+    <!-- Invoice close  -->
+    <statement name="cudIvClose">
+        <![CDATA[
+			UPDATE tb_po_master
+		  	SET IV_CLOSE  = ${stat}
+		        ,MODID    = ${userId}
+			    ,MODDATE  = TO_CHAR(SYSDATE,'YYYYMMDD')
+			    ,MODTIME  = TO_CHAR(SYSDATE,'HH24MISS')		
+		 	WHERE COMPANY_CD = ${companyCd}
+			  AND PO_NO      = ${poNo}
+        ]]> 
+    </statement>   
+   
+   
+   
+   
+    <!-- Invoice SAP Success -->
+    <statement name="cudInvoiceAfterSapSuccess">
+        <![CDATA[
+        	UPDATE TB_IV_MASTER
+        	SET SAP_GR_DO_NO = ${sapGrDoNo}
+				,SAP_IV_DO_NO = ${sapIvDoNo}
+				,SEND_STAT = ${sendStat}
+				,SEND_MSG = ${sendMsg}
+				,SEND_DATE = TO_CHAR(SYSDATE, 'YYYYMMDD')
+				,STATUS = ${sendStat}
+				,MODID = ${userId}
+				,MODDATE = TO_CHAR(SYSDATE,'YYYYMMDD')
+				,MODTIME  = TO_CHAR(SYSDATE,'HH24MISS')				
+			WHERE COMPANY_CD = ${companyCd}
+				AND PO_NO = ${poNo}
+				AND IV_SEQ = ${ivSeq}
+
+        ]]> 
+    </statement> 
+
+    <!-- Coal Production Mst Update SAP Success -->
+    <statement name="cudInvoiceAfterSapCancelSuccess">
+        <![CDATA[
+        	UPDATE TB_IV_MASTER
+        	SET SAP_CANCEL_GR_DO_NO = ${sapGrDoNo}
+				,SAP_CANCEL_IV_DO_NO = ${sapIvDoNo}
+				,CANCEL_STAT = ${sendStat}
+				,CANCEL_MSG = ${sendMsg}
+				,CANCEL_DATE = TO_CHAR(SYSDATE, 'YYYYMMDD')
+				,STATUS = ${sendStat}
+				,MODID = ${userId}
+				,MODDATE = TO_CHAR(SYSDATE,'YYYYMMDD')
+				,MODTIME  = TO_CHAR(SYSDATE,'HH24MISS')				
+			WHERE COMPANY_CD = ${companyCd}
+				AND PO_NO = ${poNo}
+				AND IV_SEQ = ${ivSeq}
+
+        ]]> 
+    </statement>     
+    
+    <statement name="updatePoRecQty">
+        <![CDATA[
+            UPDATE tb_po_detail
+			   SET receipt_qty = receipt_qty  + TO_NUMBER(${receiptQty})
+			       ,receipt_cls_yn = CASE 
+			       							WHEN QTY = RECEIPT_QTY + TO_NUMBER(${receiptQty}) 
+			       								THEN 'Y' 
+			       							ELSE 'N' 
+			       						 END
+  			       ,modid      = ${userId}    
+			       ,moddate   = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			       ,modtime   = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND po_no = ${poNo}
+			   AND po_seq = ${poSeq}
+	    ]]>
+    </statement>
+    
+    <statement name="updatePoItemClose">
+        <![CDATA[
+            UPDATE tb_po_detail
+			   SET receipt_cls_yn = ${receiptClsYn}
+  			       ,modid      = ${userId}    
+			       ,moddate   = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			       ,modtime   = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND po_no = ${poNo}
+			   AND po_seq = ${poSeq}
+	    ]]>
+    </statement>
+
+    <statement name="cancelPoRecQty">
+        <![CDATA[
+            UPDATE tb_po_detail
+			   SET 
+			       modid      = ${userId}    
+			       ,moddate   = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			       ,modtime   = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND po_no = ${poNo}
+			   AND po_seq = ${itemSeq}
+	    ]]>
+    </statement>
+        
+</statements>

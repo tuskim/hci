@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Statement of accounts --> 
+
+   	<!-- Statement of accounts -->  
+	<action-name name="statementOfAccounts">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/statementOfAccounts.jsp</return-url>
+   	</action-name>
+   	 <action-name name="fi.ar.retrieveDocClosingList">
+    	<command>fi.ar.cmd.RetrieveCountDocClosingListCmd</command>
+	</action-name>
+    <action-name name="fi.ar.retrievestatementOfAccounts">
+    	<command>fi.ar.cmd.RetrieveStatementOfAccountsCmd</command>
+	</action-name>
+    <action-name name="fi.ar.retrievePoClosingList">
+    	<command>fi.ar.cmd.RetrievePoClosingListCmd</command>
+	</action-name> 		
+ 	<action-name name="fi.ar.retrieveQtyClosing">
+    	<command>fi.ar.cmd.RetrieveQtyClosingListCmd</command>
+	</action-name> 		
+	<action-name name="fi.ar.retrieveIssueClosing">
+    	<command>fi.ar.cmd.RetrieveIssueClosingListCmd</command>
+	</action-name> 	
+		<action-name name="fi.ar.retrieveCoalProdClosing">
+    	<command>fi.ar.cmd.RetrieveCoalProdClosingListCmd</command>
+	</action-name> 
+	
+	<action-name name="fi.ar.cudStatementOfAccountsSendMail">
+    	<command>fi.ar.cmd.CudStatementOfAccountsSendMailCmd</command> 
+    	<return-url>null</return-url>
+   	</action-name>    
+ 		
+</navigation-mapper>

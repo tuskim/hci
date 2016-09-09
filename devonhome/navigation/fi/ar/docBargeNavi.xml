@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Document Print List -->
+
+   	<!-- Document Print List -->  
+	<action-name name="docBarge">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/docBarge.jsp</return-url>
+   	</action-name>
+	<action-name name="bargeDoc">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/bargeDoc.jsp</return-url>
+   	</action-name>
+    <action-name name="fi.ar.retrieveDocBargeList">
+    	<command>fi.ar.cmd.RetrieveDocBargeListCmd</command>
+	</action-name>
+    <action-name name="fi.ar.retrieveBargeDocList">
+    	<command>fi.ar.cmd.RetrieveBargeDocListCmd</command>
+	</action-name>   		
+</navigation-mapper>

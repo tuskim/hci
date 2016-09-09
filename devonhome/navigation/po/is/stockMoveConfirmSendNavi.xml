@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+    <!-- stock issue -->
+   	<action-name name="po.is.stockMoveConfirmSend"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/stockMoveConfirmSend.jsp</return-url>
+   	</action-name>
+  	
+   	<!-- Stock Movement Sap Cancel -->
+  	<action-name name="po.is.cudStockMoveSapCancel">
+		<command>po.is.cmd.CudStockMoveCancelCmd</command>
+	</action-name>
+
+   	<!-- Stock Movement Sap Send -->
+  	<action-name name="po.is.cudStockMoveSapSend">
+		<command>po.is.cmd.CudStockMoveSapSendCmd</command>
+	</action-name>
+
+   	<!-- Stock Movement Save -->
+  	<action-name name="po.is.cudStockMoveSave">
+		<command>po.is.cmd.CudStockMoveSaveCmd</command>
+	</action-name>
+
+   	<!-- Stock Movement Confirm -->
+  	<action-name name="po.is.cudStockMoveConfirm">
+		<command>po.is.cmd.CudStockMoveConfirmCmd</command>
+	</action-name>
+
+   	<!-- Stock Movement Reject-->
+  	<action-name name="po.is.cudStockMoveReject">
+		<command>po.is.cmd.CudStockMoveRejectCmd</command>
+	</action-name>
+
+</navigation-mapper>

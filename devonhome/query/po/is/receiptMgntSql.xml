@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 2015.12.21 hski CSR:C20151127_27284 Ref No. 추가 -->
+<statements>
+    <statement name="RetrievePoList">
+        <![CDATA[
+            SELECT 'F' chk
+                   ,a.po_no
+                   ,a.reference_no
+                   ,b.po_seq
+                   ,a.sap_po_no
+			       ,a.vend_cd
+			       ,DECODE(${lang},'kr',c.vend_nm_kr,'en',c.vend_nm_en, c.vend_nm_lo) vend_nm
+			       ,b.mater_cd
+			       ,DECODE(${lang},'kr',d.mater_nm_kr,'en',d.mater_nm_en, d.mater_nm_en) mater_nm
+			       ,b.model_nm
+			       ,a.pur_dept_cd
+			       ,f_getcommname('COMM',${companyCd},${lang},'2001',a.PUR_DEPT_CD) pur_dept_name
+			       ,a.deli_loct
+			       ,f_getcommname('COMM',${companyCd},${lang},'2005',a.DELI_LOCT) delivy_pla_name
+			       ,d.unit
+			       ,b.qty
+			       ,NVL(b.RECEIPT_QTY, 0) pre_qty
+			       ,TO_NUMBER(b.qty) - TO_NUMBER(NVL(b.RECEIPT_QTY, 0)) rec_qty
+			       ,NVL(b.RECEIPT_CLS_YN, 'N') cls_yn
+			  FROM  tb_po_master a
+			       ,tb_po_detail b
+			       ,tb_vend_master c
+			       ,tb_mater_info d
+			 WHERE a.company_cd = b.company_cd
+	           AND a.po_no      = b.po_no
+	           AND a.company_cd = c.company_cd
+	           AND a.vend_cd = c.vend_cd
+	           AND b.company_cd = d.company_cd
+	           AND b.mater_cd = d.mater_cd
+			   AND d.useyn = 'Y'
+			   AND a.company_cd = ${companyCd}
+			   AND a.status = '03'
+			   AND NVL(b.receipt_cls_yn, 'N') = 'N'  
+			   {#1}
+			   {#2}
+			   {#3}
+			   ORDER BY A.PO_NO
+			]]>
+            <append where="false" condition="${srtDate}.NOTEMPTY" id="#1">
+		       AND a.TRANS_DATE BETWEEN ${srtDate} AND ${endDate}
+		    </append>
+		    <append where="false" condition="${sVendor}.NOTEMPTY" id="#2">
+		       AND DECODE(${lang},'kr',c.vend_nm_kr,'en',UPPER(c.vend_nm_en), UPPER(c.vend_nm_lo)) LIKE '%'||UPPER(${sVendor})||'%'
+		    </append>		   
+            <append where="false" condition="${deptCd}.NOTEMPTY" id="#3">
+		       AND A.DELI_LOCT = ${deptCd}
+		    </append>
+    </statement>
+    
+    <statement name="insertReceiptMaster">
+        <![CDATA[
+ 	        INSERT INTO tb_receipt_master                                                                 
+			            (                               
+			             company_cd                     
+			             ,po_no                         
+			             ,receipt_seq                    
+			             ,sap_po_no                     
+			             ,pur_dept_cd                   
+			             ,vend_cd                       
+			             ,deli_loct                     
+			             ,receipt_date                  
+			             ,posting_date                      
+			             ,status 
+			             ,trans_date 
+			             ,trans_time 
+			             ,sap_receipt_no 
+			             ,sap_if_status 
+			             ,sap_rtn_msg                    
+			             ,regid                         
+			             ,regdate                       
+			             ,regtime                       
+			             ,modid                         
+			             ,moddate                       
+			             ,modtime                       
+			     )VALUES(                        
+			             ${companyCd}                  
+			             ,${poNo}                       
+			             ,${recNo}           
+			             ,${sapPoNo}                    
+			             ,${purDeptCd}                  
+			             ,${vendCd}                     
+			             ,${deliLoct}                   
+			             ,${postDate}                    
+			             ,${recDate} 	               
+			             ,${recStat}                            
+			             ,TO_CHAR(SYSDATE, 'YYYYMMDD')  
+			             ,TO_CHAR(SYSDATE, 'HH24MISS') 
+			             ,${returnSapSeq} 
+			             ,${returnStatus} 
+			             ,${returnMsg} 
+			             ,${userId}                     
+					     ,TO_CHAR(SYSDATE, 'YYYYMMDD')  
+					     ,TO_CHAR(SYSDATE, 'HH24MISS')  
+					     ,${userId}                     
+					     ,TO_CHAR(SYSDATE, 'YYYYMMDD')  
+					     ,TO_CHAR(SYSDATE, 'HH24MISS')  
+              )
+	    ]]>
+    </statement>
+    
+    <statement name="insertReceiptDetail">
+        <![CDATA[
+ 	        INSERT INTO tb_receipt_detail                   
+			            (
+			              company_cd 
+			             ,po_no      
+			             ,receipt_seq
+			             ,po_seq     
+			             ,mater_cd               
+			             ,unit       
+			             ,receipt_qty
+			             ,regid      
+			             ,regdate    
+			             ,regtime    
+			             ,modid      
+			             ,moddate    
+			             ,modtime 
+			     )VALUES(
+			             ${companyCd}
+			             ,${poNo}   
+			             ,${recNo}
+			             ,${poSeq}
+			             ,${materCd} 
+			             ,${unit}
+			             ,${recQty} 
+			             ,${userId}                   
+			             ,TO_CHAR(SYSDATE, 'YYYYMMDD')
+			             ,TO_CHAR(SYSDATE, 'HH24MISS')
+			             ,${userId}                   
+			             ,TO_CHAR(SYSDATE, 'YYYYMMDD')
+			             ,TO_CHAR(SYSDATE, 'HH24MISS')
+			             )
+	    ]]>
+    </statement>
+    
+    <statement name="getReceiptNo">
+        <![CDATA[
+            SELECT NVL(MAX(TO_NUMBER(RECEIPT_SEQ) + 1), 1) RECNO
+                   ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') XMLDOCNO 
+              FROM TB_RECEIPT_MASTER
+  			  WHERE COMPANY_CD = ${companyCd}
+               AND PO_NO = ${poNo}
+	    ]]>
+    </statement>
+    
+    <statement name="updatePoRecQty">
+        <![CDATA[
+            UPDATE tb_po_detail
+			   SET receipt_qty = receipt_qty + TO_NUMBER(${recQty})
+			       ,receipt_cls_yn = DECODE(receipt_qty + TO_NUMBER(${recQty}),qty,'Y', 'N') 
+  			       ,modid      = ${userId}    
+			       ,moddate   = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			       ,modtime   = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND po_no = ${poNo}
+			   AND po_seq = ${poSeq}
+	    ]]>
+    </statement>
+
+    <statement name="cancelPoRecQty">
+        <![CDATA[
+            UPDATE tb_po_detail
+			   SET receipt_qty = receipt_qty - TO_NUMBER(${receiptQty})
+			       ,receipt_cls_yn = 'N'
+			       ,modid      = ${userId}    
+			       ,moddate   = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			       ,modtime   = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND po_no = ${poNo}
+			   AND po_seq = ${poSeq}
+	    ]]>
+    </statement>
+    
+    <statement name="updateReceiptMaster">
+        <![CDATA[
+            UPDATE TB_RECEIPT_MASTER
+			   SET STATUS = ${recStat}
+					,sap_cancel_receipt_no =${returnSapSeq} 
+			        ,sap_if_status = ${returnStatus}
+			        ,sap_rtn_msg  = ${returnMsg}
+			        ,MODID  = 	${userId}
+				    ,MODDATE = TO_CHAR(SYSDATE, 'YYYYMMDD')
+				    ,MODTIME =  TO_CHAR(SYSDATE, 'HH24MISS')
+			                
+			 WHERE company_cd = ${companyCd}
+			   AND po_no = ${poNo}
+			   AND receipt_seq = ${receiptSeq}
+	    ]]>
+    </statement>
+    
+    <statement name="retrieveReceiptMasterList">
+        <![CDATA[
+			SELECT 
+				   'F' as chk
+				  ,MA.COMPANY_CD
+		          ,MA.PO_NO
+		          ,DE.PR_NO
+		          ,RECEIPT_SEQ
+		          ,MA.SAP_PO_NO
+		          ,MA.PUR_DEPT_CD
+		          ,MA.VEND_CD
+		          ,MA.DELI_LOCT
+		          ,RECEIPT_DATE
+		          ,POSTING_DATE
+		          ,MA.STATUS
+		          ,MA.TRANS_DATE
+		          ,MA.TRANS_TIME
+		          ,MA.PROG_STATUS_DATE
+		          ,MA.PROG_STATUS_TIME
+		          ,SAP_RECEIPT_NO
+		          ,SAP_CANCEL_RECEIPT_NO
+		          ,MA.SAP_IF_STATUS
+		          ,MA.SAP_RTN_MSG
+			FROM TB_RECEIPT_MASTER MA, TB_PO_MASTER DE
+			WHERE MA.COMPANY_CD =  DE.COMPANY_CD
+			AND   MA.PO_NO = DE.PO_NO
+			AND   MA.COMPANY_CD = ${companyCd}
+			{#1}
+			{#2}
+			{#3}
+			{#4}
+			{#5}
+			{#6}
+			ORDER BY  MA.PO_NO, TO_NUMBER(RECEIPT_SEQ)
+		 ]]>	
+            <append where="false" condition="${issue_loc}.NOTEMPTY" id="#1">
+		       AND MA.DELI_LOCT =  ${issue_loc} 
+		    </append>
+		    <append where="false" condition="${status}.NOTEMPTY" id="#2">
+		      AND MA.STATUS =  ${status} 
+		    </append>		   
+            <append where="false" condition="${vendor}.NOTEMPTY" id="#3">
+		       AND MA.VEND_CD = ${vendor}
+		    </append>
+            <append where="false" condition="${schPoNo}.NOTEMPTY" id="#4">
+		       AND MA.PO_NO = ${schPoNo}
+		    </append>
+            <append where="false" condition="${postingDateFrom}.NOTEMPTY" id="#5">
+             		and MA.POSTING_DATE	>= ${postingDateFrom}
+		    </append>
+            <append where="false" condition="${postingDateTo}.NOTEMPTY" id="#6">
+           	  <![CDATA[ 
+             		and MA.POSTING_DATE	<= ${postingDateTo}
+           	  ]]>       
+		    </append>
+    </statement>
+    
+    <statement name="retrieveReceiptDetailList">
+        <![CDATA[
+	      SELECT PO_SEQ
+		            ,b.MATER_CD
+		            ,b.MATER_NM_EN AS MATER_NM
+		            ,b.ATTR1 AS MODEL_NM
+		            ,b.UNIT
+		            ,RECEIPT_QTY
+		            ,'F' as chk
+	      FROM TB_RECEIPT_MASTER M,
+	           TB_RECEIPT_DETAIL D,
+	           TB_MATER_INFO B	               
+	      WHERE m.company_cd = d.company_cd
+	        AND m.po_no = d.po_no
+	        AND m.receipt_seq = d.receipt_seq
+	        AND d.company_cd = b.company_cd
+	        and d.mater_cd = b.mater_cd
+	        AND M.COMPANY_CD = ${companyCd}
+	        AND M.PO_NO = ${poNo}
+	        AND D.RECEIPT_SEQ = ${receiptSeq}        
+
+	    ]]>
+    </statement>
+    
+    <statement name="getRlantCd">
+        <![CDATA[
+            SELECT DETAIL_CD PLANT_CD 
+			       ,DETAIL_CD_NM_KR
+			       ,DETAIL_CD_NM_EN
+			       ,DETAIL_CD_NM_LO
+			  FROM TB_COMM_CD_DETAIL
+			 WHERE GROUP_CD = '2008'
+			   AND COMPANY_CD = ${companyCd}
+	    ]]>
+    </statement>
+    
+    <!-- 2011.08.29 hskim CSR:C20110823_49874 -->
+    <statement name="retrieveReceiptExcelDownList">
+        <![CDATA[
+	      SELECT
+				     M.COMPANY_CD
+			        ,M.PO_NO
+			        ,M.RECEIPT_SEQ
+			        ,SAP_PO_NO
+			        ,PUR_DEPT_CD
+			        ,VEND_CD
+			        ,DELI_LOCT
+			        ,RECEIPT_DATE
+			        ,POSTING_DATE
+			        ,STATUS
+			        ,TRANS_DATE
+			        ,TRANS_TIME
+			        ,PROG_STATUS_DATE
+			        ,PROG_STATUS_TIME
+			        ,SAP_RECEIPT_NO
+			        ,SAP_CANCEL_RECEIPT_NO
+			        ,SAP_IF_STATUS
+			        ,SAP_RTN_MSG 
+	                , PO_SEQ
+		            ,MATER_CD
+		            ,(SELECT MATER_NM_EN 
+		              FROM TB_MATER_INFO M
+		              WHERE M.MATER_CD = D.MATER_CD) AS MATER_NM
+		            ,(SELECT ATTR1 
+		              FROM TB_MATER_INFO M
+		              WHERE M.MATER_CD = D.MATER_CD) AS MODEL_NM
+		            ,UNIT
+		            ,RECEIPT_QTY
+	      FROM TB_RECEIPT_DETAIL D,
+	               TB_RECEIPT_MASTER M
+	      WHERE D.COMPANY_CD = ${companyCd}
+	          AND d.company_cd = m.company_cd
+              AND d.po_no = m.po_no
+              AND d.receipt_seq = m.receipt_seq
+            {#1}
+			{#2}
+			{#3}
+			{#4}
+			{#5}
+			{#6}
+			ORDER BY  PO_NO, TO_NUMBER(RECEIPT_SEQ)
+
+	    ]]>
+	    <append where="false" condition="${issueloc}.NOTEMPTY" id="#1">
+		       AND DELI_LOCT =  ${issueloc} 
+		</append>
+		    <append where="false" condition="${status}.NOTEMPTY" id="#2">
+		      AND STATUS =  ${status} 
+		    </append>		   
+            <append where="false" condition="${vendor}.NOTEMPTY" id="#3">
+		       AND VEND_CD = ${vendor}
+		    </append>
+            <append where="false" condition="${schPoNo}.NOTEMPTY" id="#4">
+		       AND M.PO_NO = ${schPoNo}
+		    </append>
+            <append where="false" condition="${postingDateFrom}.NOTEMPTY" id="#5">
+             		and POSTING_DATE	>= ${postingDateFrom}
+		    </append>
+            <append where="false" condition="${postingDateTo}.NOTEMPTY" id="#6">
+           	  <![CDATA[ 
+             		and POSTING_DATE	<= ${postingDateTo}
+           	  ]]>       
+		    </append>
+    </statement>
+       
+</statements>

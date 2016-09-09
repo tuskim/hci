@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigation-mapper>
+          
+    <!-- ****************************** -->
+    <!-- Vendor Bank Account List       -->
+    <!-- ****************************** -->
+    <action-name name="retrieveVendorBankAcctListPopup">
+        <command>tr.bc.cmd.RetrieveVendorBankAcctListCmd</command>
+        <return-url>/jsp/tr/bc/pop_VendorBankAcctList.jsp</return-url>
+    </action-name>
+    
+    <!-- ****************************** -->
+    <!-- Payment Bank Account List       -->
+    <!-- ****************************** -->
+    <action-name name="retrievePaymentBankAcctListPopup">
+        <command>tr.bc.cmd.RetrievePaymentBankAcctListCmd</command>
+        <return-url>/jsp/tr/bc/pop_PaymentBankAcctList.jsp</return-url>
+    </action-name>         
+   	
+</navigation-mapper>

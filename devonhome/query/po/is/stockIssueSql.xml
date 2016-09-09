@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+    <statement name="insertStockIssue">
+        <![CDATA[
+			INSERT INTO tb_issue_list
+					    (company_cd,     					    
+					     issue_no,       					    
+					     issue_loc,      					    
+					     mater_cd,       					    
+					     issue_qty,      					    
+					     issue_date,     					    
+					     issue_desc,     		
+					     unit,			    
+					     area_cd,        					    
+					     div_cd,         					    
+					     block_cd,       					    
+					     block_cd2,       					    
+					     year_cd,        					    
+					     tm_tbm, 
+					     posting_date,
+					     werks,        					    
+					     status,         					    										  
+					     regid,          					    
+					     regdate,        					    
+					     regtime,        					    
+					     modid,          					    
+					     moddate, 
+					     modtime,
+					     cost_center,
+					     attr1,
+					     attr2
+					     )
+				 VALUES
+					   ( ${companyCd}, 
+					     ${issueNo}, 
+					     ${issueLoc}, 
+					     ${materCd}, 
+					     ${issueQty},
+					     ${issueDate},
+					     ${desc},
+					     ${MEINS},
+					     ${areaCd},
+					     ${divCd},
+					     ${blockCd},
+					     ${blockCd2},
+					     ${yearCd},
+					     ${tmTbm}, 
+					     ${postingDate},
+					     (SELECT DETAIL_CD
+					      FROM TB_COMM_CD_DETAIL
+					      WHERE  COMPANY_CD = ${companyCd}
+					           AND GROUP_CD = '2008'
+					     ),
+					     '02',     -- XI 전송
+					     ${userId},
+					     TO_CHAR(SYSDATE, 'YYYYMMDD'),
+					     TO_CHAR(SYSDATE, 'HH24MISS'),
+					     ${userId},
+					     TO_CHAR(SYSDATE, 'YYYYMMDD'),
+					     TO_CHAR(SYSDATE, 'HH24MISS'),
+					     ${costCenter},
+					     ${attr1},
+					     ${attr2}
+					     )
+	    ]]>
+    </statement>
+    
+   			
+
+	 <!-- 해당 MATERIAL이 사용중인지 아닌지 검사하는 쿼리 -->
+    <statement name="retrieveMater">
+        <![CDATA[
+			SELECT *
+			FROM TB_MATER_INFO
+			WHERE MATER_CD = ${materCd}
+				AND USEYN = 'Y'
+	    ]]>
+
+    </statement>     
+    
+
+	<!-- Issue No 조회    ex) 2010080001 -->
+    <statement name="retrieveIssueNo">
+        <![CDATA[
+			SELECT (TO_CHAR( sysdate, 'yyyymm' ) || LPAD( TO_CHAR( NVL( SUBSTR( MAX( issue_no ), 7 ), '0' ) + 1 ), 4, '0' )) AS ISSUE_NO
+			FROM tb_issue_list
+			WHERE issue_no LIKE ('%'||TO_CHAR( sysdate, 'yyyymm' )||'%') 
+	    ]]>
+    </statement>     		
+
+	<!-- Plant 조회  -->
+    <statement name="retrievePlant">
+        <![CDATA[
+			SELECT DETAIL_CD as plant
+	        FROM TB_COMM_CD_DETAIL
+	        WHERE  COMPANY_CD = ${companyCd}
+	             AND GROUP_CD = '2008'
+	    ]]>
+    </statement>     		
+    
+    <statement name="stockIssueSapCancel">
+        <![CDATA[
+			UPDATE TB_ISSUE_LIST
+			SET STATUS = '04'			-- SAP Cancel 요청
+			     ,MODID  = 	${userId}
+				 ,MODDATE = TO_CHAR(SYSDATE, 'YYYYMMDD')
+				 ,MODTIME =  TO_CHAR(SYSDATE, 'HH24MISS')
+			WHERE COMPANY_CD = ${companyCd} 
+				AND  ISSUE_NO  = ${issueNo} 
+				AND  MATER_CD = ${materCd}
+	    ]]>
+    </statement>     		
+
+    <statement name="retrieveIssueRequestList">
+        <![CDATA[
+			SELECT  'F' as chk
+						,COMPANY_CD
+						,ISSUE_NO
+						,MATER_CD
+						,(SELECT MATER_NM_EN 
+						  FROM TB_MATER_INFO M
+						  WHERE M.MATER_CD = TB_ISSUE_LIST.MATER_CD
+						  and company_cd = ${companyCd} ) AS MATER_NM
+						,UNIT
+						,ISSUE_QTY
+						,ISSUE_DATE
+						,ISSUE_LOC
+						,ISSUE_DESC
+						,COST_CENTER
+						,AREA_CD
+						,DIV_CD
+						,BLOCK_CD
+						,BLOCK_CD2
+						,YEAR_CD
+						,TM_TBM
+						,POSTING_DATE
+						,WERKS AS PLANT_CD
+						,SAP_DOC_NO
+						,SAP_CANCEL_DOC_NO
+						,STATUS
+						,SAP_RTN_MSG
+						,ATTR1            -- Vendor
+						,ATTR2			 -- Description
+			FROM TB_ISSUE_LIST 
+			WHERE COMPANY_CD = ${companyCd}
+			{#1}
+			{#2}
+			{#3}
+			{#4}			
+			{#5}			
+			ORDER BY ISSUE_NO DESC
+	    ]]>
+
+	    <append where="false" condition="${issue_loc}.NOTEMPTY"   id="#1">
+	               		and ISSUE_LOC = ${issue_loc}
+	    </append>  
+	    <append where="false" condition="${materCd}.NOTEMPTY"   id="#2">
+	               		and MATER_CD = ${materCd}
+	    </append>  
+	    <append where="false" condition="${status}.NOTEMPTY"   id="#3">
+	               		and STATUS = ${status}
+	    </append>  
+	    <append where="false" condition="${posting_date_from}.NOTEMPTY"   id="#4">
+	               and POSTING_DATE	>= ${posting_date_from}
+	    </append>  
+	    <append where="false" condition="${posting_date_to}.NOTEMPTY"   id="#5">
+	       	  <![CDATA[ 
+             		and POSTING_DATE	<= ${posting_date_to}
+           	  ]]>          	
+
+	    </append>  
+    </statement>     	
+       
+</statements>

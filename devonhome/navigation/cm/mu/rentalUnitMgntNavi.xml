@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Rental Unit Mgnt Master -->
+   <!-- coalSalesReg  조회 첫 페이지--> 	
+   <action-name name="rentalUnitMgnt">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/cm/mu/RentalUnitMgnt.jsp</return-url>
+  	</action-name>
+  	
+  	<!-- Rental Unit  조회 -->
+   	<action-name name="cm.mu.retrieveRentalUnitMgntList"> 
+    	<command>cm.mu.cmd.RetrieveRentalUnitMgntListCmd</command>
+   	</action-name>
+   	
+   	<!-- Rental Unit  등록 -->
+  	<action-name name="cm.mu.cudRentalUnitMgnt">
+		<command>cm.mu.cmd.CudRentalUnitMgntCmd</command>
+	</action-name>
+
+</navigation-mapper>
+

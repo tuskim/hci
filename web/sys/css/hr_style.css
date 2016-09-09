@@ -1,0 +1,187 @@
+td {
+	FONT-SIZE: 9pt; COLOR: #515151; LINE-HEIGHT: 14px; FONT-FAMILY: ±¼¸²
+}
+.title {
+	FONT-SIZE: 9pt; COLOR: #515151; LINE-HEIGHT: 31px; FONT-FAMILY: ±¼¸²
+}
+
+
+select {
+	FONT-SIZE: 9pt; COLOR: #6d6c6c; PADDING-TOP: 2px; FONT-FAMILY: ±¼¸²
+}
+
+input {
+	FONT-SIZE: 9pt; COLOR: #656565; PADDING-TOP: 2px; FONT-FAMILY: ±¼¸²; BORDER:1px solid #C4C4C4
+}
+
+.math {
+	FONT-SIZE: 9pt; COLOR: #656565; text-align:right; PADDING-TOP: 2px; FONT-FAMILY: ±¼¸²; BORDER:1px solid #C4C4C4
+}
+
+.mathdis {
+	FONT-SIZE: 9pt; COLOR: #656565; text-align:right; PADDING-TOP: 2px; FONT-FAMILY: ±¼¸²; BORDER:0px solid #C4C4C4
+}
+
+
+textarea {
+	FONT-SIZE: 9pt; COLOR: #FFFFFF; PADDING-TOP: 2px; FONT-FAMILY: ±¼¸²
+}
+
+.default {
+	FONT-SIZE: 9pt; COLOR: #656565; PADDING-TOP: 2px; FONT-FAMILY: ±¼¸²; BORDER:1px solid #C4C4C4
+}
+
+
+A:visited{text-decoration:underline; color:blue}
+
+.lnk_main A:link {
+	FONT-SIZE: 9pt; COLOR: #522727; FONT-FAMILY: ±¼¸²; TEXT-DECORATION: none
+}
+.lnk_main A:visited {
+	FONT-SIZE: 9pt; COLOR: #522727; FONT-FAMILY: ±¼¸²; TEXT-DECORATION: none
+}
+.lnk_main A:active {
+	FONT-SIZE: 9pt; COLOR: #522727; FONT-FAMILY: ±¼¸²; TEXT-DECORATION: none
+}
+.lnk_main A:hover {
+	FONT-SIZE: 9pt; COLOR: #ef3e08; FONT-FAMILY: ±¼¸²; TEXT-DECORATION: underline
+}
+
+.lnk_main2 A:link {
+	FONT-SIZE: 9pt; COLOR: #2E3631; FONT-FAMILY: ±¼¸²; TEXT-DECORATION: none
+}
+.lnk_main2 A:visited {
+	FONT-SIZE: 9pt; COLOR: #2E3631; FONT-FAMILY: ±¼¸²; TEXT-DECORATION: none
+}
+.lnk_main2 A:active {
+	FONT-SIZE: 9pt; COLOR: #2E3631; FONT-FAMILY: ±¼¸²; TEXT-DECORATION: none
+}
+.lnk_main2 A:hover {
+	FONT-SIZE: 9pt; COLOR: blue; FONT-FAMILY: ±¼¸²; TEXT-DECORATION: underline
+}
+
+.table_title {
+	FONT-SIZE: 9pt; COLOR: #7F7960; BACKGROUND-COLOR: #BDBCB6; FONT-WEIGHT: BOLD
+}
+
+.table_title1 {
+	FONT-SIZE: 9pt; COLOR: #7F7960; BACKGROUND-COLOR: #EEECE4; padding-left:3px
+}
+
+.table_title2 {
+	FONT-SIZE: 9pt; COLOR: #7F7960; BACKGROUND-COLOR: #EEECE4;
+}
+
+.table_box_1 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #FFFFFF;
+}
+
+.table_box_1_1 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #FFFFFF; padding-left:5px
+}
+
+.table_box_1_s {
+	FONT-SIZE: 8pt; COLOR: #515151; BACKGROUND-COLOR: #FFFFFF;
+}
+
+.table_box_2 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #FFFFFF; padding-left:5px
+}
+
+.table_box_3 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #F0F0F0; padding-left:12px
+}
+
+.table_box_4 {
+	FONT-SIZE: 9pt; COLOR: #7E7E7E; BACKGROUND-COLOR: #FFFFFF;  FONT-WEIGHT: BOLD
+}
+
+
+.table_box_5 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #F0F0F0;
+}
+
+.table_box_5_1 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #F0F0F0; padding-left:5px
+}
+
+.table_box_5_s {
+	FONT-SIZE: 8pt; COLOR: #515151; BACKGROUND-COLOR: #F0F0F0;
+}
+
+.table_box_6 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #F7F7F7;
+}
+
+.table_box_7 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #FFFFFF; padding-left:5px
+}
+
+.table_box_8 {
+	FONT-SIZE: 9pt; COLOR: #515151; BACKGROUND-COLOR: #E2E2E2;
+}
+
+.table_box_9 {
+	FONT-SIZE: 8pt; COLOR: #515151; BACKGROUND-COLOR: #FFFFFF;
+}
+
+
+.table_background {
+	BACKGROUND-COLOR: C3C3C3
+}
+
+.table_background_under {
+	BACKGROUND-COLOR: #CDCDCD
+}
+.table_box_b {
+	FONT-SIZE: 9pt; COLOR: #4F5668;  FONT-WEIGHT: BOLD
+}
+
+.title_box {
+	FONT-SIZE:9pt; COLOR:#2F2F2F; FONT-WEIGHT: BOLD
+	}
+.td_1 {
+	FONT-SIZE: 9pt; COLOR: #6A6A6A; BACKGROUND-COLOR: #E5E5E5;  LINE-HEIGHT: 14px; FONT-FAMILY: ±¼¸²; padding-left:3px
+}
+
+.td_2 {
+	FONT-SIZE: 9pt; COLOR: #6A6A6A;  BACKGROUND-COLOR: #F0F0F0; LINE-HEIGHT: 14px; FONT-FAMILY: ±¼¸²; padding-left:3px
+}
+
+.td_3 {
+	FONT-SIZE: 9pt; COLOR: #FFFFFF; FONT-FAMILY: ±¼¸²;
+}
+
+.td_4 {
+	FONT-SIZE: 9pt; COLOR: #868686; BACKGROUND-COLOR: #FFFFFF; FONT-FAMILY: ±¼¸²; FONT-WEIGHT: BOLD; padding-left:8px
+}
+
+.td_5 {
+	FONT-SIZE: 9pt; COLOR: 3884A4; FONT-FAMILY: "±¼¸²"; padding-left:0px; font-weight: bold
+}
+
+.td_6 {
+	FONT-SIZE: 9pt; COLOR: #3884A4; FONT-FAMILY: ±¼¸²;
+}
+
+.td_7 {
+	FONT-SIZE: 8pt; FONT-FAMILY: ±¼¸²;
+}
+
+
+
+
+
+
+
+
+
+
+.table_background_01{
+	BACKGROUND-COLOR: #FFFFFF
+}
+
+
+.input_1 {
+	FONT-SIZE: 9pt; COLOR: #656565; PADDING-TOP: 2px; FONT-FAMILY: ±¼¸²; BORDER:1x solid #FFFFFF
+}

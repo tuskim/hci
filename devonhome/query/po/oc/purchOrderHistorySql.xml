@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  P/O History Page -->
+
+  
+
+    <!-- 조회 : P/O 입력현황 조회-->
+    <statement name="retrievePurchOrderHistoryList">
+        <![CDATA[
+			SELECT PO_MA.COMPANY_CD,
+		        PO_MA.PO_NO,
+		        PO_MA.REGDATE,
+		        PO_MA.TRANS_DATE DOC_DATE,
+		        PO_MA.DELI_DATE,
+		        lgiusf.F_GETCOMMNAME('COMM',PO_MA.COMPANY_CD ,'en','2203',po_MA.STATUS) STATUS,
+		        to_number(RE_DE.RECEIPT_SEQ) RECEIPT_SEQ , 
+		        (SELECT MATER_NM_EN 
+		           FROM TB_MATER_INFO MT
+		          WHERE MT.COMPANY_CD = PO_MA.COMPANY_CD 
+		            AND MT.MATER_TYPE NOT IN ('9100', '9200', '7920')
+		            AND MT.MATER_CD = PO_DE.MATER_CD) MATER_NM,
+		        PO_DE.QTY PO_QTY,
+		        RE_DE.receipt_qty,
+		        RE_MA.REGDATE      RECEIPT_REGDATE,
+		        RE_MA.RECEIPT_DATE,
+		        RE_MA.POSTING_DATE RECEIPT_POSTING_DATE,
+	        	TO_DATE(RE_MA.REGDATE,'RRRRMMDD')-TO_DATE(RE_MA.RECEIPT_DATE,'RRRRMMDD')			   RE_TERM,
+   				CASE WHEN TO_DATE( RE_MA.REGDATE,'RRRRMMDD')-TO_DATE(RE_MA.RECEIPT_DATE,'RRRRMMDD')>5 THEN 'TRUE' ELSE 'FALSE' END as term,
+   				CASE WHEN TO_DATE( RE_MA.REGDATE,'RRRRMMDD')-TO_DATE(RE_MA.RECEIPT_DATE,'RRRRMMDD')>5 THEN 'Receipt Input Delayed.'
+					 END as message
+		     FROM TB_PO_MASTER     PO_MA,
+		          TB_PO_DETAIL PO_DE, 
+		          TB_RECEIPT_MASTER RE_MA,
+		          TB_RECEIPT_DETAIL RE_DE
+		      WHERE PO_MA.COMPANY_CD = PO_DE.COMPANY_CD
+		      AND PO_MA.PO_NO =  PO_DE.PO_NO
+		      AND PO_DE.MATER_CD = RE_DE.MATER_CD
+		      AND PO_MA.COMPANY_CD  = RE_MA.COMPANY_CD(+)
+		      AND PO_MA.PO_NO     = RE_MA.PO_NO(+)
+		      AND RE_MA.COMPANY_CD  = RE_DE.COMPANY_CD(+)
+		      AND RE_MA.PO_NO     = RE_DE.PO_NO(+)
+		      AND RE_MA.RECEIPT_SEQ = RE_DE.RECEIPT_SEQ(+)
+			  AND PO_MA.COMPANY_CD  = ${companyCd}
+			  AND po_MA.STATUS != '99'
+			  AND RE_MA.STATUS != '99'
+			     {#1}
+			     {#2}
+			     {#3}
+		  ORDER BY 1,2,3,4,5,6,7
+        ]]>  
+         <append condition="${poNo}.NOTEMPTY" id="#1">       
+			   AND UPPER(PO_MA.PO_NO) like '%'||upper(${poNo})||'%'
+	    </append>
+	    <append condition="${docDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND PO_MA.TRANS_DATE >= replace(${docDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${docDateFrom}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND PO_MA.TRANS_DATE <= replace(${docDateFrom},'/','')  ]]>
+	    </append> 	
+    </statement> 
+</statements>

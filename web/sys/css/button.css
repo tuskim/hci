@@ -1,0 +1,44 @@
+@charser "utf-8";
+
+/* 공통버튼 */
+.btn_r{ float: none;margin:0;display:inline-block; }
+.btn_r input{height:25px;line-height:12px;border:none;color:#444;font-family:gulim, arial;font-size:12px; font-weight:bold;background: url("../images/button/btn_R.gif") no-repeat right top;cursor:pointer;	overflow:visible;}
+.btn_l{ background: url("../images/button/btn_L.gif") no-repeat left top;}
+.btn_l input{padding:2px 18px 1px 10px;_padding-top:2px}
+
+.sbtn_r{ float: none;margin:0;display:inline-block; }
+.sbtn_r input{height:20px;line-height:12px;border:none;color:#687389;font-family:dotum;font-size:11px;background: url("../images/button/sbtn_R.gif") no-repeat right top;cursor:pointer;overflow:visible;}
+.sbtn_l{ background: url("../images/button/sbtn_L.gif") no-repeat left top;}
+.sbtn_l input{padding:2px 6px 1px 6px;_padding-top:2px}
+
+.sbtn2_r{ float:none;margin:0;display:inline-block; }
+.sbtn2_r input{height:18px;border:none;color:#f0f0f0;font-family: dotum, arial; font-size:11px;background: url("../images/button/sbtn2_R.gif") no-repeat right top;cursor:pointer;overflow:visible; letter-spacing:}
+.sbtn2_l{ background: url("../images/button/sbtn2_L.gif") no-repeat left top;}
+.sbtn2_l input{padding:2px 9px 1px 10px;_padding-top:2px}
+
+/* 검색버튼 */
+.search_btn_r{ float: none;margin:0;display:inline-block; }
+.search_btn_r input{height:25px; line-height:12px; border:none; color:#e2ebf7; font-family:gulim, arial; font-size:12px; font-weight:bold; background: url("../images/button/search_btn_R.gif") no-repeat right top; cursor:pointer; overflow:visible;letter-spacing:-1px;}
+.search_btn_r{ background: url("../images/button/search_btn_L.gif") no-repeat left top;}
+.search_btn_r input{padding:2px 10px 4px 8px;_padding-top:2px}
+
+
+.search_btn2_r{ float: none;margin:0;display:inline-block; }
+.search_btn2_r input{height:42px;border:none;color:#e2ebf7;font-family:arial;font-size:12px; font-weight:bold;background: url("../images/button/search_btn2_R.gif") no-repeat right top;cursor:pointer;overflow:visible; letter-spacing:-0.8px;}
+.search_btn2_l{ background: url("../images/button/search_btn2_L.gif") no-repeat left top;}
+.search_btn2_l input{padding:2px 10px 4px 8px;_padding-top:2px}
+
+
+/* 기타버튼 */
+.excel_btn_r{ float: none;margin:0;display:inline-block; }
+.excel_btn_r input{height:21px;border:none;color:#555;font-family:arial;font-size:12px; font-weight:bold;background: url("../images/button/excel_R.gif") no-repeat right top;cursor:pointer;overflow:visible;}
+.excel_btn_l{ background: url("../images/button/excel_L.gif") no-repeat left top;}
+.excel_btn_l input{padding:2px 10px 2px 24px;_padding-top:2px}
+
+.print_btn_r{ float: none;margin:0;display:inline-block; }
+.print_btn_r input{height:21px;border:none;color:#555;font-family:arial;font-size:12px; font-weight:bold;background: url("../images/button/print_R.gif") no-repeat right top;cursor:pointer;overflow:visible;}
+.print_btn_l{ background: url("../images/button/print_L.gif") no-repeat left top;}
+.print_btn_l input{padding:1px 10px 2px 27px;_padding-top:2px}
+
+input.buttonSearch{width:28px;height:20px;border: none 0px transparent;background: url("../images/button/search_icon_2.gif") no-repeat;cursor:hand;}
+input.button_cal{width:17px;height:18px;border: none 0px transparent;background: url("../images/button/cal_icon.gif") no-repeat;cursor:hand;}

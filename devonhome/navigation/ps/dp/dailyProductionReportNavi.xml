@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!--Daily Production Report  -->
+
+
+
+   	<!--Daily Production Report  -->  
+	<action-name name="dailyProductionReport">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/ps/dp/dailyProductionReport.jsp</return-url>
+   	</action-name>
+
+
+
+
+
+   	
+   	<!--Daily Production Report Retrieve -->  
+	<action-name name="ps.dp.retrieveDailyProductionReportMasterList">
+    	<command>ps.dp.cmd.RetrieveDailyProductionReportMasterListCmd</command> 
+   	</action-name>   
+
+
+
+   	   	    
+</navigation-mapper>

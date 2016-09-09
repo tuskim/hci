@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>	 
+    
+    <statement name="retrieveMaterialRequestList">
+        <![CDATA[
+						SELECT M.COMPANY_CD
+						      ,M.REQUEST_NO
+						      ,M.REQUEST_TYPE
+						      ,NVL2(M.MATER_NM_EN,M.MATER_NM_LO,'') MATER_NM
+						      ,M.MATER_CD
+						      ,M.MATER_TYPE
+						      ,M.MATER_GROUP
+						      ,M.UNIT
+						      ,M.STATUS
+						      ,M.CANCEL_MSG
+						      ,M.SAP_MSG
+						  FROM TB_MATER_REQUEST M
+						 WHERE M.COMPANY_CD = ${companyCd}
+						 {#1}
+						 {#2}
+						 {#3}
+						 {#4}
+						 {#5}
+						 ORDER BY M.REQUEST_NO
+        ]]>
+        
+        <append where="false" condition="${fromDate}.NOTEMPTY" id="#1">
+        	<![CDATA[ AND M.REGDATE >= ${fromDate} ]]>
+        </append>
+        
+        <append where="false" condition="${toDate}.NOTEMPTY" id="#2">
+        	<![CDATA[ AND M.REGDATE <= ${toDate} ]]>
+        </append>
+        
+        <append where="false" condition="${materNm}.NOTEMPTY" id="#3">
+          <![CDATA[ AND M.MATER_NM_EN LIKE '%' || ${materNm} || '%' ]]>
+        </append>
+        
+        <append where="false" condition="${status}.NOTEMPTY" id="#4">
+          <![CDATA[ AND M.STATUS   = ${status} ]]>
+        </append>
+
+        <append where="false" condition="${requestType}.NOTEMPTY" id="#5">
+          <![CDATA[ AND M.REQUEST_TYPE   = ${requestType} ]]>
+        </append>        
+     </statement>
+    
+ 
+		<statement name="retrieveMaterialRequestAddRow">
+		  <![CDATA[
+				SELECT ${companyCd} AS COMPANY_CD
+		           ,('MR'||NVL(MAX(TO_NUMBER(SUBSTR(M.REQUEST_NO , 3, 7))) + 1,TO_NUMBER(TO_CHAR(SYSDATE, 'YYMM')) || '001')) AS REQUEST_NO 
+		           , ${requestType} AS REQUEST_TYPE
+		           ,'' AS MATER_NM
+		           ,'' AS MATER_CD
+		           ,'' AS MATER_TYPE
+		           ,'' AS MATER_GROUP
+		           ,'' AS UNIT
+		           ,'01' AS STATUS
+		           ,'' AS CANCEL_MSG
+		           ,'' AS SAP_MSG
+				 FROM TB_MATER_REQUEST M
+			  WHERE M.COMPANY_CD =  ${companyCd}
+			 	  AND SUBSTR(M.REQUEST_NO , 3, 4) = TO_CHAR(SYSDATE, 'YYMM')
+		  ]]>
+        
+		</statement>
+		
+    
+    <statement name="insertMaterialRequest">
+      <![CDATA[
+				INSERT INTO TB_MATER_REQUEST
+				    (
+				    COMPANY_CD
+				    ,REQUEST_NO
+				    ,REQUEST_TYPE
+				    ,MATER_NM_EN
+				    ,MATER_NM_LO
+				    ,MATER_TYPE
+				    ,MATER_GROUP
+				    ,UNIT
+				    ,MATER_CD
+				    ,STATUS
+				    ,REGID
+				    ,REGDATE
+				    ,REGTIME    
+				    )
+				    VALUES
+				    (
+				    ${companyCd}
+				    ,${requestNo}
+				    ,${requestType}
+				    ,${materNm}
+				    ,${materNm}
+				    ,'3400'
+				    ,${materGroup}
+				    ,${unit}
+				    ,${materCd}
+				    ,'01'
+				    ,${userId}
+				    ,TO_CHAR(SYSDATE,'YYYYMMDD')
+				    ,TO_CHAR(SYSDATE,'HH24MISS')
+				    )
+      ]]>
+    </statement>
+    
+
+		<statement name="updateMaterialRequest">
+			<![CDATA[
+				UPDATE TB_MATER_REQUEST
+				   SET MATER_NM_EN = ${materNm}
+				      ,MATER_NM_LO = ${materNm}
+				      ,MATER_CD    = ${materCd}
+				      ,UNIT        = ${unit}
+				      ,MODID       = ${userId}
+				      ,MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD')
+				      ,MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+				 WHERE REQUEST_NO = ${requestNo}
+				   AND STATUS = '01' 
+			]]>
+		</statement>
+		
+		<statement name="deleteMaterialRequest">
+			<![CDATA[
+				DELETE FROM TB_MATER_REQUEST
+				 WHERE REQUEST_NO = ${requestNo}
+				   AND STATUS = '01' 
+			]]>
+		</statement>
+</statements>

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Document Print List -->
+
+
+    <statement name="retrieveBargeDoc">
+        <![CDATA[
+			SELECT 
+				   DENSE_RANK() OVER (ORDER BY T1.SYSKEY ,T1.MV_CD ,T1.BARGE_SEQ ,T1.BARGE_CD ,T1.POST_DATE ,T1.MV_ARRIVAL_DATE ,T1.LOADING_QTY DESC) SEQ 
+			      ,T1.SYSKEY
+			      ,T1.MV_CD
+			      ,T1.BARGE_SEQ
+			      ,T1.BARGE_CD
+			      ,T1.POST_DATE AS BARGE_POST_DATE
+			      ,T1.MV_ARRIVAL_DATE
+			      ,T1.LOADING_QTY
+			      ,ROW_NUMBER() OVER(PARTITION BY SYSKEY, MV_CD, BARGE_SEQ ORDER BY F1.COMPANY_CD, F1.DEPT_CD, F1.DOC_YM, F1.DOC_SEQ) SEQ2
+			      ,F1.COMPANY_CD
+			      ,F1.DEPT_CD
+			      ,F1.DOC_YM
+			      ,F1.DOC_SEQ
+			      ,F1.SAP_DOC_SEQ
+			      ,F1.DOC_DATE
+			      ,F1.POST_DATE
+			      ,F1.AMOUNT
+			      ,F1.CURRENCY_CD
+			      ,F1.VENDOR
+			  FROM (
+			        SELECT MST.COMPANY_CD,                                                                                
+			               MST.DEPT_CD,                                                                                   
+			               MST.DOC_SEQ,                                                                                   
+			               MST.DOC_YM,                                 
+			               TO_CHAR(TO_DATE(MST.DOC_DATE,'YYYYMMDD'),'YYYY/MM/DD')  DOC_DATE,            
+			               MST.SAP_DOC_SEQ,                              
+			               TO_CHAR(TO_DATE(MST.POST_DATE,'YYYYMMDD'),'YYYY/MM/DD') POST_DATE,                                                                                  
+			               DTL.AMOUNT,                                                                        
+			               MST.CURRENCY_CD,                                                                                      
+			               DTL.VENDOR  
+			          FROM LGIUSF.TB_DOC_MASTER MST,                                                                    
+			                (                                                                                           
+			                 SELECT COMPANY_CD,                                                                         
+			                        DEPT_CD,                                                                            
+			                        DOC_YM,                                                                             
+			                        DOC_SEQ,                                                                            
+			                        SUM(DEBIT_AMT) AMOUNT, 
+			                        MAX(SAP_ACCT_V) VENDOR
+			                   FROM LGIUSF.TB_DOC_DETAIL                                                            
+			                 WHERE 1=1        
+					  					{#1}                                                                                      
+			                    AND DEL_YN     = 'N'                                                                    
+			                  GROUP BY COMPANY_CD,                                                                      
+			                           DEPT_CD,                                                                         
+			                           DOC_YM,                                                                          
+			                           DOC_SEQ                                                                          
+			                ) DTL                                                                                       
+			         WHERE MST.COMPANY_CD  = DTL.COMPANY_CD         
+					  {#2}                                                                                                       
+			           AND MST.DEPT_CD     = DTL.DEPT_CD                                                                        
+			           AND MST.DOC_YM      = DTL.DOC_YM                                                                         
+			           AND MST.DOC_SEQ     = DTL.DOC_SEQ                                            
+			           AND MST.DEL_YN      = 'N'                   
+			       ) F1,
+			       (
+			        SELECT A.SYSKEY,          -- MV LOADING NO
+			               A.MV_CD,           -- MV NAME
+			               B.BARGE_SEQ,       -- BARGE LOADING NO
+			               B.BARGE_CD,        -- BARGE NAME
+			               A.POST_DATE,       -- POSTING DATE
+			               A.MV_ARRIVAL_DATE, -- ARRIVAL DATE
+			               B.LOADING_QTY,      -- ACTUAL LOADING(MT)
+			               B.LOADING_DATE,
+			               A.PORT_STOCK,
+			               Z.DEPT_CD,
+			               Z.DOC_YM,
+			               Z.DOC_SEQ,
+			               Z.BARGE_NAME,
+			               Z.REGID,
+			               Z.REGDATE,
+			               Z.REGTIME,
+			               Z.MODID,
+			               Z.MODDATE,
+			               Z.BARGE_LIST, 
+			               A.COMPANY_CD
+			          FROM TB_DOC_BARGE Z ,
+			               TB_MV_LOADING A , 
+			               TB_BARGE_LOADING B
+			         WHERE Z.COMPANY_CD = A.COMPANY_CD(+)
+			           AND A.COMPANY_CD = B.COMPANY_CD 
+			           AND Z.SYSKEY     = A.SYSKEY
+			           AND A.SYSKEY     = B.SYSKEY
+			           AND Z.BARGE_SEQ  = B.BARGE_SEQ
+					  {#3}
+					  {#4}
+					  {#5}
+					  {#6}
+					  {#7}
+					  {#8}
+					  {#9}
+					  {#10}
+					  {#11}
+			       ) T1    
+			 WHERE T1.COMPANY_CD  =  F1.COMPANY_CD 
+			   AND T1.DEPT_CD     =  F1.DEPT_CD    
+			   AND T1.DOC_YM      =  F1.DOC_YM     
+			   AND T1.DOC_SEQ     =  F1.DOC_SEQ    
+			 ORDER BY T1.SYSKEY
+			      ,T1.MV_CD
+			      ,T1.BARGE_SEQ
+			      ,T1.BARGE_CD
+			      ,T1.POST_DATE
+			      ,T1.MV_ARRIVAL_DATE
+			      ,T1.LOADING_QTY
+		]]>
+		
+		
+	    <append condition="${companyCd}.NOTEMPTY" id="#1">       
+			 <![CDATA[ AND COMPANY_CD = ${companyCd}  ]]>
+	    </append>  
+	    <append condition="${companyCd}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND MST.COMPANY_CD    = ${companyCd}  ]]>
+	    </append>  
+	    <append condition="${companyCd}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND Z.COMPANY_CD   = ${companyCd}  ]]>
+	    </append>  
+	    <append condition="${syskey}.NOTEMPTY" id="#4">       
+			 <![CDATA[ AND UPPER(A.SYSKEY)    LIKE ('%'||  UPPER(${syskey})||'%')  ]]>
+	    </append>  
+	    <append condition="${mvCd}.NOTEMPTY" id="#5">       
+			 <![CDATA[ AND UPPER(A.MV_CD)   LIKE ('%'||  UPPER(${mvCd})||'%')   ]]>
+	    </append>  	    
+	    
+	    <append condition="${bargeSeq}.NOTEMPTY" id="#6">       
+			 <![CDATA[ AND UPPER(B.BARGE_SEQ)   LIKE ('%'||  UPPER(${bargeSeq})||'%')   ]]>
+	    </append>  
+	    <append condition="${bargeCd}.NOTEMPTY" id="#7">       
+			 <![CDATA[ AND UPPER(B.BARGE_CD)  LIKE ('%'||  UPPER(${bargeCd})||'%')  ]]>
+	    </append>  
+	    
+	    <append condition="${postDateFrom}.NOTEMPTY" id="#8">       
+			 <![CDATA[ AND A.POST_DATE      >= replace(${postDateFrom},'/','')  ]]>
+	    </append>  
+	    <append condition="${postDateTo}.NOTEMPTY" id="#9">       
+			 <![CDATA[ AND A.POST_DATE      <= replace(${postDateTo},'/','')  ]]>
+	    </append>  
+	    
+	    <append condition="${mvArrivalDateFrom}.NOTEMPTY" id="#10">       
+			 <![CDATA[ AND A.MV_ARRIVAL_DATE      >= replace(${mvArrivalDateFrom},'/','')  ]]>
+	    </append>  
+	    <append condition="${mvArrivalDateTo}.NOTEMPTY" id="#11">       
+			 <![CDATA[ AND A.MV_ARRIVAL_DATE      <= replace(${mvArrivalDateTo},'/','')  ]]>
+	    </append>  
+		
+     </statement>  
+
+
+
+
+    <statement name="retrieveDocBarge">
+        <![CDATA[			
+			SELECT
+			       DENSE_RANK() OVER (ORDER BY F1.COMPANY_CD, F1.DEPT_CD, F1.DOC_YM, F1.DOC_SEQ, F1.SAP_DOC_SEQ, F1.DOC_DATE, F1.POST_DATE, F1.AMOUNT, F1.CURRENCY_CD, F1.VENDOR DESC) SEQ 
+			      ,F1.COMPANY_CD
+			      ,F1.DEPT_CD
+			      ,F1.DOC_YM
+			      ,F1.DOC_SEQ
+			      ,NVL(F1.SAP_DOC_SEQ,' ')
+			      ,NVL(F1.DOC_DATE,' ')
+			      ,NVL(F1.POST_DATE,' ')
+			      ,NVL(F1.AMOUNT,0)
+			      ,NVL(F1.CURRENCY_CD,' ')
+			      ,NVL(F1.VENDOR,' ')
+			      ,ROW_NUMBER() OVER(PARTITION BY F1.COMPANY_CD, F1.DEPT_CD, F1.DOC_YM, F1.DOC_SEQ ORDER BY SYSKEY, MV_CD, BARGE_SEQ) SEQ2
+			      ,T1.SYSKEY
+			      ,T1.MV_CD
+			      ,T1.BARGE_SEQ
+			      ,T1.BARGE_CD
+			      ,T1.POST_DATE AS BARGE_POST_DATE
+			      ,T1.MV_ARRIVAL_DATE
+			      ,T1.LOADING_QTY
+			  FROM (
+			        SELECT MST.COMPANY_CD,                                                                                
+			               MST.DEPT_CD,                                                                                   
+			               MST.DOC_SEQ,                                                                                   
+			               MST.DOC_YM,                                 
+			               TO_CHAR(TO_DATE(MST.DOC_DATE,'YYYYMMDD'),'YYYY/MM/DD')  DOC_DATE,            
+			               MST.SAP_DOC_SEQ,                              
+			               TO_CHAR(TO_DATE(MST.POST_DATE,'YYYYMMDD'),'YYYY/MM/DD') POST_DATE,                                                                                  
+			               DTL.AMOUNT,                                                                        
+			               MST.CURRENCY_CD,                                                                                      
+			               DTL.VENDOR  
+			          FROM LGIUSF.TB_DOC_MASTER MST,                                                                    
+			                (                                                                                           
+			                 SELECT COMPANY_CD,                                                                         
+			                        DEPT_CD,                                                                            
+			                        DOC_YM,                                                                             
+			                        DOC_SEQ,                                                                            
+			                        SUM(DEBIT_AMT) AMOUNT, 
+			                        MAX(SAP_ACCT_V) VENDOR
+			                   FROM LGIUSF.TB_DOC_DETAIL                                                                
+			                  WHERE 1=1
+					  			{#0}                                                                      
+			                    AND DEL_YN     = 'N'                                                                    
+			                  GROUP BY COMPANY_CD,                                                                      
+			                           DEPT_CD,                                                                         
+			                           DOC_YM,                                                                          
+			                           DOC_SEQ                                                                          
+			                ) DTL                                                                                       
+			         WHERE MST.COMPANY_CD  = DTL.COMPANY_CD                                                                     
+			           AND MST.DEPT_CD     = DTL.DEPT_CD                                                                        
+			           AND MST.DOC_YM      = DTL.DOC_YM                                                                         
+			           AND MST.DOC_SEQ     = DTL.DOC_SEQ                                                                                       
+			           AND MST.DEL_YN      = 'N'         
+					  {#1}
+					  {#3}
+					  {#4}
+					  {#5}
+					  {#6}
+					  {#7}
+					  {#8}
+					  {#9}
+					  {#10}
+			                                                                                             
+			       ) F1,
+			       (
+			        SELECT A.SYSKEY,          -- MV LOADING NO
+			               A.MV_CD,           -- MV NAME
+			               B.BARGE_SEQ,       -- BARGE LOADING NO
+			               B.BARGE_CD,        -- BARGE NAME
+			               A.POST_DATE,       -- POSTING DATE
+			               A.MV_ARRIVAL_DATE, -- ARRIVAL DATE
+			               B.LOADING_QTY,      -- ACTUAL LOADING(MT)
+			               B.LOADING_DATE,
+			               A.PORT_STOCK,
+			               Z.DEPT_CD,
+			               Z.DOC_YM,
+			               Z.DOC_SEQ,
+			               Z.BARGE_NAME,
+			               Z.REGID,
+			               Z.REGDATE,
+			               Z.REGTIME,
+			               Z.MODID,
+			               Z.MODDATE,
+			               Z.BARGE_LIST, 
+			               A.COMPANY_CD
+			          FROM TB_DOC_BARGE Z ,
+			               TB_MV_LOADING A , 
+			               TB_BARGE_LOADING B
+			         WHERE Z.COMPANY_CD = A.COMPANY_CD(+)
+			           AND A.COMPANY_CD = B.COMPANY_CD 
+			           AND Z.SYSKEY          = A.SYSKEY
+			           AND A.SYSKEY         = B.SYSKEY
+			           AND Z.BARGE_SEQ  = B.BARGE_SEQ
+			       ) T1    
+			 WHERE F1.COMPANY_CD = T1.COMPANY_CD
+			   AND F1.DEPT_CD = T1.DEPT_CD
+			   AND F1.DOC_YM = T1.DOC_YM
+			   AND F1.DOC_SEQ = T1.DOC_SEQ
+			 ORDER BY F1.COMPANY_CD
+			      ,F1.DEPT_CD
+			      ,F1.DOC_YM
+			      ,F1.DOC_SEQ
+			      ,F1.SAP_DOC_SEQ
+			      ,F1.DOC_DATE
+			      ,F1.POST_DATE
+			      ,F1.AMOUNT
+			      ,F1.CURRENCY_CD
+			      ,F1.VENDOR
+		]]>
+		
+	    <append condition="${companyCd}.NOTEMPTY" id="#0">       
+			 <![CDATA[ AND COMPANY_CD    = ${companyCd}  ]]>
+	    </append>  
+	    <append condition="${companyCd}.NOTEMPTY" id="#1">       
+			 <![CDATA[ AND MST.COMPANY_CD    = ${companyCd}  ]]>
+	    </append>  
+	    <append condition="${docSeq}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND UPPER(MST.DOC_SEQ)     LIKE ('%'||  UPPER(${docSeq})||'%')   ]]>
+	    </append>  
+	    <append condition="${docYm}.NOTEMPTY" id="#4">       
+			 <![CDATA[ AND MST.DOC_YM      = replace(${docYm},'/','')  ]]>
+	    </append>  	    
+	    <append condition="${sapDocSeq}.NOTEMPTY" id="#5">       
+			 <![CDATA[ AND UPPER(MST.SAP_DOC_SEQ)   LIKE ('%'||  UPPER(${sapDocSeq})||'%')     ]]>
+	    </append>  
+	    <append condition="${postDateFrom}.NOTEMPTY" id="#6">       
+			 <![CDATA[ AND MST.POST_DATE      >= replace(${postDateFrom},'/','')  ]]>
+	    </append>  
+	    <append condition="${postDateTo}.NOTEMPTY" id="#7">       
+			 <![CDATA[ AND MST.POST_DATE      <= replace(${postDateTo},'/','')  ]]>
+	    </append>  
+	    <append condition="${docDateFrom}.NOTEMPTY" id="#8">       
+			 <![CDATA[ AND MST.DOC_DATE      >= replace(${docDateFrom},'/','')  ]]>
+	    </append>  
+	    <append condition="${docDateTo}.NOTEMPTY" id="#9">       
+			 <![CDATA[ AND MST.DOC_DATE      <= replace(${docDateTo},'/','')  ]]>
+	    </append>  
+	    <append condition="${vendor}.NOTEMPTY" id="#10">       
+			 <![CDATA[ AND DTL.VENDOR = ${vendor} ]]>
+	    </append>       
+	    <append condition="${companyCd}.NOTEMPTY" id="#11">       
+			 <![CDATA[ AND A.COMPANY_CD    = ${companyCd}  ]]>
+	    </append>  
+		
+     </statement> 
+</statements>

@@ -1,0 +1,1047 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Cost Total Ledger Mgnt -->
+
+    <!-- Cost Total Ledger Master Search -->
+    <statement name="retrieveCostTotLedgerMstMgnt">
+        <![CDATA[
+			SELECT mst.company_cd,
+			       mst.dept_cd,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2001',mst.dept_cd) dept_nm,
+			       mst.doc_ym,
+			       mst.doc_seq,
+			       dtl.amount,
+			       mst.create_type,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2003',mst.create_type) create_type_nm,
+			       mst.doc_type,
+			       mst.prog_status,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2002',mst.prog_status) prog_status_nm,
+			       mst.sap_doc_seq,
+			       mst.currency_cd,
+			       mst.create_date,
+			       TO_CHAR(to_date(mst.doc_date,'yyyymmdd'),'yyyy/mm/dd')  doc_date,
+			       TO_CHAR(to_date(mst.post_date,'yyyymmdd'),'yyyy/mm/dd') post_date,
+			       mst.success_type,
+			       mst.attr2,
+			       mst.attr3,
+			       '' status,
+			       'F' as chk_update,
+			       TO_CHAR(to_date(mst.doc_date,'yyyymmdd'),'yyyymm')  doc_date_ym
+			  FROM lgiusf.tb_doc_master mst,
+				(
+				 SELECT company_cd,
+				        dept_cd,
+				        doc_ym,
+				        doc_seq,
+				        sum(debit_amt) amount
+				   FROM lgiusf.tb_doc_detail
+				  WHERE company_cd = ${companyCd}
+					AND dept_cd    = ${deptCd}
+				    AND del_yn     = 'N'
+				  GROUP BY company_cd,
+				           dept_cd,
+				           doc_ym,
+				           doc_seq          
+				) dtl
+	         WHERE mst.company_cd  = dtl.company_cd
+	           AND mst.dept_cd     = dtl.dept_cd
+	           AND mst.doc_ym      = dtl.doc_ym
+	           AND mst.doc_seq     = dtl.doc_seq
+			   AND mst.company_cd  = ${companyCd}
+			   AND mst.dept_cd     = ${deptCd}
+			   AND mst.create_date BETWEEN ${orderDateFrom} AND ${orderDateTo}
+	           AND mst.del_yn      = 'N'
+			   {#1}
+			   {#2}
+			   {#3}
+			   {#4}
+			   {#5}
+                   ORDER BY mst.doc_ym, mst.doc_seq
+		]]>
+
+        <append where="false" condition="${createType}.NOTEMPTY" id="#1">
+			   AND mst.create_type = ${createType}
+	    </append>
+
+        <append where="false" condition="${progStatus}.NOTEMPTY" id="#2">
+			   AND mst.prog_status = ${progStatus}
+	    </append>
+	    
+	    <append where="false" condition="${createType}.NOTEMPTY" id="#3">
+			   AND mst.create_type = ${createType}
+	    </append>
+	    
+	    <append where="false" condition="${docDateFrom}.NOTEMPTY" id="#4">
+			   AND mst.doc_date >= ${docDateFrom}
+	    </append>
+	    
+	    <append where="false" condition="${docDateTo}.NOTEMPTY" id="#5">
+	    <![CDATA[
+			   AND mst.doc_date <= ${docDateTo}
+		]]>
+	    </append>
+
+    </statement>  
+    
+    <statement name="retrieveCostTotLedgerMstMgntC">
+        <![CDATA[
+			SELECT mst.company_cd,
+			       mst.dept_cd,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2001',mst.dept_cd) dept_nm,
+			       mst.doc_ym,
+			       mst.doc_seq,
+			       dtl.amount,
+			       mst.create_type,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2003',mst.create_type) create_type_nm,
+			       mst.doc_type,
+			       mst.prog_status,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2002',mst.prog_status) prog_status_nm,
+			       mst.sap_doc_seq,
+			       mst.currency_cd,
+			       mst.create_date,
+			       doc_date,
+			       post_date,
+			       mst.success_type,
+			       mst.attr2,
+			       mst.attr3,
+			       '' status
+			  FROM lgiusf.tb_doc_master mst,
+				(
+				 SELECT company_cd,
+				        dept_cd,
+				        doc_ym,
+				        doc_seq,
+				        sum(debit_amt) amount
+				   FROM lgiusf.tb_doc_detail
+				  WHERE company_cd = ${companyCd}
+					AND dept_cd    = ${deptCd}
+				    AND del_yn     = 'N'
+				  GROUP BY company_cd,
+				           dept_cd,
+				           doc_ym,
+				           doc_seq          
+				) dtl
+	         WHERE mst.company_cd  = dtl.company_cd
+	           AND mst.dept_cd     = dtl.dept_cd
+	           AND mst.doc_ym      = dtl.doc_ym
+	           AND mst.doc_seq     = dtl.doc_seq
+			   AND mst.company_cd  = ${companyCd}
+			   AND mst.dept_cd     = ${deptCd}
+			   AND mst.doc_ym		= ${docYm}
+	           AND mst.del_yn      = 'N'
+	           AND mst.create_type = '1'
+			   {#1}
+			   
+			   order by mst.doc_ym,
+			       mst.doc_seq
+		]]>
+	    
+	    <append where="false" condition="${docFlg}.NOTEMPTY" id="#1">
+			   AND mst.doc_seq = ${docSeq2}
+	    </append>
+
+    </statement>  
+
+
+    <!-- Cost Total Ledger Document Seq -->
+    <statement name="retrieveCostTotLedgerDocSeq">
+        <![CDATA[
+			SELECT LPAD(TO_NUMBER(NVL(MAX(doc_seq),9000000))+1,7,'0') doc_seq
+			  FROM lgiusf.tb_doc_master
+			 WHERE company_cd          = ${companyCd}
+			   AND dept_cd             = ${deptCd}
+			   AND doc_ym              = ${docYm}
+			   AND substr(doc_seq,1,1) = '9'
+		]]>
+
+    </statement>  
+
+
+    <!-- Cost Total Ledger Detail Insert -->
+    <statement name="insertCostTotLedgerMstMgnt">
+        <![CDATA[
+			INSERT into lgiusf.tb_doc_master ( 
+				   company_cd,
+				   dept_cd,
+				   doc_ym,
+				   doc_seq,
+				   create_type,
+				   doc_type,
+				   create_date,
+				   doc_date,
+				   post_date,
+				   del_yn,
+				   prog_status,
+				   prog_status_date,
+				   prog_status_time,
+				   currency_cd,
+				   trans_date,
+				   trans_time,
+				   sap_doc_seq,
+				   success_type,
+				   attr1,
+				   attr2,
+				   attr3,
+				   attr4,
+				   attr5,
+				   regid,
+				   regdate,
+				   regtime )
+		  values ( ${companyCd},
+				   ${deptCd},
+				   ${docYm},
+				   ${docSeq},
+				   '1',
+				   '',
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   ${docDate},
+				   ${postDate},
+				   'N',
+				   '10',
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   TO_CHAR(SYSDATE, 'HH24MISS'),
+				   ${currencyCd},
+				   '',
+				   '',
+				   '',
+				   '',
+				   ${workType},
+				   ${attr2},
+				   '',
+				   '',
+				   '',
+				   ${userId},
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   TO_CHAR(SYSDATE, 'HH24MISS') )
+		]]>     
+    </statement>
+    
+    <!-- 2010.09.29 Type B Copy -->
+    <statement name="insertCostTotLedgerMstMgntC">
+        <![CDATA[
+			INSERT into lgiusf.tb_doc_master ( 
+				   company_cd,
+				   dept_cd,
+				   doc_ym,
+				   doc_seq,
+				   create_type,
+				   doc_type,
+				   create_date,
+				   doc_date,
+				   post_date,
+				   del_yn,
+				   prog_status,
+				   prog_status_date,
+				   prog_status_time,
+				   currency_cd,
+				   trans_date,
+				   trans_time,
+				   sap_doc_seq,
+				   success_type,
+				   attr1,
+				   attr2,
+				   attr3,
+				   attr4,
+				   attr5,
+				   regid,
+				   regdate,
+				   regtime )
+		  SELECT company_cd, 
+		  		   dept_cd,
+				   doc_ym,
+				   ${docSeq2},
+		  		   create_type,
+				   doc_type,
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   doc_date,
+				   DECODE(post_date, '', '', TO_CHAR(ADD_MONTHS(to_date(post_date), 1),'YYYYMM') ||'01'),
+				   del_yn,
+				   '20',
+				   prog_status_date,
+				   prog_status_time,
+				   currency_cd,
+				   trans_date,
+				   trans_time,
+				   '',
+				   success_type,
+				   attr1,
+				   'C',
+				   '',
+				   attr4,
+				   attr5,
+				   ${userId},
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   TO_CHAR(SYSDATE, 'HH24MISS') 
+		  FROM lgiusf.tb_doc_master
+		  WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+    
+    <!-- Cost Total Ledger Master Delete -->
+    <statement name="deleteCostTotLedgerMstMgnt">
+        <![CDATA[
+			DELETE lgiusf.tb_doc_master
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+
+
+    <!-- Cost Total Ledger Detail Search -->
+    <statement name="retrieveCostTotLedgerDtlMgnt">
+        <![CDATA[
+			SELECT dtl.company_cd,
+			       dtl.dept_cd,
+			       dtl.doc_ym,
+			       dtl.doc_seq,
+			       dtl.doc_num,
+			       dtl.acct_cd,
+			       decode(${lang},'kr',acc.acct_nm_kr,
+			                      'en',acc.acct_nm_en, acc.acct_nm_lo) sap_acct_nm,
+			       dtl.sap_acct_cd,
+			       dtl.debit_amt,
+			       dtl.credit_amt,
+			       dtl.area_cd,
+			       dtl.div_cd,
+			       dtl.block_cd,
+			       dtl.block_cd2,
+			       dtl.year_cd,
+			       dtl.tm_tbm,
+			       dtl.doc_desc,
+			       dtl.spgl_no,
+			       dtl.sap_acct_v,
+			       (SELECT decode(${lang}, 'kr',vend_nm_kr,
+                                           'en',vend_nm_en, vend_nm_lo) sap_acct_v_nm           
+                      FROM lgiusf.tb_vend_master
+                     WHERE useyn = 'Y'
+                       AND company_cd = dtl.company_cd
+                       AND vend_cd = dtl.sap_acct_v
+                   ) as sap_acct_v_nm,
+			       dtl.sap_acct_c,
+			       (SELECT decode(${lang}, 'kr',vend_nm_kr,
+                                           'en',vend_nm_en, vend_nm_lo) sap_acct_c_nm           
+                      FROM lgiusf.tb_vend_master
+                     WHERE useyn = 'Y'
+                       AND company_cd = dtl.company_cd
+                       AND vend_cd = dtl.sap_acct_c
+                   ) as sap_acct_c_nm,
+			       dtl.return_msg,
+			       dtl.attr3 vat,
+			       dtl.attr4 base,
+			       dtl.attr5 code,
+			       dtl.attr6 rate,
+			       dtl.attr7 type,
+			       dtl.attr8 center,
+			       dtl.attr9 int_order,
+			       (SELECT io_name as int_order_nm                            
+                      FROM tb_io_master  
+                     WHERE use_yn = 'Y'
+                       AND company_cd = dtl.company_cd
+                       AND io_cd = dtl.attr9
+			       ) as int_order_nm,
+			       dtl.attr10 vat_base_amount,
+			       dtl.attr11 due_date,
+			       dtl.work_cd,
+			       dtl.work_vendor,
+			       dtl.work_ym,
+			       acc.attr1 sp,
+			       acc.attr2 chkyn,
+			       dtl.work_rental_type,
+			       dtl.waste_cd,
+			       dtl.attr12,
+			       dtl.attr13,
+			       dtl.attr14,
+			       dtl.attr15,
+			       dtl.attr16,
+			       'U' AS load_gbn,
+			       dtl.attr17 as period_cost_from,
+			       dtl.attr18 as period_cost_to
+			  FROM lgiusf.tb_doc_detail dtl,
+			       lgiusf.tb_sap_account acc
+			 WHERE dtl.company_cd  = acc.company_cd(+)
+			   AND dtl.sap_acct_cd = acc.acct_sap_cd(+)
+			   AND dtl.company_cd = ${companyCd}
+			   AND dtl.dept_cd    = ${deptCd}
+			   AND dtl.doc_ym     = ${docYm}
+			   AND dtl.doc_seq    = ${docSeq}
+		]]>
+    </statement>
+
+
+    <!-- Cost Total Ledger Detail Insert -->
+    <statement name="insertCostTotLedgerDtlMgnt">
+        <![CDATA[
+			INSERT into lgiusf.tb_doc_detail (
+				   company_cd,
+				   dept_cd,
+				   doc_ym,
+				   doc_seq,
+				   doc_num,
+				   acct_cd,
+				   spgl_no,
+				   sap_acct_v,
+				   sap_acct_c,
+				   sap_acct_cd,
+				   debit_amt,
+				   credit_amt,
+				   area_cd,
+				   div_cd,
+				   block_cd,
+				   block_cd2,
+				   year_cd,
+				   tm_tbm,
+				   doc_desc,
+				   del_yn,
+				   attr3,
+				   attr4,
+				   attr5,
+				   attr6,
+				   attr7,
+				   attr8,
+				   attr9,
+				   attr10,
+				   attr11,
+			       attr12,
+			       attr13,
+			       attr14,
+			       attr15,
+			       attr16,
+			       attr17,
+			       attr18,
+			       attr19,
+			       attr20,
+				   regid,
+				   regdate,
+				   regtime,
+				   modid,
+				   moddate,
+				   modtime,
+				   work_cd,
+			       work_vendor,
+			       work_ym,
+			       work_rental_type,
+			       waste_cd )
+			VALUES ( ${companyCd},
+				   ${deptCd},
+				   ${docYm},
+				   ${docSeq},
+				   ( select LPAD(TO_NUMBER(NVL(MAX(doc_num),0))+1,3,'0')
+				     from lgiusf.tb_doc_detail t
+				    where company_cd = ${companyCd}
+				      and dept_cd    = ${deptCd}
+				      and doc_ym     = ${docYm}
+				      and doc_seq    = ${docSeq}),
+				   ${acctCd},
+				   ${spglNo},
+				   ${sapAcctV},
+				   ${sapAcctC},
+				   ${sapAcctCd},
+				   ${debitAmt},
+				   ${creditAmt},
+				   ${areaCd},
+				   ${divCd},
+				   ${blockCd},
+				   ${blockCd2},
+				   ${yearCd},
+				   ${tmTbm},
+				   ${docDesc},
+				   'N',
+				   ${vat},
+				   ${base},
+				   ${code},
+				   nvl(0,${rate}),
+				   ${type},
+				   ${center},
+				   ${intOrder},
+				   ${vatBaseAmount},
+				   ${dueDate},
+				   ${attr12},
+				   ${attr13},
+				   ${attr14},
+				   ${attr15},
+				   ${attr16},
+				   ${periodCostFrom},
+				   ${periodCostTo},
+				   ${attr19},
+				   ${attr20},
+				   ${userId},
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   TO_CHAR(SYSDATE, 'HH24MISS'),
+				   ${userId},
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   TO_CHAR(SYSDATE, 'HH24MISS'),
+				   ${workCd},
+			       ${workVendor},
+			       ${workYm},
+			       ${workRentalType},
+			       ${wasteCd})
+		]]>     
+    </statement>
+    
+    <!-- 2010.09.29 Type B Copy -->
+    <statement name="insertCostTotLedgerDtlMgntC">
+        <![CDATA[
+			INSERT into lgiusf.tb_doc_detail (
+				   company_cd,
+				   dept_cd,
+				   doc_ym,
+				   doc_seq,
+				   doc_num,
+				   acct_cd,
+				   spgl_no,
+				   sap_acct_v,
+				   sap_acct_c,
+				   sap_acct_cd,
+				   debit_amt,
+				   credit_amt,
+				   area_cd,
+				   div_cd,
+				   block_cd,
+				   block_cd2,
+				   year_cd,
+				   tm_tbm,
+				   doc_desc,
+				   del_yn,
+				   attr3,
+				   attr4,
+				   attr5,
+				   attr6,
+				   attr7,
+				   attr8,
+				   attr9,
+				   attr10,
+				   attr11,
+			       attr12,
+			       attr13,
+			       attr14,
+			       attr15,
+			       attr16,
+			       attr17,
+			       attr18,
+			       attr19,
+			       attr20,
+				   regid,
+				   regdate,
+				   regtime,
+				   modid,
+				   moddate,
+				   modtime,
+				   work_cd,
+			       work_vendor,
+			       work_ym,
+			       work_rental_type,
+			       waste_cd
+			        )
+			SELECT  company_cd,
+				   dept_cd,
+				   doc_ym,
+				   ${docSeq2},
+				   LPAD(( select TO_NUMBER(NVL(MAX(doc_num),0))
+					            from lgiusf.tb_doc_detail t
+					           where company_cd = ${companyCd}
+					             and dept_cd    = ${deptCd}
+					             and doc_ym     = ${docYm}
+					             and doc_seq    = ${docSeq2})+rownum,3,'0'),
+				   acct_cd,
+				   spgl_no,
+				   sap_acct_v,
+				   sap_acct_c,
+				   sap_acct_cd,
+				   credit_amt,
+				   debit_amt,
+				   area_cd,
+				   div_cd,
+				   block_cd,
+				   block_cd2,
+				   year_cd,
+				   tm_tbm,
+				   doc_desc,
+				   del_yn,
+				   attr3,
+				   attr4,
+				   attr5,
+				   nvl( 0 , attr6),
+				   attr7,
+				   attr8,
+				   attr9,
+				   attr10,
+				   attr11,
+			       attr12,
+			       attr13,
+			       attr14,
+			       attr15,
+			       attr16,
+			       attr17,
+			       attr18,
+			       attr19,
+			       attr20,
+				   ${userId},
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   TO_CHAR(SYSDATE, 'HH24MISS'),
+				   ${userId},
+				   TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   TO_CHAR(SYSDATE, 'HH24MISS') ,
+				   work_cd,
+			       work_vendor,
+			       work_ym,
+			       work_rental_type,
+			       waste_cd
+			FROM lgiusf.tb_doc_detail
+			WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+
+
+    <!-- Barge SELECT -->
+    <statement name="selectCostTotLedgerBargeMgnt">
+        <![CDATA[
+        SELECT COUNT(*) AS cnt
+           FROM TB_DOC_BARGE
+        WHERE COMPANY_CD  = ${companyCd} 
+              AND DEPT_CD     = ${deptCd}    
+              AND DOC_YM      = ${docYm}     
+              AND DOC_SEQ     = ${docSeq}    
+        
+		]]>     
+    </statement>
+    
+    <statement name="selectCostTotLedgerBargeMgnt2">
+        <![CDATA[
+		 SELECT   
+		           A.SYSKEY,          -- MV LOADING NO
+		           A.MV_CD,           -- MV NAME
+		           B.BARGE_SEQ,       -- BARGE LOADING NO
+		           B.BARGE_CD,        -- BARGE NAME
+		           A.POST_DATE,       -- POSTING DATE
+		           A.MV_ARRIVAL_DATE, -- ARRIVAL DATE
+		           B.LOADING_QTY,      -- ACTUAL LOADING(MT)
+		           B.LOADING_DATE,
+		           A.PORT_STOCK,
+		           A.SYSKEY||'*'||A.MV_CD||'*'|| B.BARGE_SEQ ||'*'|| B.BARGE_CD ||'*'|| A.POST_DATE ||'*'|| A.MV_ARRIVAL_DATE ||'*'|| B.LOADING_QTY ||'*'|| B.LOADING_DATE ||'*'|| A.PORT_STOCK AS LNG_CD,
+		           Z.DEPT_CD,
+		           Z.DOC_YM,
+		           Z.DOC_SEQ,
+		           Z.BARGE_NAME,
+		           Z.REGID,
+		           Z.REGDATE,
+		           Z.REGTIME,
+		           Z.MODID,
+		           Z.MODDATE,
+		           Z.BARGE_LIST, 
+		           A.COMPANY_CD
+		      FROM TB_DOC_BARGE Z ,
+		                 tb_mv_loading A , 
+		                 tb_barge_loading B
+		   WHERE Z.COMPANY_CD = A.COMPANY_CD(+)
+		        AND A.COMPANY_CD = B.COMPANY_CD 
+			    AND Z.COMPANY_CD  = ${companyCd}
+		        AND Z.SYSKEY 		= A.SYSKEY
+		        AND A.SYSKEY 		= B.SYSKEY
+		        AND Z.BARGE_SEQ = B.BARGE_SEQ
+			    AND Z.DEPT_CD     = ${deptCd}    
+			    AND Z.DOC_YM      = ${docYm}     
+			    AND Z.DOC_SEQ     = ${docSeq}      
+        
+        
+        
+        ]]> 
+    </statement> 
+    
+    
+    
+    
+
+    <!-- Barge DELETE -->
+    <statement name="deleteCostTotLedgerBargeMgnt">
+        <![CDATA[
+        DELETE TB_DOC_BARGE
+		WHERE  COMPANY_CD  = ${companyCd} 
+		     AND  DEPT_CD     = ${deptCd}    
+		     AND  DOC_YM      = ${docYm}     
+		     AND  DOC_SEQ     = ${docSeq}    
+        
+		]]>     
+    </statement>
+    
+    <!-- Barge insert -->
+    <statement name="insertCostTotLedgerBargeMgnt">
+        <![CDATA[
+                 INSERT INTO TB_DOC_BARGE
+                       (
+							COMPANY_CD,
+							DEPT_CD,
+							DOC_YM,
+							DOC_SEQ,
+							SYSKEY,
+							BARGE_SEQ,
+							LOADING_DATE,
+							BARGE_CD,
+							PORT_STOCK,
+							LOADING_QTY,
+							BARGE_LIST,
+							REGID,
+							REGDATE,
+							REGTIME
+                    )
+                    VALUES
+                    (    
+                        ${companyCd},
+                        ${deptCd},
+                        ${docYm},
+                        ${docSeq},
+                        ${syskey},
+                        ${bargeSeq},
+                        replace(${loadingDate},'/',''),
+                        ${bargeCd},
+                        ${portStock},
+                        ${loadingQty},
+                        ${bargeList},
+                        ${userId},
+                        TO_CHAR(SYSDATE,'YYYYMMDD'),
+                        TO_CHAR(SYSDATE,'HH24MISS')
+                    )       	
+		]]>     
+    </statement>
+
+
+
+
+
+
+    <!-- Cost Total Ledger Detail Update -->
+    <statement name="updateCostTotLedgerDtlMgnt">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_detail
+			   SET sapAcctCd  = ${sapAcctCd},
+			       debit_amt  = ${debitAmt},
+			       credit_amt = ${creditAmt},
+			       spgl_no    = ${spglNo},
+				   sap_acct_v = ${sapAcctV},
+				   sap_acct_c = ${sapAcctC},
+			       attr3      = ${vat},
+			       attr4      = ${base},
+			       attr5      = ${code},
+			       attr6      = 0,
+			       attr7      = ${type},
+			       attr8      = ${center},
+			       attr9      = ${intOrder},
+			       attr10     = ${vatBaseAmount},
+			       attr11     = ${dueDate},
+			       attr12     = ${attr12},
+			       attr13     = ${attr13},
+			       attr14     = ${attr14},
+			       attr15     = ${attr15},
+			       attr16     = ${attr16},
+			       attr17     = ${attr17},
+			       attr18     = ${attr18},
+			       attr19     = ${attr19},
+			       attr20     = ${attr20},
+			       doc_desc   = ${docDesc},
+			       modid      = ${userId},
+			       moddate    = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime    = TO_CHAR(SYSDATE, 'HH24MISS'),
+			       work_cd		= ${workCd},
+			       work_vendor =${workVendor},
+			       work_ym = ${workYm},
+			       work_rental_type = ${workRentalType}
+			       waste_cd = ${wasteCd}
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+			   and doc_num    = ${docNum}
+		]]>     
+    </statement>
+
+
+    <!-- Cost Total Ledger Detail Change After Master Infomation Update -->
+    <statement name="updateCostTotLedgerDtlChgMgnt">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_master
+			   SET modid      = ${userId},
+			   	   currency_cd = ${currencyCd},
+			   	   prog_status      = '10',
+			   	   doc_date =${docDate},
+				   post_date = ${postDate},
+			       moddate    = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime    = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>
+    </statement>
+    
+    <!-- 2010.09.29 tb_doc_master attr3 -->
+        <statement name="updateDocMaster">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_master
+			   SET attr3      = ${docSeq2},
+			   		modid      = ${userId},
+			       moddate    = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime    = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>
+    </statement>
+
+
+    <!-- Waste Removal Status Update -->
+    <statement name="updateWasteRemovalStatus">
+        <![CDATA[
+			UPDATE lgiusf.tb_waste_removal_confirm
+			   SET status      	= ${status}
+			   		{#1}
+				 	{#2}
+			       	, modid       	= ${userId}
+			       	, moddate     = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			       	, modtime     = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd  = ${companyCd}
+			   AND vend_cd     = ${vendCd}
+			   AND post_ym     = ${postYm}
+			   AND waste_cd	= ${wasteCd}
+		]]>
+		<append where="false" condition="${statusIdr}.NOTEMPTY" id="#1">
+			   , status_idr 	= ${statusIdr}
+	    </append>
+	    <append where="false" condition="${statusUsd}.NOTEMPTY" id="#2">
+			   , status_usd 	= ${statusUsd}
+	    </append>
+    </statement>
+    
+    <!-- Waste Removal Status -->
+    <statement name="getWasteRemovalStatus">
+        <![CDATA[
+			SELECT (case when {#1}='10' then '20' 
+						              when {#1}<>'10' then {#2}  end) status
+			 FROM tb_waste_removal_confirm
+			 WHERE company_cd  = ${companyCd}
+			   AND vend_cd     = ${vendCd}
+			   AND post_ym     = ${postYm}
+			   AND waste_cd	= ${wasteCd}
+		]]>
+		<append where="false" condition="${currencyCd}.eq.IDR" id="#1">
+			   status_usd
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.USD" id="#1">
+			   status_idr
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.IDR" id="#2">
+			   '40'
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.USD" id="#2">
+			   '30'
+	    </append>
+    </statement>
+    
+    <!-- Waste Removal Status -->
+    <statement name="getWasteRemovalStatus2">
+        <![CDATA[
+			SELECT (case when {#1}='20' then '50' 
+						              when {#1}='10' then {#2}  end) status
+			 FROM tb_waste_removal_confirm
+			 WHERE company_cd  = ${companyCd}
+			   AND vend_cd     = ${vendCd}
+			   AND post_ym     = ${postYm}
+			   AND waste_cd	= ${wasteCd}
+		]]>
+		<append where="false" condition="${currencyCd}.eq.IDR" id="#1">
+			   status_usd
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.USD" id="#1">
+			   status_idr
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.IDR" id="#2">
+			   '30'
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.USD" id="#2">
+			   '40'
+	    </append>
+    </statement>
+
+    <!-- Coal Hauling Status Update -->
+    <statement name="updateCoalHaulingStatus">
+        <![CDATA[
+			UPDATE lgiusf.tb_coal_hauling_confirm
+			   SET status      = ${status},
+			   	  {#1}
+				  {#2}
+			       modid       = ${userId},
+			       moddate     = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime     = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd  = ${companyCd}
+			   AND vend_cd     = ${vendCd}
+			   AND post_ym     = ${postYm}
+		]]>
+		<append where="false" condition="${statusIdr}.NOTEMPTY" id="#1">
+			   status_idr 	= ${statusIdr},
+	    </append>
+	    <append where="false" condition="${statusUsd}.NOTEMPTY" id="#2">
+			   status_usd 	= ${statusUsd},
+	    </append>
+    </statement>
+    
+    <!-- Coal Hauling Status -->
+    <statement name="getCoalHaulingStatus">
+        <![CDATA[
+			SELECT (case when {#1}='10' then '20' 
+						              when {#1}<>'10' then {#2}  end) status
+			 FROM tb_coal_hauling_confirm
+			 WHERE company_cd  = ${companyCd}
+			   AND vend_cd     = ${vendCd}
+			   AND post_ym     = ${postYm}
+		]]>
+		<append where="false" condition="${currencyCd}.eq.IDR" id="#1">
+			   status_usd
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.USD" id="#1">
+			   status_idr
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.IDR" id="#2">
+			   '40'
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.USD" id="#2">
+			   '30'
+	    </append>
+    </statement>
+    
+    <statement name="getCoalHaulingStatus2">
+        <![CDATA[
+			SELECT (case when {#1}='20' then '50' 
+						              when {#1}='10' then {#2}  end) status
+			 FROM tb_coal_hauling_confirm
+			 WHERE company_cd  = ${companyCd}
+			   AND vend_cd     = ${vendCd}
+			   AND post_ym     = ${postYm}
+		]]>
+		<append where="false" condition="${currencyCd}.eq.IDR" id="#1">
+			   status_usd
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.USD" id="#1">
+			   status_idr
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.IDR" id="#2">
+			   '30'
+	    </append>
+	    <append where="false" condition="${currencyCd}.eq.USD" id="#2">
+			   '40'
+	    </append>
+    </statement>
+        
+    <!-- Rental Hour Status Update -->
+    <statement name="updateRentalHourStatus">
+        <![CDATA[
+			UPDATE lgiusf.tb_rental_hour_confirm
+			   SET status      = ${status},
+			       modid       = ${userId},
+			       moddate     = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime     = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd  = ${companyCd}
+			   AND vend_cd     = ${vendCd}
+			   AND post_ym     = ${postYm}
+			   AND currency_cd = ${currencyCd}
+			   AND TYPE			= ${workRentalType}
+		]]>
+    </statement>
+
+    <!-- Cost Total Ledger Detail Delete -->
+    <statement name="deleteCostTotLedgerAllDtlMgnt">
+        <![CDATA[
+			DELETE lgiusf.tb_doc_detail
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+    <!-- Cost Total Ledger Detail Delete -->
+    <statement name="deleteCostTotLedgerDtlMgnt">
+        <![CDATA[
+			DELETE lgiusf.tb_doc_detail
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+			   and doc_num    = ${docNum}	
+		]]>     
+    </statement>
+    
+        <statement name="retrieveCostTotLedgerMstExcelList">
+        <![CDATA[
+			SELECT DM.DOC_YM
+			            , DM.DOC_SEQ
+			            , DD.DOC_NUM
+			            , DM.DOC_DATE
+			            , DD.SAP_ACCT_CD
+			            , (SELECT decode(${lang},'kr',acc.acct_nm_kr, 'en',acc.acct_nm_en, acc.acct_nm_lo) FROM tb_sap_account acc WHERE DD.company_cd  = acc.company_cd AND dd.sap_acct_cd = acc.acct_sap_cd) SAP_ACCT_NM
+			            , DD.DEBIT_AMT
+			            , DD.CREDIT_AMT
+			            , DD.ATTR8 COST_CENTER
+			            , DD.DOC_DESC 
+			            , DM.CURRENCY_CD
+			            , DM.POST_DATE
+			            , DD.ATTR3 VAT
+			            , DD.ATTR4 BASE
+			            , DD.ATTR5 CODE
+			            , DD.ATTR6 RATE
+			            , DD.SPGL_NO SPGL
+			            , DD.SAP_ACCT_V VENDOR
+			            , DD.SAP_ACCT_C CUSTOMER
+			            , lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2002',DM.prog_status) prog_status_nm
+			            , DM.attr2
+			            , DM.sap_doc_seq
+			            , DD.attr11 due_date
+			FROM TB_DOC_MASTER DM, TB_DOC_DETAIL DD
+			WHERE DM.COMPANY_CD = DD.COMPANY_CD
+			AND DM.DEPT_CD = DD.DEPT_CD
+			AND DM.DOC_YM = DD.DOC_YM
+			AND DM.DOC_SEQ = DD.DOC_SEQ
+			AND DM.COMPANY_CD = ${companyCd}
+			   {#1}
+			   {#2}
+			   {#3}
+			   {#4}
+			   {#5}
+			ORDER BY DM.DOC_YM, DM.DOC_SEQ
+		]]>
+
+        <append where="false" condition="${createType}.NOTEMPTY" id="#1">
+			   AND DM.create_type = ${createType}
+	    </append>
+
+        <append where="false" condition="${progStatus}.NOTEMPTY" id="#2">
+			   AND DM.prog_status = ${progStatus}
+	    </append>
+	    
+	    <append where="false" condition="${createType}.NOTEMPTY" id="#3">
+			   AND DM.create_type = ${createType}
+	    </append>
+	    
+	    <append where="false" condition="${docDateFrom}.NOTEMPTY" id="#4">
+			   AND DM.doc_date >= ${docDateFrom}
+	    </append>
+	    
+	    <append where="false" condition="${docDateTo}.NOTEMPTY" id="#5">
+	    <![CDATA[
+			   AND DM.doc_date <= ${docDateTo}
+		]]>
+	    </append>
+
+    </statement>  
+
+</statements>

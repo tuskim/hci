@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Cement Production 등록 -->
+
+   <!-- Cement Production  조회 첫 페이지--> 	
+   <action-name name="cementProduction">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/ps/cp/cementProduction.jsp</return-url>
+  	</action-name>
+
+  	<!-- Cement Production List 조회-->
+   	<action-name name="ps.cp.retrieveCementProductionList"> 
+    	<command>ps.cp.cmd.RetrieveCementProductionListCmd</command>
+   	</action-name>
+   	
+  	<!-- Use of Material for Cement 조회-->
+   	<action-name name="ps.cp.retrieveCementProductionMaterial"> 
+    	<command>ps.cp.cmd.RetrieveCementProductionMaterialCmd</command>
+   	</action-name>
+ 
+   	<!-- Result of Cement 조회-->
+   	<action-name name="ps.cp.retrieveCementProductionResult"> 
+    	<command>ps.cp.cmd.RetrieveCementProductionResultCmd</command>
+   	</action-name>
+
+  	<!-- [Add Row] New Data Search-->
+   	<action-name name="ps.cp.retrieveCementProductionAddRow"> 
+    	<command>ps.cp.cmd.RetrieveCementProductionAddRowCmd</command>
+   	</action-name>
+   	
+   	<!-- Save -->
+  	<action-name name="ps.cp.cudCementProductionReg">
+		<command>ps.cp.cmd.CudCementProductionRegCmd</command>
+	</action-name>
+
+   	<!-- Delete -->
+  	<action-name name="ps.cp.cudCementProductionDel">
+		<command>ps.cp.cmd.CudCementProductionDelCmd</command>
+	</action-name>
+	
+   	<!-- Approval -->
+  	<action-name name="ps.cp.cudCementProductionApproval">
+		<command>ps.cp.cmd.CudCementProductionApprovalCmd</command>
+	</action-name>
+
+   	<!-- Reject -->
+  	<action-name name="ps.cp.cudCementProductionReject">
+		<command>ps.cp.cmd.CudCementProductionRejectCmd</command>
+	</action-name>
+		
+   	<!-- SAP Send -->
+  	<action-name name="ps.cp.cudCementProductionSAPsend">
+		<command>ps.cp.cmd.CudCementProductionSAPSendCmd</command>
+	</action-name>
+
+   	<!-- SAP Cancel -->
+  	<action-name name="ps.cp.cudCementProductionSAPcancel">
+		<command>ps.cp.cmd.CudCementProductionSAPCancelCmd</command>
+	</action-name>
+	
+	<!-- Excel down List -->
+   	<action-name name="ps.cp.retrieveCementProductionExcelList">
+	  	<command>ps.cp.cmd.RetrieveCementProductionExcelListCmd</command>     
+   	</action-name>
+</navigation-mapper>
+

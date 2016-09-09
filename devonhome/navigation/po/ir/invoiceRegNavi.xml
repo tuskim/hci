@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+    <!-- Invoice Request 화면 -->
+   	<action-name name="invoiceReg"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/ir/invoiceReg.jsp</return-url>
+   	</action-name>
+
+    <!-- Invoice List & Cancel 화면-->
+   	<action-name name="invoiceList"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/ir/invoiceList.jsp</return-url>
+   	</action-name>
+  	
+    <!-- PO Mst List 조회 -->
+   	<action-name name="po.ir.retrievePoMstList"> 
+    	<command>po.ir.cmd.RetrievePoMstListCmd</command>
+   	</action-name>
+  	
+    <!-- PO Dtl List 조회 -->
+   	<action-name name="po.ir.retrievePoDtlList"> 
+    	<command>po.ir.cmd.RetrievePoDtlListCmd</command>
+   	</action-name>
+
+    <!-- Invoice Mst List 조회 -->
+   	<action-name name="po.ir.retrieveInvoiceMstList"> 
+    	<command>po.ir.cmd.RetrieveInvoiceMstListCmd</command>
+   	</action-name>
+
+    <!-- Invoice Dtl List 조회 -->
+   	<action-name name="po.ir.retrieveInvoiceDtlList"> 
+    	<command>po.ir.cmd.RetrieveInvoiceDtlListCmd</command>
+   	</action-name>
+
+    <!-- Tax Data Set 조회 -->
+   	<action-name name="po.ir.retrieveInvoiceTaxDataSet"> 
+    	<command>po.ir.cmd.RetrieveInvoiceTaxDataSetCmd</command>
+   	</action-name>
+
+    <!-- Invoice Tax List 조회 -->
+   	<action-name name="po.ir.retrieveInvoiceTaxList"> 
+    	<command>po.ir.cmd.RetrieveInvoiceTaxListCmd</command>
+   	</action-name>
+  	
+   	<!-- Save ( invoice 등록, 입고 처리 )  -->
+  	<action-name name="po.ir.cudInvoiceSave">
+		<command>po.ir.cmd.CudInvoiceSaveCmd</command>
+	</action-name>
+	
+   	<!-- Cancel -->
+  	<action-name name="po.ir.cudInvoiceCancel">
+		<command>po.ir.cmd.CudInvoiceCancelCmd</command>
+	</action-name>
+
+   	<!-- Re Try -->
+  	<action-name name="po.ir.cudInvoiceRetry">
+		<command>po.ir.cmd.CudInvoiceRetryCmd</command>
+	</action-name>
+
+
+</navigation-mapper>

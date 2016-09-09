@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+
+    <!-- Login Info -->
+    <!--Jwhan C20140410_21774 -->
+    <statement name="retrieveLoginUser">
+        <![CDATA[
+			SELECT company_cd,
+				   user_id,
+				   user_nm,
+				   user_pw,
+				   auth_cd,
+				   system_id,
+				   dept_cd,
+				   position,
+				   business,
+				   email,
+				   ${lang} lang,
+				   last_login,--20140228 start
+				   login_error_count,  
+				   (sysdate - last_login ) as login_between  --20140228 end
+			  FROM lgiusf.tb_user
+			 WHERE company_cd = ${companyCd}
+			   AND user_id    = ${userid}
+			   AND useyn      = 'Y'
+        ]]>
+    </statement>
+    
+    <!-- Login SSO Info -->
+    <statement name="retrieveLoginSSOUser">
+        <![CDATA[
+			SELECT company_cd,
+				   user_id,
+				   user_nm,
+				   user_pw,
+				   auth_cd,
+				   system_id,
+				   dept_cd,
+				   position,
+				   business,
+				   email,
+				   'en' lang
+			  FROM lgiusf.tb_user
+			 WHERE company_cd = ${companyCd}
+			   AND user_id    = ${userid}
+			   AND useyn      = 'Y'
+        ]]>
+    </statement>
+
+    <!-- User ID Search -->
+    <statement name="commRetrieveUserId">
+        <![CDATA[
+			SELECT user_id
+			  FROM TB_USER
+			 WHERE user_nm = ${userNm}
+			   AND resident_num = ${residentNum}
+			   AND company_cd = ${companyCd}
+        ]]>
+    </statement>
+
+    <!-- Password Search -->
+    <statement name="commRetrieveUserPw">
+        <![CDATA[
+			SELECT user_pw
+			  FROM TB_USER
+			 WHERE user_id = ${userId}
+			   AND resident_num = ${residentNum}
+			   AND company_cd = ${companyCd}
+        ]]>
+    </statement>
+
+    <!-- 메뉴권한여부판단 -->
+    <!--Jwhan C20140410_21774 -->
+    <statement name="retrieveMenuInfo">
+        <![CDATA[
+        
+         SELECT LEVEL AS DEPTH
+       ,AAA.PROG_UP_CD
+       ,AAA.PROG_CD
+       ,DECODE('en', 'kr', AAA.PROG_NM_KR, 'en', AAA.PROG_NM_EN, AAA.PROG_NM_LO) AS PROG_NM
+       ,AAA.PROG_URL
+       ,AAA.REMARK
+       ,DECODE(CONNECT_BY_ISLEAF, 0, 'Y', 'N') AS LEAF
+       ,SUBSTR(SYS_CONNECT_BY_PATH(AAA.PROG_CD, ','), 2, 6) AS ROOT_PROG_CD
+       ,AAA.SORT
+   FROM (
+          SELECT AA.*
+            FROM TB_PROG_MASTER AA 
+                ,TB_PROG_MASTER BB 
+                ,(
+                   SELECT A.COMPANY_CD
+                         ,B.PROG_CD
+                     FROM TB_USER A
+                         ,TB_AUTHORITH_MASTER B 
+                    WHERE A.COMPANY_CD = B.COMPANY_CD
+                      AND A.AUTH_CD    = B.AUTH_CD
+                      AND A.COMPANY_CD = ${companyCd}
+                      AND A.USER_ID    = ${userid}
+                 ) CC
+           WHERE AA.COMPANY_CD = BB.COMPANY_CD(+)
+             AND AA.PROG_UP_CD = BB.PROG_CD(+)
+             AND AA.COMPANY_CD = ${companyCd}
+             AND DECODE(AA.USEYN, 'N', 'N', 'Y') = 'Y' -- 상위 레벨 메뉴가 'N'인경우 하위도 'N' 으로 변경
+             AND AA.COMPANY_CD = CC.COMPANY_CD
+             AND AA.PROG_CD    = CC.PROG_CD
+             AND AA.PROG_CD NOT IN (
+                                      SELECT CASE WHEN ${userIp} NOT IN ( SELECT USER_IP FROM TB_AUTHORIZED_USER_IP ) THEN 'CM0001' ELSE 'NULL' END
+                                        FROM DUAL
+                                       UNION
+                                      SELECT CASE WHEN ${userIp} NOT IN ( SELECT USER_IP FROM TB_AUTHORIZED_USER_IP ) THEN 'CM0003' ELSE 'NULL' END
+                                        FROM DUAL
+                                   )
+        ) AAA
+  START WITH AAA.PROG_UP_CD IS NULL
+CONNECT BY PRIOR AAA.PROG_CD = AAA.PROG_UP_CD
+  ORDER SIBLINGS BY AAA.SORT 			          	      
+        ]]>   
+    </statement>  
+
+    <!-- password 변경 기간 확인 20140310-->
+    <!--Jwhan C20140410_21774 -->
+    <statement name = "retrievePasswordBetween">
+    	<![CDATA[
+       select (sysdate - to_date(tu.passwd_chg_date, 'yyyymmdd') ) as password_between
+         from  tb_user tu
+    	where  user_id    = ${userId}
+    	  and  company_cd = ${companyCd}
+    	]]>
+   	</statement>
+
+</statements>

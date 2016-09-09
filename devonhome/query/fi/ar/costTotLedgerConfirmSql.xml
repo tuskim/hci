@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Cost Total Ledger Confirm -->
+
+    <!-- Cost Total Ledger Master Search -->
+    <statement name="retrieveCostTotLedgerMstConfirm">
+        <![CDATA[
+			SELECT 'F' chk,
+			       mst.company_cd,
+			       mst.dept_cd,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2001',mst.dept_cd) dept_nm,
+			       mst.doc_ym,
+			       mst.doc_seq,
+			       TO_NUMBER(dtl.amount) amount,
+			       mst.create_type,
+			       mst.doc_type,
+			       mst.create_date,
+			       mst.doc_date,
+			       mst.post_date,
+			       mst.prog_status,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2002',mst.prog_status) prog_status_nm,
+			       mst.sap_doc_seq,
+			       mst.success_type,
+			       mst.currency_cd,
+			       mst.attr2,
+			       mst.attr3
+			  FROM lgiusf.tb_doc_master mst,
+				(
+				 SELECT company_cd,
+				        dept_cd,
+				        doc_ym,
+				        doc_seq,
+				        sum(debit_amt) amount
+				   FROM lgiusf.tb_doc_detail
+				  WHERE company_cd = ${companyCd}
+					AND dept_cd    = ${deptCd}
+				    AND del_yn     = 'N'
+				  GROUP BY company_cd,
+				           dept_cd,
+				           doc_ym,
+				           doc_seq          
+				) dtl
+	         WHERE mst.company_cd = dtl.company_cd
+	           AND mst.dept_cd    = dtl.dept_cd
+	           AND mst.doc_ym     = dtl.doc_ym
+	           AND mst.doc_seq    = dtl.doc_seq
+	           AND mst.company_cd = ${companyCd}
+	           AND mst.dept_cd    = ${deptCd}
+	           AND mst.create_date BETWEEN ${orderDateFrom} AND ${orderDateTo}
+	           AND mst.del_yn  = 'N'
+			   {#1}
+			   {#2}
+			   {#3}
+                   ORDER BY mst.doc_seq
+		]]>
+
+        <append where="false" condition="${createType}.NOTEMPTY" id="#1">
+	           AND mst.create_type = ${createType}
+	    </append>
+
+        <append where="false" condition="${progStatus}.NOTEMPTY" id="#2">
+	           AND mst.prog_status = ${progStatus}
+	    </append>
+	    
+	    <append where="false" condition="${createType}.NOTEMPTY" id="#3">
+			   AND mst.create_type = ${createType}
+	    </append>
+
+    </statement>  
+
+    <!-- Cost Total Ledger Master Update -->
+    <statement name="updateCostTotLedgerMstConfirm">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_master
+			   SET prog_status      = ${progStatus},
+			       prog_status_date = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       prog_status_time = TO_CHAR(SYSDATE, 'HH24MISS'),
+			       modid            = ${userId},
+			       moddate          = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime          = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+    
+    <statement name="updateCostTotLedgerMstConfirmC">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_master
+			   SET prog_status      = ${progStatus},
+			       prog_status_date = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       prog_status_time = TO_CHAR(SYSDATE, 'HH24MISS'),
+			       attr3						= '',
+			       modid            = ${userId},
+			       moddate          = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime          = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+
+    <!-- Cost Total Ledger master approval date Update -->
+    <statement name="updateApprovalDate">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_master
+			   SET approval_id   = ${userId},
+			       approval_date = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       approval_time = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+ 
+    
+    <!-- Cost Total Ledger master approval cancel date Update -->
+    <statement name="updateCostTotLedgerMstConfirmCancelApprovalDate">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_master
+			   SET approval_id   = '',
+			       approval_date = '',
+			       approval_time = ''
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+    
+    
+
+
+
+    <!-- Cost Total Ledger Detail Change After Master Infomation Update -->
+    <statement name="updateCostTotLedgerMstChgConfirm">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_master
+			   SET modid      = ${userId},
+			       moddate    = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime    = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+    
+    <!-- Cost Total Ledger Master Delete -->
+    <statement name="deleteCostTotLedgerMstConfirm">
+        <![CDATA[
+			DELETE lgiusf.tb_doc_master
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+
+
+    <!-- Cost Total Ledger Detail Search -->
+    <statement name="retrieveCostTotLedgerDtlConfirm">
+        <![CDATA[
+			SELECT dtl.company_cd,
+			       dtl.dept_cd,
+			       dtl.doc_ym,
+			       dtl.doc_seq,
+			       dtl.doc_num,
+			       dtl.acct_cd,
+			       decode(${lang},'kr',acc.acct_nm_kr,
+			                      'en',acc.acct_nm_en, acc.acct_nm_lo) sap_acct_nm,
+			       dtl.sap_acct_cd,
+			       dtl.debit_amt,
+			       dtl.credit_amt,
+			       dtl.doc_desc,
+			       dtl.spgl_no,
+			       dtl.sap_acct_v,
+			       lgiusf.F_GETCOMMNAME('VEND', ${companyCd}, ${lang}, dtl.sap_acct_v, '') sap_acct_v_nm,
+			       dtl.sap_acct_c,
+			       lgiusf.F_GETCOMMNAME('VEND', ${companyCd}, ${lang}, dtl.sap_acct_c, '') sap_acct_c_nm,
+			       dtl.return_msg,
+			       dtl.attr3 vat,
+			       to_number(dtl.attr4) base,
+			       dtl.attr5 code,
+			       to_number(dtl.attr6) rate,
+			       dtl.attr7 type,
+			       dtl.attr8 center,
+			       dtl.attr9 int_order,
+			       (SELECT io_name as int_order_nm                            
+                      FROM tb_io_master  
+                     WHERE use_yn = 'Y'
+                       AND company_cd = dtl.company_cd
+                       AND io_cd = dtl.attr9
+			       ) as int_order_nm,
+			       to_number(dtl.attr10) vat_base_amount,
+			       dtl.attr11 due_date,
+			       acc.attr1 sp,
+			       dtl.attr12,
+			       dtl.attr13,
+			       dtl.attr14,
+			       dtl.attr15,
+			       dtl.attr16,
+			       dtl.attr17 as period_cost_from,
+			       dtl.attr18 as period_cost_to
+			  FROM lgiusf.tb_doc_detail dtl,
+			       lgiusf.tb_sap_account acc
+			 WHERE dtl.company_cd  = acc.company_cd(+)
+			   AND dtl.sap_acct_cd = acc.acct_sap_cd(+)
+			   AND dtl.company_cd = ${companyCd}
+			   AND dtl.dept_cd    = ${deptCd}
+			   AND dtl.doc_ym     = ${docYm}
+			   AND dtl.doc_seq    = ${docSeq}
+		]]>
+    </statement>
+
+    <!-- Cost Total Ledger All Detail Add Retrieve -->
+    <statement name="retrieveApprCostTotLedgerAdd">
+        <![CDATA[
+			SELECT company_cd,
+			       dept_cd,
+			       doc_ym,
+			       doc_seq,
+			       doc_num,
+			       acct_cd,
+			       spgl_no,
+			       sap_acct_v,
+			       sap_acct_c,
+			       sap_acct_cd,
+			       debit_amt,
+			       credit_amt,
+			       doc_desc,
+			       del_yn,
+			       return_msg,
+			       attr3,
+			       to_number(attr4) attr4,
+			       attr5,
+			       to_number(attr6) attr6,
+			       (select detail_cd from tb_comm_cd_detail where company_cd = ${companyCd} and group_cd   = '2011' and attr2 = sap_acct_cd) attr7,
+			       attr8,
+			       attr9,
+			       NVL(attr10, '0') attr10,
+			       attr11,
+			       attr12,
+			       attr13,
+			       attr14,
+			       attr15,
+			       attr16,
+			       attr17,
+			       attr18,
+			       attr19,
+			       attr20
+			  FROM lgiusf.tb_doc_detail
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+			   AND del_yn     = 'N'
+		]]>
+    </statement>
+    
+    <!-- Internal Order 정보 조회 쿼리  -->
+    <statement name="retrieveInternalOrderInfo">
+        <![CDATA[
+			SELECT company_cd
+			      ,io_cd
+			      ,io_name
+			      ,io_type
+			      ,use_yn     
+			  FROM tb_io_master
+			 WHERE io_cd = ${attr9}
+			   AND company_cd = ${companyCd}
+		]]>     
+    </statement>
+
+</statements>

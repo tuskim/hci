@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Document History List --> 
+
+   	<!-- Document History List -->  
+	<action-name name="docHistory">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/docHistory.jsp</return-url>
+   	</action-name>
+    <action-name name="fi.ar.retrieveDocHistoryList">
+    	<command>fi.ar.cmd.RetrieveDocHistoryListCmd</command>
+	</action-name>
+ 		
+</navigation-mapper>

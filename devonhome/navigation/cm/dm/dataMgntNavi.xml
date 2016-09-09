@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- data input Monitoring Mgnt-->
+   	<!-- data input Monitoring 조회 첫 페이지-->
+   	
+   	<action-name name="dataInputMonitoring"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/cm/dm/dataInputMonitoring.jsp</return-url>
+   	</action-name>
+   
+    <!-- prog Mgnt 조회-->
+    <action-name name="cm.dm.retrieveDataInputMonitoringList">
+    <command>cm.dm.cmd.RetrieveDataInputMonitoringListCmd</command>
+   </action-name>
+
+    <!-- Email 리스트 조회-->
+    <action-name name="cm.dm.retrieveDataInputMonitoringEmailList">
+    <command>cm.dm.cmd.RetrieveDataInputMonitoringEmailListCmd</command>
+   </action-name>
+   
+    <!-- Email 리스트 수정-->
+    <action-name name="cm.dm.cudDataInputMonitoringEmailList">
+    <command>cm.dm.cmd.CudDataInputMonitoringEmailListCmd</command>
+   </action-name>
+   
+   	<!--Email 전송 -->  
+	<action-name name="cm.dm.sendMail">
+    	<command>po.oc.cmd.CudPurchOrderRegSendMailCmd</command> 
+    	<return-url>/jsp/cm/dm/dataInputMonitoring.jsp?send=true</return-url>
+   	</action-name>   
+   	
+</navigation-mapper>

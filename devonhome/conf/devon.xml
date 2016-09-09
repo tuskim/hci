@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<devon>
+  <core>
+      <src>#home/conf/devon-core.xml</src>
+  </core>
+  <framework>
+      <src>#home/conf/products/devon-framework.xml</src>
+  </framework>
+  <security>
+      <src>#home/conf/products/devon-security.xml</src>
+  </security>
+    
+  <!--  페이지 샘플인 devonframework.sample.front.paging.LWSGPageNavigationByPost 에서 사용하는 설정 파일 --> 
+  <resource name="page">
+    <validate>false</validate> 
+    <src>#home/conf/products/resource-page.xml</src> 
+  </resource>
+  
+</devon>

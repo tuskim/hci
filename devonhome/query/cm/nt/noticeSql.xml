@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>	 
+    
+	<!--  Notice List 조회-->
+    <statement name="retrieveNoticeList">
+        <![CDATA[
+			SELECT bs.row_num,
+			       bs.company_cd, 
+			       bs.seq,
+			       bs.subject,
+			       bs.content,
+			       bs.read_count,
+			       bs.useyn,
+			       bs.email,
+				   TO_CHAR(TO_DATE(bs.bbs_from_date,'YYYYMMDD'),'YYYY/MM/DD') bbs_from_date,
+                   TO_CHAR(TO_DATE(bs.bbs_to_date,'YYYYMMDD'),'YYYY/MM/DD') bbs_to_date,
+			       bs.user_ip,
+			       NVL(bs.reg_nm,'') reg_nm,
+			       bs.regid,
+			       TO_CHAR(TO_DATE(bs.regdate,'YYYYMMDD'),'YYYY/MM/DD') regdate,
+			       bs.regtime,
+			       bs.modid,
+			       bs.moddate,
+			       bs.modtime,
+			       bs.seq_attach
+			  FROM (
+			         SELECT ROWNUM row_num,
+			               bbs.company_cd, 
+			               bbs.seq,
+			               bbs.subject,
+			               bbs.content,
+			               bbs.read_count,
+			               bbs.useyn,
+			               bbs.email,
+			               bbs.bbs_from_date,
+			               bbs.bbs_to_date,
+			               bbs.user_ip,
+			               tu.user_nm reg_nm,
+			               bbs.regid,
+			               bbs.regdate,
+			               bbs.regtime,
+			               bbs.modid,
+			               bbs.moddate,
+			               bbs.modtime,
+			               NVL(att.seq_attach, '') seq_attach
+			          FROM lgiusf.tb_bbs bbs
+			              ,(SELECT ta.company_cd
+			                      ,ta.seq
+			                      ,MIN(seq_attach) seq_attach 
+			                  FROM lgiusf.tb_attach_f ta
+			                 WHERE ta.company_cd = ${companyCd}
+			                 GROUP BY ta.company_cd ,ta.seq
+			               )att  
+			              ,tb_user tu         
+			         WHERE bbs.company_cd = att.company_cd(+)
+			           AND bbs.seq        = att.seq(+)
+			           AND bbs.useyn   = 'Y'
+			           AND bbs.company_cd = tu.company_cd(+)
+			           AND bbs.regid = tu.user_id     (+)
+			           AND bbs.company_cd = ${companyCd}) bs                     
+			WHERE UPPER(bs.subject) LIKE '%'||UPPER(NVL(${subject},''))||'%'    
+	              {#1}
+			ORDER BY seq DESC 
+		]]>     
+        <append where="false" condition="${usernm}.NOTEMPTY" id="#1">
+			  AND UPPER(bs.reg_nm) LIKE '%'||UPPER(NVL(${usernm},''))||'%'
+	    </append>
+    </statement> 
+    
+    <!-- 신규등록인 경우 현재시간을 넣어주기 위해 이를 사용함 -->
+    <statement name="retrieveNoticeDetailNew">
+        <![CDATA[
+			SELECT '' company_cd,                  
+			       '' seq,
+			       '' subject,
+			       '' content,
+			       '' read_count,
+			       '' useyn,
+			       '' email,
+			       TO_CHAR(SYSDATE, 'YYYY/MM/DD') bbs_from_date, 
+			       TO_CHAR(SYSDATE+90, 'YYYY/MM/DD') bbs_to_date,  
+			       '' user_ip,
+			       '' reg_nm,
+			       '' regid,
+			       TO_CHAR(SYSDATE, 'YYYY/MM/DD') regdate,
+			       TO_CHAR(SYSDATE, 'HH24:MI:SS') regtime, 
+			       '' modid,
+			       '' moddate,
+			       '' modtime,              
+			       ${mode} cudmode    
+			  FROM dual     
+        ]]> 
+    </statement>
+    
+    <!-- Notice Seq 구하기 -->
+    <statement name="retrieveNoticeSeq">
+        <![CDATA[
+	        SELECT NVL(MAX(seq),0)+1 next_seq
+	          FROM lgiusf.tb_bbs
+	         WHERE company_cd = ${companyCd}
+      ]]> 
+    </statement>
+    
+     <!-- Notice Detail -->
+    <statement name="retrieveNoticeDetail">
+        <![CDATA[
+	        SELECT  bbs.company_cd,
+	                  bbs.seq,
+	                  bbs.subject,
+	                  bbs.content,
+	                  bbs.read_count,
+	                  bbs.useyn,
+	                  bbs.email,
+					  TO_CHAR(TO_DATE(bbs.bbs_from_date,'YYYYMMDD'),'YYYY/MM/DD') bbs_from_date,
+                      TO_CHAR(TO_DATE(bbs.bbs_to_date,'YYYYMMDD'),'YYYY/MM/DD') bbs_to_date,
+	                  bbs.user_ip,
+	                  (SELECT user_nm FROM tb_user tu WHERE bbs.company_cd = tu.company_cd and bbs.regid = tu.user_id) reg_nm,
+	                  bbs.regid,
+	                  TO_CHAR(TO_DATE(bbs.regdate,'YYYYMMDD'),'YYYY/MM/DD') regdate,
+	                  bbs.regtime,
+	                  bbs.modid,
+	                  bbs.moddate,
+	                  bbs.modtime,
+	                  ${mode} cudmode    
+	          FROM lgiusf.tb_bbs bbs
+	         WHERE company_cd = ${companyCd} 
+	           AND seq = ${seq}
+      ]]> 
+    </statement>
+    
+    <!-- 첨부파일 Seq 구하기 -->
+    <statement name="retrieveNoticeAttachSeq">
+        <![CDATA[
+	        SELECT NVL(MAX(seq_attach),0)+1 next_seq
+	          FROM lgiusf.tb_attach_f
+	         WHERE company_cd = ${companyCd}
+	           AND seq = ${seq}
+      ]]> 
+    </statement>
+    
+    <!-- 첨부파일 조회 -->
+    <statement name="retrieveNoticeAttach">
+		    SELECT company_cd,
+		           seq_attach,
+		           file_url,
+		           file_nm
+		      FROM lgiusf.tb_attach_f
+		     WHERE company_cd = ${companyCd}    
+		       AND seq = ${seq}
+
+    </statement>
+    
+    <!-- 첨부파일 저장 -->
+    <statement name="insertNoticeAttach">
+		    INSERT INTO lgiusf.tb_attach_f
+		    (
+		      company_cd,
+		      seq, seq_attach,
+		      file_url,
+		      file_nm,
+		      regid,
+		      regdate,
+		      regtime
+		    )
+		    VALUES
+		    (
+		      ${companyCd},
+		      ${seq},
+		      ${seqAttach},
+		      ${fileUrl},
+		      ${fileNm},
+		      ${regid},
+		      TO_CHAR(SYSDATE,'YYYYMMDD'),
+		      TO_CHAR(SYSDATE,'HH24MISS')
+		    )
+    </statement>
+    
+    <!-- 첨부파일 삭제 -->
+    <statement name="deleteNoticeAttach">
+            DELETE
+              FROM lgiusf.tb_attach_f
+             WHERE company_cd = ${companyCd}    
+               AND seq = ${seq} 
+               AND seq_attach = ${seqAttach}
+    </statement>
+    
+    <!-- Notice 조회수 update -->
+    <statement name="updateNoticeHit">
+                UPDATE lgiusf.tb_bbs
+                   SET read_count = read_count + 1
+                 WHERE company_cd = ${companyCd}   
+                   AND seq = ${seq}      
+    </statement>
+    
+    
+    <!-- Notice 등록 -->
+    <statement name="insertNotice">
+           INSERT INTO lgiusf.tb_bbs
+           (
+               company_cd,
+               seq,
+               subject,
+               content,
+               read_count,
+               useyn,
+               email,
+               bbs_from_date,
+               bbs_to_date,
+               user_ip,
+               regid,
+               regdate,
+               regtime,
+               modid,
+               moddate,
+               modtime      
+	           )
+	    VALUES
+	           (
+	             ${companyCd},
+	             ${seq},
+	             ${subject},
+	             ${content},
+	             0,
+	             'Y',
+	             ${email},
+	             replace(${bbsFromDate},'/',''),
+	             replace(${bbsToDate},'/',''),
+	             ${userIp},
+	             ${regId},
+	              to_char(sysdate,'YYYYMMDD'),
+	              to_char(sysdate,'HH24MISS'),
+	             ${regId},
+	             to_char(sysdate,'YYYYMMDD'),
+	             to_char(sysdate,'HH24MISS')               
+	           )
+    </statement>
+    
+    <!-- Notice 수정 -->
+    <statement name="updateNotice">
+			UPDATE lgiusf.tb_bbs
+			   SET subject = ${subject},
+			       content = ${content},
+			       email = ${email},
+			       modid = ${regId},
+			       bbs_from_date = replace(${bbsFromDate},'/',''),
+			       bbs_to_date = replace(${bbsToDate},'/',''),
+			       moddate = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       modtime = TO_CHAR(SYSDATE,'HH24MISS')
+			WHERE company_cd = ${companyCd}
+			  AND seq = ${seq}
+    </statement>
+    
+    <!-- Notice 삭제-->
+    <statement name="deleteNotice">
+	        UPDATE lgiusf.tb_bbs
+	           SET useyn = 'N'
+	         WHERE company_cd = ${companyCd}   
+	           AND seq = ${seq}      
+    </statement>
+
+     <!-- 메인 공지사항 목록 -->
+    <statement name="retrieveMainNoticeList">
+        <![CDATA[ 
+			SELECT *
+			  FROM (              
+			       SELECT bbs.company_cd, 
+			              bbs.seq,
+			              bbs.subject,
+			              bbs.content,
+			              bbs.read_count,
+			              bbs.useyn,
+			              bbs.email,
+			              bbs.user_ip,
+					      TO_CHAR(TO_DATE(bbs.bbs_from_date,'YYYYMMDD'),'YYYY/MM/DD') bbs_from_date,
+                          TO_CHAR(TO_DATE(bbs.bbs_to_date,'YYYYMMDD'),'YYYY/MM/DD') bbs_to_date,
+			              bbs.regid,
+			              TO_CHAR(TO_DATE(bbs.regdate,'YYYYMMDD'),'YYYY/MM/DD') regdate,
+			              bbs.regtime,
+			              bbs.modid,
+			              bbs.moddate,
+			              bbs.modtime
+			         FROM lgiusf.tb_bbs bbs
+			        WHERE (bbs.bbs_from_date <= bbs.regdate
+			           OR bbs.bbs_to_date >= bbs.regdate)
+			          AND bbs.useyn = 'Y'   
+			          AND bbs.company_cd = ${companyCd}                   
+			     ORDER BY seq DESC )      
+			 WHERE ROWNUM < 6
+	     ]]>
+    </statement>
+        
+</statements>

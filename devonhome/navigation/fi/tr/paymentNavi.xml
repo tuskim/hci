@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+   	<!-- Payment Request 화면 호출 -->  
+	<action-name name="paymentRequestScn">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/tr/paymentRequest.jsp</return-url>
+   	</action-name>
+   	
+    <action-name name="fi.tr.retrieveOpenAPList">
+    	<command>fi.tr.cmd.RetrievePaymentRequestCmd</command>
+	</action-name>
+	
+	<!-- Payment Request 정보 저장 -->
+    <action-name name="fi.tr.cudPaymentRequest">
+    	<command>fi.tr.cmd.CudPaymentRequestCmd</command>
+	</action-name>
+	
+	<!-- Payment Request List 화면 호출 -->  
+	<action-name name="paymentRequestListScn">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/tr/paymentRequestList.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- Payment Request List 조회 -->
+    <action-name name="fi.tr.retrieveRequestList">
+    	<command>fi.tr.cmd.RetrieveRequestListCmd</command>
+	</action-name>
+	
+	<!-- Payment Request List AP 상세 조회 -->
+    <action-name name="fi.tr.retrievePaymentApInvoiceList">
+    	<command>fi.tr.cmd.RetrievePaymentApInvoiceListCmd</command>
+	</action-name>
+	
+	<!-- Payment Request List 정보 삭제 -->
+    <action-name name="fi.tr.cudPaymentRequestDelete">
+    	<command>fi.tr.cmd.CudPaymentRequestDeleteCmd</command>
+	</action-name>
+	
+	<!-- Payment Request List 출력 정보 조회 (Print 용) -->
+    <action-name name="fi.tr.retrievePaymentRequestListPrint">
+    	<command>fi.tr.cmd.RetrievePaymentRequestListPrintCmd</command>
+	</action-name>  	 
+   	
+</navigation-mapper>

@@ -1,0 +1,46 @@
+@charser "utf-8";
+
+
+/* 공통버튼 */
+.btn_r{ float: none; margin:0;display:inline-block; }	  
+.btn_r input{height:25px;color:#7d7f84;font-family:gulim, arial;font-size:12px; font-weight:bold;cursor:pointer;overflow:visible;padding:2px 10px 1px 10px;_padding-top:2px; border: solid 1px #a9a7a6; 
+ border-radius:3px;	
+-moz-border-radius:3px; 
+-webkit-border-radius:3px;
+background-image:#d3dded;
+background-image: -webkit-gradient(linear, left top, left bottom, from(#fdfdfd), to(#e0e0e0));  
+background-image: -moz-linear-gradient(top, #fdfdfd, #e0e0e0);
+filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#fdfdfd', EndColorStr='#e0e0e0'); 
+-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#fdfdfd',EndColorStr='#e0e0e0')"; 
+}
+
+
+/* 작은공통버튼 */
+.sbtn_r{ float: none; margin:0;display:inline-block;	 }
+.sbtn_r input{height:19px;color:#8a96ac;font-family:gulim, arial;font-size:12px; letter-spacing:-0.8px;cursor:pointer;overflow:visible;padding:2px 6px 1px 6px;_padding-top:1px; border: solid 1px #c1c7d3; background:#e9edf5; border-radius:3px;	-moz-border-radius:3px;	 -webkit-border-radius:3px;}
+
+.sbtn_r2{ float: none; margin:0;display:inline-block;	 }
+.sbtn_r2 input{height:19px; color:#F0F0F0; font-family:gulim, arial;font-size:11px; letter-spacing:-0.8px;font-weight:bold;cursor:pointer;overflow:visible;padding:2px 5px 1px 5px;_padding-top:1px; border: solid 1px #414141; background:#515151; border-radius:3px;	-moz-border-radius:3px;	 -webkit-border-radius:3px;}
+
+
+/* 검색버튼 */
+.search_btn_r{ float: none;margin:0;display:inline-block; }
+.search_btn_r input{height:22px;color:#E2EBF7;font-family:gulim, arial;font-size:12px; font-weight:bold; letter-spacing:-0.5px; cursor:pointer;overflow:visible;padding:3px 6px 1px 6px;_padding-top:2px; border: solid 1px #213e74; background:#3a67a5; border-radius:3px;	-moz-border-radius:3px; -webkit-border-radius:3px; background: -webkit-gradient(linear, left top, left bottom, from(#3f6eac), to(#284c8b));  background: -moz-linear-gradient(top, #3f6eac, #284c8b);}
+
+.search_btn2_r{ float: none;margin:0;display:inline-block; }
+.search_btn2_r input{height:40px;color:#E2EBF7;font-family:gulim, arial;font-size:12px; font-weight:bold; letter-spacing:-0.5px; cursor:pointer;overflow:visible;padding:3px 6px 2px 6px;_padding-top:2px; border: solid 1px #213e74; background:#3a67a5; border-radius:3px;	-moz-border-radius:3px; -webkit-border-radius:3px; background: -webkit-gradient(linear, left top, left bottom, from(#3f6eac), to(#284c8b));  background: -moz-linear-gradient(top, #3f6eac, #284c8b);}
+
+
+/* 기타버튼 */
+.excel_btn_r{ float: none;margin:0;display:inline-block; }
+.excel_btn_r input{height:21px;border:none;color:#555;font-family:arial;font-size:12px; font-weight:bold;background: url("../images/button/excel_R.gif") no-repeat right top;cursor:pointer;overflow:visible;}
+.excel_btn_l{ background: url("../images/button/excel_L.gif") no-repeat left top;}
+.excel_btn_l input{padding:2px 10px 2px 24px;_padding-top:2px}
+
+.print_btn_r{ float: none;margin:0;display:inline-block; }
+.print_btn_r input{height:21px;border:none;color:#555;font-family:arial;font-size:12px; font-weight:bold;background: url("../images/button/print_R.gif") no-repeat right top;cursor:pointer;overflow:visible;}
+.print_btn_l{ background: url("../images/button/print_L.gif") no-repeat left top;}
+.print_btn_l input{padding:1px 10px 2px 27px;_padding-top:2px}
+
+input.buttonSearch{width:28px;height:20px;border: none 0px transparent;background: url("../images/button/search_icon_2.gif") no-repeat;cursor:hand;}
+input.button_cal{width:17px;height:18px;border: none 0px transparent;background: url("../images/button/cal_icon.gif") no-repeat;cursor:hand;}

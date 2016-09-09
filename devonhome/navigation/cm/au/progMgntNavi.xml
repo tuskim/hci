@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- prog Mgnt-->
+   	<!-- prog Mgnt 조회 첫 페이지-->
+	<action-name name="progMgnt">
+    	<command-no>2</command-no>
+    	<command1>cm.au.cmd.RetrieveProgAuthorityListCmd</command1>
+  		<command2>cm.lo.cmd.RetrievePageInfoCmd</command2>
+    	<return-url>/jsp/cm/au/progMgnt.jsp</return-url>
+   	</action-name>
+   
+    <!-- prog Mgnt 조회-->
+    <action-name name="cm.au.retrieveProgMgntList">
+    <command>cm.au.cmd.RetrieveProgMgntListCmd</command>
+   </action-name>
+   
+   <!-- prog Authority 조회-->  
+    <action-name name="cm.au.retrieveProgAuthorityList">
+    <command>cm.au.cmd.RetrieveProgAuthorityListCmd</command>
+   </action-name>
+   
+   <!-- prog Mgnt 저장-->  
+    <action-name name="cm.au.cudProgMgnt">
+    <command>cm.au.cmd.CudProgMgntCmd</command>
+   </action-name>
+   
+   <!-- prog Authorityt 저장-->  
+    <action-name name="cm.au.cudProgAuthority">
+    <command>cm.au.cmd.CudProgAuthorityCmd</command>
+   </action-name>
+
+</navigation-mapper>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu>
+    <prog>
+        <id>CM0000</id>
+        <name>Master</name>
+        <url>0</url>
+    </prog>
+    <prog>
+        <id>CM0001</id>
+        <name>사용자등록</name>
+        <url>userMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>CM0002</id>
+        <name>개인정보 수정</name>
+        <url>userInfoChange.dev</url>
+    </prog>
+    <prog>
+        <id>CM0003</id>
+        <name>프로그램 및 권한 등록</name>
+        <url>progMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>CM0007</id>
+        <name>공지사항 리스트</name>
+        <url> noticeList.dev</url>
+    </prog>
+    <prog>
+        <id>CM0008</id>
+        <name>공통코드 등록</name>
+        <url>codeMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>CM0009</id>
+        <name>농장계정 필수 항목 등록</name>
+        <url>accountMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>CM0010</id>
+        <name>농장계정 필수 항목 조회</name>
+        <url>accountList.dev</url>
+    </prog>
+    <prog>
+        <id>CM0012</id>
+        <name>자재코드 필수항목 조회</name>
+        <url>materialMasterList.dev</url>
+    </prog>
+    <prog>
+        <id>CM0013</id>
+        <name>거래처정보 조회/수정</name>
+        <url>vendorListMgnt.dev</url>
+    </prog>
+    <prog>    
+        <id>FI0000</id>
+        <name>회계</name>
+        <url>0</url>    
+    </prog>     
+    <prog>
+        <id>FI0001</id>
+        <name>원가취합원장 등록</name>
+        <url>costTotLedgerMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>FI0002</id>
+        <name>원가취합원장 Excel Upload</name>
+        <url>costTotLedgerUpload.dev</url>
+    </prog>
+    <prog>
+        <id>FI0003</id>
+        <name>원가취합원장 수정 확정</name>
+        <url>costTotLedgerConfirm.dev</url>
+    </prog>
+    <prog>
+        <id>FI0004</id>
+        <name>원가취합원장 조회</name>
+        <url>costTotLedgerList.dev</url>
+    </prog> 
+    <prog>
+        <id>PO0000</id>
+        <name>구매</name>
+        <url>0</url>
+    </prog>    
+    <prog>
+        <id>PO0003</id>
+        <name>P/O 등록</name>
+        <url>purchOrderReg.dev</url>
+    </prog> 
+    <prog>
+        <id>PO0005</id>
+        <name>입고등록</name>
+        <url>receiptMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>PO0006</id>
+        <name>출고 등록</name>
+        <url>stockIssue.dev</url>
+    </prog>
+    <prog>
+        <id>PO0007</id>
+        <name>이동 등록</name>
+        <url>stockMove.dev</url>
+    </prog>
+    <prog>
+        <id>PO0010</id>
+        <name>안전재고 등록</name>
+        <url>safetyStockMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>PO0011</id>
+        <name>재고현황 조회</name>
+        <url>stockList.dev</url>
+    </prog>
+    <prog>
+        <id>PO0012</id>
+        <name>출고 조회 및 취소요청</name>
+        <url>stockIssueList.dev</url>
+    </prog>
+    <prog>
+        <id>PO0013</id>
+        <name>입고조회 및 취소요청</name>
+        <url>receiptCancelMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>PO0014</id>
+        <name>이동 조회 및 취소 요청</name>
+        <url>stockMoveCancel.dev</url>
+    </prog>
+    <prog>
+        <id>PS0000</id>
+        <name>생산판매</name>
+        <url>0</url>
+    </prog>  
+    <prog>
+        <id>PS0001</id>
+        <name>수확량 등록</name>
+        <url>cropMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>PS0002</id>
+        <name>판매량 등록</name>
+        <url>salesMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>PS0003</id>
+        <name>판매단가 등록</name>
+        <url>salesCostMgnt.dev</url>
+    </prog>
+    <prog>
+        <id>PS0004</id>
+        <name>식재년도별표준중량</name>
+        <url>plantYearStdWeight.dev</url>
+    </prog>    
+    <prog>
+        <id>PS0005</id>
+        <name>매출/입고 확정</name>
+        <url>hubOutHubInConfirm.dev</url>
+    </prog>
+    <prog>
+        <id>PS0006</id>
+        <name>수확량 조회</name>
+        <url>cropList.dev</url>
+    </prog>
+    <prog>
+        <id>PS0008</id>
+        <name>Material별 판매량 조회</name>
+        <url>salesMaterialList.dev</url>
+    </prog>
+</menu>

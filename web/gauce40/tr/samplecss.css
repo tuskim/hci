@@ -1,0 +1,12 @@
+<style>
+	body  {font-family : ±¼¸², ±¼¸²Ã¼; font-size:9pt}
+	label {font-family : ±¼¸², ±¼¸²Ã¼; font-size:9pt; height:24px}
+	table {font-family : ±¼¸², ±¼¸²Ã¼; font-size:9pt}
+	input {font-family : ±¼¸², ±¼¸²Ã¼; font-size:9pt; height:24px; width: 110px}
+	select {font-family : ±¼¸², ±¼¸²Ã¼; font-size:9pt; height:24px; width: 80px}
+	object {font-family : ±¼¸², ±¼¸²Ã¼; font-size:9pt}
+	div.page {background-color: #fffff0;
+             border: black outset 1px;
+             visibility: hidden; z-index: 2;
+             font-family : ±¼¸², ±¼¸²Ã¼; font-size:9pt}
+</style>

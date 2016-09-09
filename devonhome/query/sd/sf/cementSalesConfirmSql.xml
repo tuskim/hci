@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+
+    <!-- Cement Sales master Mgnt 조회-->
+    <statement name="retrieveCementSalesConfirmList">
+        <![CDATA[
+			SELECT '0' chk
+				,ce_mas.sales_no
+				,(SELECT vend_mas.vend_nm_en 
+				FROM tb_vend_master vend_mas 
+				WHERE vend_mas.company_cd = ${companyCd}
+				and vend_mas.vend_cd = ce_mas.customer_cd) customer
+				,ce_mas.customer_cd
+				,(SELECT vend_mas.vend_nm_en 
+				FROM tb_vend_master vend_mas 
+				WHERE vend_mas.company_cd = ${companyCd}
+				and vend_mas.vend_cd = ce_mas.delivery_cd) delivery
+				,ce_mas.delivery_cd
+				,to_char(to_date(ce_mas.sales_date,'yyyymmdd'),'yyyy/mm/dd')  sales_date
+				,ce_mas.grand_total_qty
+				,ce_mas.currency_cd
+				,ce_mas.grand_total_amt
+				,ce_mas.pay_term
+				,lgiusf.F_GETCOMMNAME('COMM',${companyCd},${lang},'2319',ce_mas.status) status_nm
+				,ce_mas.status
+				,ce_mas.bl_if_doc_seq
+				,(SELECT attr10
+			       FROM lgiusf.tb_comm_cd_detail comm 
+			       WHERE comm.company_cd = ce_mas.company_cd
+				   AND group_cd = '2001' 
+			       AND detail_cd = ce_mas.dept_cd) group_cd
+			    ,ce_mas.sap_seq
+			    ,ce_mas.sap_rtn_msg
+			    ,ce_mas.trans_date
+			FROM tb_cement_sales_master ce_mas
+			WHERE ce_mas.company_cd = ${companyCd}
+			   AND ce_mas.sales_date >= replace(${salesDateFrom},'/','') 
+ 			   AND ce_mas.sales_date <= replace(${salesDateTo},'/','')
+ 			   AND original_sales_no IS NULL
+ 			   AND ce_mas.order_status = '2' --여신체크 및 출력 완료 건만
+ 			   	   {#1}
+			       {#2}
+        ]]>   
+	    <append condition="${vendorCd}.NOTEMPTY" id="#1">       
+			   AND ce_mas.customer_cd like '%'||${vendorCd}||'%'
+	    </append>	    
+	     <append condition="${status}.NOTEMPTY" id="#2">       
+			   AND ce_mas.status like '%'||${status}||'%'
+	    </append>
+    </statement> 
+
+    <!-- Cement Sales detail Mgnt 조회-->
+    <statement name="retrieveCementDetailSalesMgnt">
+        <![CDATA[
+			SELECT 
+				ce_det.mater_cd
+				,(SELECT mat_inf.mater_nm_en 
+					FROM tb_mater_info mat_inf 
+					WHERE mat_inf.company_cd = ${companyCd}
+					AND mat_inf.mater_cd = ce_det.mater_cd
+					AND mat_inf.useyn = 'Y') mater_nm
+				,ce_det.current_qty
+				,ce_det.sales_qty
+				,ce_det.unit_price
+				,ce_det.sales_amt
+				,ce_det.vat_cd
+				,ce_det.vat_amt
+				,ce_det.total_amt
+				,ce_det.sales_no
+				,ce_det.unit
+				,ce_det.stor_loct
+				,to_char(to_date(ce_det.sales_date,'yyyymmdd'),'yyyy/mm/dd') sales_date
+				,ce_det.sales_item_seq
+			FROM tb_cement_sales_detail ce_det
+			WHERE ce_det.company_cd = ${companyCd}
+			   AND ce_det.sales_date = replace(${salesDate},'/','')
+ 			   AND ce_det.sales_no = ${salesNo}
+        ]]>   
+    </statement> 
+
+    <!-- create : Cement sales master insert시 sales_no 생성-->
+    <statement name="createCementSalesNo">
+        <![CDATA[
+		 	SELECT 'SA' || SUBSTR(replace(${salesDate},'/',''), 3, 6) || LPAD(TO_NUMBER(NVL(MAX(SUBSTR(sales_no,9,3)),0))+1,3,0) sales_no
+		 	  FROM tb_cement_sales_master
+		 	 WHERE company_cd = ${companyCd}
+		 	   AND sales_date = replace(${salesDate},'/','')
+        ]]> 
+    </statement>  
+
+    <!-- create : Cement sales Master생성-->
+    <statement name="createCementSalesMaster">
+        <![CDATA[
+			INSERT into tb_cement_sales_master
+				  (company_cd
+					,dept_cd
+					,sales_date
+					,sales_no
+					,pernr
+					,customer_cd
+					,currency_cd
+					,stor_loct
+					,plant_cd
+					,grand_total_amt
+					,grand_total_qty
+					,pay_term
+					,status
+					,regid
+					,regdate
+					,regtime)
+			VALUES
+				  (${companyCd}
+				   ,${deptCd}
+				   , replace(${salesDate},'/','')
+				   ,${salesNo}
+				   ,${userId}
+				   ,${customerCd}
+				   ,${currencyCd}
+ 				   ,''
+				   ,'GA10'
+				   ,${grandTotalAmt}
+				   ,${grandTotalQty}
+				   ,${payTerm}
+				   ,'0'
+				   ,${userId}
+ 				   ,to_char(sysdate,'yyyymmdd')
+				   ,to_Char(sysdate,'hh24miss')
+				  )
+        ]]> 
+    </statement>  
+
+  	<!-- create : Cement detail 생성-->
+    <statement name="createCementSalesDetail">
+        <![CDATA[
+			INSERT INTO tb_cement_sales_detail
+					(company_cd
+					,dept_cd
+					,sales_date
+					,sales_no
+					,sales_item_seq
+					,mater_cd
+					,total_amt
+					,unit_price
+					,current_qty
+					,sales_qty
+					,sales_amt
+					,vat_cd
+					,vat_amt
+					,unit
+					,stor_loct
+					,regid
+					,regdate
+					,regtime)
+			VALUES 
+					(${companyCd}
+					,${deptCd}
+					,replace(${salesDate},'/','')
+					,${salesNo}
+					,( SELECT LPAD(TO_NUMBER(NVL(MAX(sales_item_seq),0))+10,6,0) 
+						FROM tb_cement_sales_detail 
+						WHERE company_cd = ${companyCd}
+						   AND sales_date = replace(${salesDate},'/','')
+						   AND sales_no  = ${salesNo})
+					,${materCd}
+				   ,${totalAmt}
+				   ,${unitPrice}
+				   ,${currentQty}
+				   ,${salesQty}
+				   ,${salesAmt}
+				   ,${vatCd}
+				   ,${vatAmt}
+				   ,${unit}
+				   ,${storLoct}
+				   ,${userId}
+ 				   ,to_char(sysdate,'yyyymmdd')
+				   ,to_Char(sysdate,'hh24miss')
+				   )
+        ]]> 
+    </statement> 
+
+   <!--Delete : Cement Sales Master 삭제-->
+    <statement name="deleteCementSalesMaster">
+        <![CDATA[
+			DELETE tb_cement_sales_master
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+        ]]> 
+    </statement>   
+  
+     <!--Delete : Cement Sales Detail 전체삭제-->
+    <statement name="deleteCementSalesDetail">
+        <![CDATA[
+			DELETE tb_cement_sales_detail
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+	     ]]>  
+    </statement>
+
+  <!--Delete :  Cement Sales Detail 행하나씩 삭제-->
+    <statement name="deleteCementSalesDetailOneRow">
+        <![CDATA[
+			DELETE tb_cement_sales_detail
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND sales_item_seq = ${salesItemSeq}
+        ]]> 
+    </statement>
+
+  	<!--Update : Cement Master 수정-->
+    <statement name="updateCementSalesMaster">
+        <![CDATA[
+			UPDATE tb_cement_sales_master
+   			   SET pernr 	    = ${userId},
+			       customer_cd		= ${customerCd},
+			       currency_cd    = ${currencyCd},
+			       stor_loct   = '',
+			       plant_cd   = 'GA10',
+			       grand_total_amt   = ${grandTotalAmt},
+			       grand_total_qty   = ${grandTotalQty},
+			       pay_term   = ${payTerm},
+			       status = '0',
+			       modid	    = ${userId},
+			       moddate 		= to_char(sysdate,'yyyymmdd'),
+			       modtime 		= to_Char(sysdate,'hh24miss')
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+        ]]> 
+    </statement>  
+
+  	<!-- Update : Cement Sales Detail 수정-->
+    <statement name="updateCementSalesDetail">
+        <![CDATA[
+			UPDATE tb_cement_sales_detail
+   			   SET mater_cd = ${materCd},
+			        total_amt 		 = ${totalAmt},
+		       		unit_price 		 = ${unitPrice},
+			        current_qty 	 = ${currentQty},
+			        sales_qty 	 = ${salesQty},
+			        sales_amt 	 = ${salesAmt},
+			        vat_cd  = ${vatCd},
+			        vat_amt = ${vatAmt},
+			        stor_loct = ${storLoct},
+			        modid	     = ${userId},
+			        moddate 	 = to_char(sysdate,'yyyymmdd'),
+			        modtime 	 = to_Char(sysdate,'hh24miss')
+			 WHERE company_cd 	 = ${companyCd}
+			   AND sales_date   	 = replace(${salesDate},'/','')
+			   AND sales_no   	 = ${salesNo}		
+			   AND sales_item_seq   	 = ${salesItemSeq}		
+        ]]> 
+    </statement>  
+
+   <!--Cement Sales Management,  Select retrieveSalesMgmtVatACombo -->
+    <statement name="retrieveSalesMgmtVatACombo">
+        <![CDATA[
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   TO_NUMBER(sort) sort     
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.company_cd = ${companyCd} 
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y' 
+               AND cd.group_cd   = '2007'
+               AND cd.useyn      = 'Y'
+               AND cd.detail_cd  LIKE 'A%'
+             ORDER BY SORT
+		]]> 	       		
+    </statement>        
+
+    <!-- 팝업 Mater type List  -->
+    <statement name="retrieveCementMaterialCombo">
+        <![CDATA[
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   TO_NUMBER(sort) sort     
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y'
+               AND cd.company_cd = ${companyCd} 
+               AND cd.group_cd   = ${groupCd}
+               AND cd.detail_cd  IN ('7900','7920')
+               AND cd.useyn      = 'Y'
+             ORDER BY cd.detail_cd desc
+			   
+		]]> 
+    </statement>      
+
+    <!-- Cement 품목별 Material Name List -->
+    <statement name="retrieveCementStockModelList">
+        <![CDATA[
+            SELECT COMPANY_CD
+            ,MATER_CD
+            ,ATTR1 MODEL_NM
+            ,ATTR2 ACTV_CD
+            ,F_GETUNITPRICE(${companyCd}, DECODE(BLOCK_CD,'CP','CP','KE','KE',SUBSTR(YEAR_CD,2,2)), TO_CHAR(TO_DATE(${salesDate},'YYYYMMDD'), 'YYYY'), TO_CHAR(TO_DATE(${salesDate},'YYYYMMDD'), 'MM')) 	UNIT_PRICE
+            FROM tb_mater_info
+			WHERE COMPANY_CD = ${companyCd}
+			AND   MATER_TYPE = ${materType}
+			AND   USEYN = 'Y'
+	    ]]>
+    </statement>     
+
+    <!-- PopUp Original Sales Company 조회-->
+    <statement name="retrieveComboSalesCompanyList">
+        <![CDATA[
+			SELECT 	
+				'-- Total --' AS  name
+				,'' AS  code
+				,0 sort
+			FROM	dual
+			UNION ALL
+			SELECT a.vend_nm_en code 
+				,a.vend_cd name
+				,1 sort
+			FROM (SELECT vend_mas.vend_nm_en 
+				,vend_mas.vend_cd
+			FROM tb_vend_master vend_mas 
+			WHERE vend_mas.company_cd = ${companyCd}) a,
+			(SELECT ce_mas.customer_cd
+			FROM tb_cement_sales_master ce_mas
+			WHERE ce_mas.company_cd = ${companyCd}
+			AND ce_mas.original_sales_no IS NULL
+			GROUP BY ce_mas.customer_cd) b
+			WHERE a.vend_cd = b.customer_cd
+			ORDER BY sort, name
+	]]>
+    </statement>
+ 
+    <!-- PopUp Original Sales List 조회-->
+    <statement name="retrievePopUpOriginalSalesList">
+        <![CDATA[
+			SELECT '0' chk
+				,ce_mas.sales_no
+				,(SELECT vend_mas.vend_nm_en 
+				FROM tb_vend_master vend_mas 
+				WHERE vend_mas.company_cd = ${companyCd}
+				and vend_mas.vend_cd = ce_mas.customer_cd) customer
+				,ce_mas.customer_cd
+				,to_char(to_date(ce_mas.sales_date,'yyyymmdd'),'yyyy/mm/dd')  sales_date
+				,ce_mas.grand_total_qty
+				,ce_mas.currency_cd
+				,ce_mas.grand_total_amt
+				,ce_mas.pay_term
+				,lgiusf.F_GETCOMMNAME('COMM',${companyCd},${lang},'2319',ce_mas.status) status_nm
+				,ce_mas.status
+				,ce_mas.bl_if_doc_seq
+				,(SELECT attr10
+			       FROM lgiusf.tb_comm_cd_detail comm 
+			       WHERE comm.company_cd = ce_mas.company_cd
+				   AND group_cd = '2001' 
+			       AND detail_cd = ce_mas.dept_cd) group_cd
+			    ,ce_mas.sap_seq
+			    ,ce_mas.sap_rtn_msg
+			    ,ce_mas.trans_date
+				,(SELECT NVL(cop_det.vat_cd, 'A1')
+				FROM tb_cement_sales_detail cop_det 
+				WHERE cop_det.company_cd = ce_mas.company_cd
+				AND cop_det.sales_date = ce_mas.sales_date
+				AND cop_det.sales_no = ce_mas.sales_no
+				AND rownum=1) vat_cd
+			FROM tb_cement_sales_master ce_mas
+			WHERE ce_mas.company_cd = ${companyCd}
+			   AND ce_mas.sales_date >= replace(${salesDateFrom},'/','') 
+ 			   AND ce_mas.sales_date <= replace(${salesDateTo},'/','')
+ 			   AND original_sales_no IS NULL
+ 			   	   {#1}
+			       {#2}
+        ]]>   
+	    <append condition="${vendorCd}.NOTEMPTY" id="#1">       
+			   AND ce_mas.customer_cd like '%'||${vendorCd}||'%'
+	    </append>	    
+	     <append condition="${status}.NOTEMPTY" id="#2">       
+			   AND ce_mas.status like '%'||${status}||'%'
+	    </append>
+    </statement> 
+
+    <!-- Cement Credit Memo Mgnt 조회-->
+    <statement name="retrieveCementCreditMemoMgntList">
+        <![CDATA[
+			SELECT '0' chk
+				,ce_mas.sales_no
+				,ce_mas.original_sales_no
+				,(SELECT vend_mas.vend_nm_en FROM tb_vend_master vend_mas WHERE vend_mas.company_cd = ${companyCd} and vend_mas.vend_cd = ce_mas.customer_cd) customer
+				,ce_mas.customer_cd
+				,to_char(to_date(ce_mas.sales_date,'yyyymmdd'),'yyyy/mm/dd') sales_date
+				,to_char(to_date(ce_mas.doc_date,'yyyymmdd'),'yyyy/mm/dd') doc_date
+				,to_char(to_date(ce_mas.posting_date,'yyyymmdd'),'yyyy/mm/dd') posting_date
+				,ce_mas.grand_total_qty
+				,ce_mas.currency_cd
+				,ce_mas.memo_type
+				,ce_mas.grand_total_amt
+				,ce_mas.pay_term
+				,ce_mas.original_amt
+				,ce_mas.condition_value
+				,ce_mas.condition_vat_amt
+				,ce_mas.condition_vat_cd
+				,ce_mas.condition_total_amt
+				,lgiusf.F_GETCOMMNAME('COMM',${companyCd},${lang},'2320',ce_mas.status) status_nm
+				,ce_mas.status
+				,ce_mas.attr1  org_billing_no	
+				,(SELECT attr10
+			       FROM lgiusf.tb_comm_cd_detail comm 
+			       WHERE comm.company_cd = ce_mas.company_cd
+				   AND group_cd = '2001' 
+			       AND detail_cd = ce_mas.dept_cd) group_cd
+				,ce_mas.sap_rtn_msg
+				,ce_mas.sap_seq
+				,ce_mas.trans_date
+			FROM tb_cement_sales_master ce_mas
+			WHERE ce_mas.company_cd = ${companyCd}
+			   AND ce_mas.sales_date >= replace(${salesDateFrom},'/','') 
+ 			   AND ce_mas.sales_date <= replace(${salesDateTo},'/','')
+ 			   AND original_sales_no IS NOT NULL
+ 			   	   {#1}
+			       {#2}
+        ]]>   
+	    <append condition="${vendorCd}.NOTEMPTY" id="#1">       
+			   AND ce_mas.customer_cd like '%'||${vendorCd}||'%'
+	    </append>	    
+	     <append condition="${status}.NOTEMPTY" id="#2">       
+			   AND ce_mas.status like '%'||${status}||'%'
+	    </append>
+    </statement> 
+
+    <!-- Cement Credit Memo detail Mgnt 조회-->
+    <statement name="retrieveCementCreditMemoCondition">
+        <![CDATA[
+			SELECT ce_mas.condition_value
+				,ce_mas.condition_vat_amt
+				,ce_mas.condition_vat_cd
+				,ce_mas.condition_total_amt
+			FROM tb_cement_sales_master ce_mas
+			WHERE ce_mas.company_cd = ${companyCd}
+			   AND ce_mas.sales_date = replace(${salesDate},'/','')
+ 			   AND ce_mas.sales_no = ${salesNo}
+ 			   AND original_sales_no IS NOT NULL
+        ]]>   
+    </statement> 
+
+   <!--Delete : Cement Credit Memo Master 삭제-->
+    <statement name="deleteCementCreditMemoMaster">
+        <![CDATA[
+			DELETE tb_cement_sales_master
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND original_sales_no IS NOT NULL
+        ]]> 
+    </statement>   
+
+  	<!--Update : Cement Master 수정-->
+    <statement name="updateCementCreditMemoMaster">
+        <![CDATA[
+			UPDATE tb_cement_sales_master
+   			   SET pernr 	= ${userId},
+					memo_type = ${memoType},
+					doc_date = replace(${docDate},'/',''),
+					posting_date = replace(${postingDate},'/',''),
+					condition_value = ${conditionValue},
+					condition_vat_amt = ${conditionVatAmt},
+					condition_vat_cd = ${conditionVatCd},
+					condition_total_amt = ${conditionTotalAmt},
+					status = '0',
+					sap_rtn_msg = '',
+					modid	    = ${userId},
+					moddate 		= to_char(sysdate,'yyyymmdd'),
+					modtime 		= to_Char(sysdate,'hh24miss')
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND original_sales_no IS NOT NULL 
+        ]]> 
+    </statement>  
+
+	<statement name="dupCheckOriSalesNo">
+		<![CDATA[
+			SELECT CASE WHEN COUNT(*) OVER(PARTITION BY ce_mas.COMPANY_CD, ce_mas.original_sales_no) = 0 THEN 'NOT EXIST'
+			            ELSE 'EXIST'
+			        END AS check_original_sales_no
+			     , ce_mas.original_sales_no
+			  FROM tb_cement_sales_master ce_mas
+			 WHERE ce_mas.company_cd = ${companyCd}
+			   AND ce_mas.original_sales_no = ${originalSalesNo}
+		]]>
+	</statement>
+
+    <!-- create : Cement credit Memo Master생성-->
+    <statement name="createCementCreditMemoMaster">
+        <![CDATA[
+			INSERT into tb_cement_sales_master
+				  (company_cd
+					,dept_cd
+					,sales_date
+					,sales_no
+					,pernr
+					,customer_cd
+					,currency_cd
+					,stor_loct
+					,plant_cd
+					,grand_total_amt
+					,grand_total_qty
+					,pay_term
+					,original_sales_no
+					,original_amt
+					,condition_value
+					,condition_vat_amt
+					,condition_vat_cd
+					,condition_total_amt
+					,memo_type
+					,doc_date
+					,posting_date
+					,status
+					,attr1
+					,regid
+					,regdate
+					,regtime)
+			VALUES
+				  (${companyCd}
+				    ,${deptCd}
+				    , replace(${salesDate},'/','')
+				    ,${salesNo}
+				    ,${userId}
+				    ,${customerCd}
+				    ,${currencyCd}
+ 				    ,''
+				    ,'GA10'
+				    ,${grandTotalAmt}
+				    ,${grandTotalQty}
+				    ,${payTerm}
+					,${originalSalesNo}
+					,${originalAmt}
+					,${conditionValue}
+					,${conditionVatAmt}
+					,${conditionVatCd}
+					,${conditionTotalAmt}
+					,${memoType}
+					,replace(${docDate},'/','')
+					,replace(${postingDate},'/','')
+				   ,'0'
+				   ,${orgBillingNo}
+				   ,${userId}
+ 				   ,to_char(sysdate,'yyyymmdd')
+				   ,to_Char(sysdate,'hh24miss')
+				  )
+        ]]> 
+    </statement>  
+
+  <!--########## SAP SEND ##########-->  
+      <!--Sales managemant SAP succuess- 생산판매 sending update  -->
+    <statement name="checkSendingStatus"> 
+       <![CDATA[	
+		    SELECT status
+		  	  FROM tb_cement_sales_master
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND original_sales_no IS NULL 
+     	]]>
+    </statement> 
+
+    <!--Sales managemant SAP succuess- 판매 sending update  -->
+    <statement name="cudCementSalesListUpdateSendingStatus"> 
+       <![CDATA[	
+	     	UPDATE tb_cement_sales_master
+			   set 
+			       status		 = '8',
+			       modid	    = ${userId},
+			       moddate 	 	= to_char(sysdate,'yyyymmdd'),
+			       modtime 	 	= to_Char(sysdate,'hh24miss'),
+			       trans_date   = to_char(sysdate,'yyyymmdd')
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND original_sales_no IS NULL 
+     	]]>		
+    </statement> 
+
+    <!--Sales managemant SAP Send시 detail조회 -->
+    <!--CSR:C20131031_28724 2013.11.01 hskim -->
+    <statement name="cudCementSalesSapSend"> 
+       <![CDATA[	
+      		select ce_det.company_cd
+				,ce_det.dept_cd
+				,ce_det.sales_date delivery_date
+				,ce_det.sales_no
+				,ce_det.sales_item_seq item_seq
+				,ce_det.mater_cd
+				,ce_det.sales_type
+				,ce_det.unit
+				,ce_det.stor_loct
+				,'GA10'             plant_cd
+				,ce_det.total_amt
+				,ce_det.unit_price
+				,ce_det.current_qty
+				,ce_det.sales_qty      div_sales_weight
+				,ce_det.sales_amt     div_sales_amt
+				,ce_det.vat_cd
+				,ce_det.vat_amt tax_amt
+				,ce_det.attr1
+				,ce_det.attr2
+				,ce_det.attr3
+				,ce_det.attr4
+				,ce_det.attr5
+				,ce_det.attr6
+				,ce_det.attr7
+				,ce_det.attr8
+				,ce_det.attr9
+				,ce_det.attr10
+				,ce_det.regid
+				,ce_det.regdate
+				,ce_det.regtime
+				,ce_det.modid
+				,ce_det.moddate
+				,ce_det.modtime
+				,ce_det.ifstcd
+				,ce_det.iferrmsg
+				,ce_mas.currency_cd 
+			  FROM tb_cement_sales_master ce_mas, tb_cement_sales_detail ce_det
+			 WHERE ce_mas.company_cd = ce_det.company_cd
+    		   AND ce_mas.dept_cd = ce_det.dept_cd
+    		   AND ce_mas.sales_date  = ce_det.sales_date
+    		   AND ce_mas.sales_no   = ce_det.sales_no
+			   AND ce_det.company_cd = ${companyCd}
+			   AND ce_det.sales_date  = replace(${salesDate},'/','')
+			   AND ce_det.sales_no   = ${salesNo}
+     	]]>		
+    </statement>   
+
+    <!--Sales Confirm SAP succuess- 생산판매 테이블 update  -->
+    <statement name="cudCementSalesAfterSapSuccess"> 
+       <![CDATA[	
+	     	UPDATE tb_cement_sales_master
+			   set 
+			       sap_seq 		= ${sapSeq},
+			       status		 = '1',
+			       sap_rtn_msg  = ${returnMsg},
+			       modid	    = ${userId},
+			       moddate 	 	= to_char(sysdate,'yyyymmdd'),
+			       modtime 	 	= to_Char(sysdate,'hh24miss'),
+			       ifstcd 		= 'Y'
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND original_sales_no IS NULL 
+     	]]>		
+    </statement> 
+
+      <!--Sales managemant SAP succuess- 판매 sending update  -->
+    <statement name="checkCreditMemoSendingStatus"> 
+       <![CDATA[	
+		    SELECT status
+		  	  FROM tb_cement_sales_master
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND original_sales_no IS NOT NULL 
+     	]]>
+    </statement> 
+
+    <!--Credit Memo SAP succuess- 판매 sending update  -->
+    <statement name="cudCementCreditMemoUpdateSendingStatus"> 
+       <![CDATA[	
+	     	UPDATE tb_cement_sales_master
+			   set 
+			       status		 = '8',
+			       modid	    = ${userId},
+			       moddate 	 	= to_char(sysdate,'yyyymmdd'),
+			       modtime 	 	= to_Char(sysdate,'hh24miss'),
+			       trans_date   = to_char(sysdate,'yyyymmdd')
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND original_sales_no IS NOT NULL 
+     	]]>		
+    </statement> 
+
+    <!--Credit Memo SAP succuess- 판매 테이블 update  -->
+    <statement name="cudCementCreditMemosAfterSapSuccess"> 
+       <![CDATA[	
+	     	UPDATE tb_cement_sales_master
+			   set 
+			       sap_seq 		= ${sapSeq},
+			       status		 = '1',
+			       sap_rtn_msg  = ${returnMsg},
+			       modid	    = ${userId},
+			       moddate 	 	= to_char(sysdate,'yyyymmdd'),
+			       modtime 	 	= to_Char(sysdate,'hh24miss'),
+			       ifstcd 		= 'Y'
+			 WHERE company_cd = ${companyCd}
+			   AND sales_date  = replace(${salesDate},'/','')
+			   AND sales_no   = ${salesNo}
+			   AND original_sales_no IS NOT NULL 
+     	]]>		
+    </statement> 
+    
+    <!-- Cement Sales History 조회-->
+    <statement name="retrieveCementSalesHistoryList">
+        <![CDATA[
+			SELECT '0' chk
+				,ce_mas.sales_no
+				,(SELECT vend_mas.vend_nm_en 
+				FROM tb_vend_master vend_mas 
+				WHERE vend_mas.company_cd = ${companyCd}
+				and vend_mas.vend_cd = ce_mas.customer_cd) customer
+				,ce_mas.customer_cd
+				,ce_mas.sales_date
+				,ce_mas.regdate
+				,ce_mas.grand_total_qty
+				,ce_mas.currency_cd
+				,ce_mas.grand_total_amt
+				,ce_mas.pay_term
+				,lgiusf.F_GETCOMMNAME('COMM',${companyCd},${lang},'2319',ce_mas.status) status_nm
+				,ce_mas.status
+				,ce_mas.bl_if_doc_seq
+				,(SELECT attr10
+			       FROM lgiusf.tb_comm_cd_detail comm 
+			       WHERE comm.company_cd = ce_mas.company_cd
+				   AND group_cd = '2001' 
+			       AND detail_cd = ce_mas.dept_cd) group_cd
+			    ,ce_mas.sap_seq
+			    ,ce_mas.sap_rtn_msg
+			    ,ce_mas.trans_date
+			    ,to_DATE( ce_mas.regdate,'YYYYMMDD')- to_DATE(ce_mas.sales_date,'YYYYMMDD') credate_doc_term
+       			,CASE WHEN  TO_DATE( ce_mas.regdate,'YYYYMMDD')-TO_DATE(ce_mas.sales_date,'YYYYMMDD')>5  THEN 'TRUE' ELSE 'FALSE' END as term
+       			,CASE WHEN TO_DATE( ce_mas.regdate,'YYYYMMDD')-TO_DATE(ce_mas.sales_date,'YYYYMMDD')>5 THEN 'CPO Sales Input delayed.'
+   		  	     END as message
+			FROM tb_cement_sales_master ce_mas
+			WHERE ce_mas.company_cd = ${companyCd}
+			   AND ce_mas.sales_date >= replace(${salesDateFrom},'/','') 
+ 			   AND ce_mas.sales_date <= replace(${salesDateTo},'/','')
+ 			   AND original_sales_no IS NULL
+ 			   	   {#1}
+			       {#2}
+        ]]>   
+	    <append condition="${vendorCd}.NOTEMPTY" id="#1">       
+			   AND ce_mas.customer_cd like '%'||${vendorCd}||'%'
+	    </append>	    
+	     <append condition="${status}.NOTEMPTY" id="#2">       
+			   AND ce_mas.status like '%'||${status}||'%'
+	    </append>
+    </statement> 
+
+</statements>

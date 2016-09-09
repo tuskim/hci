@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  P/O RegsiTration Page -->
+
+    <!--P/O RegsiTration Main -->
+    <statement name="retrievePurchOrderRegMainList">
+        <![CDATA[
+			SELECT '0' chk,
+                   pm.company_cd,
+                   pm.po_no,
+                   pm.pur_dept_cd,
+                   DECODE(${lang},'kr',pd.detail_cd_nm_kr,'en',pd.detail_cd_nm_en,pd.detail_cd_nm_lo)  pur_dept_nm, 
+                   pm.vend_cd,  
+                   lgiusf.F_GETCOMMNAME('VEND',pm.company_cd ,${lang},pm.vend_cd,'')  vend_nm,
+                   pm.currency_cd,
+                   lgiusf.F_GETCOMMNAME('COMM',pm.company_cd ,${lang},'2004',pm.currency_cd)  currency_nm,
+                   cu.attr1 curr_type,  
+                   cu.attr2 curr_per,                   
+                   pm.deli_loct,
+                   DECODE(${lang},'kr',dl.detail_cd_nm_kr,'en',dl.detail_cd_nm_en,dl.detail_cd_nm_lo) deli_loct_nm,
+                   pm.pay_term,
+                   lgiusf.F_GETCOMMNAME('COMM',pm.company_cd ,${lang},'2206',pm.pay_term)  pay_term_nm,                      
+                   pm.deli_date,
+                  TO_CHAR(TO_DATE(pm.deli_date,'YYYYMMDD'),'YYYY/MM/DD') deliSDate,                   
+                   pm.email_send_date,
+                   pm.parvw,
+                   pm.pernr,
+                   pm.ekorg,
+                   pm.absgr,
+                   pm.status pstatus,
+                   lgiusf.F_GETCOMMNAME('COMM',pm.company_cd ,'en','2203',pm.status)  status_nm,    
+                   pm.trans_date,
+                   pm.trans_time,
+                   pm.prog_status_date,
+                   pm.prog_status_time,
+                   pm.sap_po_no,
+                   pm.sap_rtn_msg,
+                   pm.regid,
+                   pm.regdate,
+                   TO_CHAR(TO_DATE(pm.regdate,'YYYYMMDD'),'YYYY/MM/DD') insertSDate,                   
+                   pm.regtime,   
+                   NVL(pm.plant_cd,dd.detail_cd) plant_cd,
+                   pm.sap_if_status,
+                   pm.discount_amt,
+                   0  minusdiscount_amt,
+                   pm.attr2 po_type, -- attr2
+                   pm.pr_no,
+                   pm.reference_no ref_no,    
+                   pm.iv_close,                
+                   dl.attr1 pur_group,
+                   dl.attr2 loct_addr,                   
+                   pt.attr2 addr1,
+                   pt.attr3 addr2,
+                   pt.attr4 addr3,
+                   pt.attr5 addr4,
+                   pt.attr6 addr5,
+                   pt.attr7 addr6,
+                   pd.attr2 pur_dept1,
+                   pd.attr3 pur_dept2,
+                   pd.attr4 pur_dept3,
+                   pd.attr5 pur_dept4,
+                   pd.attr6 pur_dept5,
+                   pd.attr7 pur_dept6
+                   
+              FROM lgiusf.tb_po_master pm,     
+                   lgiusf.tb_comm_cd_detail pd,
+                   lgiusf.tb_comm_cd_detail pt,
+                   lgiusf.tb_comm_cd_detail dl,
+                 (
+                   SELECT company_cd,
+                          detail_cd 
+                     FROM lgiusf.tb_comm_cd_detail
+                    WHERE company_cd = ${companyCd} 
+                      AND group_cd = '2008'
+                      AND useyn ='Y'
+                  ) dd,  
+                   (
+                   SELECT ss.company_cd
+                          ,ss.detail_cd 
+                          ,nvl(ss.attr1,'N') attr1
+                          ,nvl(ss.attr2,'1') attr2
+                     FROM lgiusf.tb_comm_cd_detail ss
+                    WHERE ss.company_cd = ${companyCd} 
+                      AND ss.group_cd = '2004'
+                      AND ss.useyn ='Y'
+                   ) cu                           
+             WHERE pm.company_cd   = pd.company_cd 
+               AND pm.pur_dept_cd  = pd.detail_cd
+               AND pm.company_cd   = ${companyCd}
+               AND pd.group_cd     = '2001'
+
+               AND pd.company_cd   = pt.company_cd
+               AND pd.company_cd   = pt.detail_cd
+               AND pt.group_cd     = '2006' 
+
+               AND pt.company_cd   = dl.company_cd
+               AND dl.group_cd     = '2005'
+               AND pm.deli_loct    = dl.detail_cd 
+               AND dl.company_cd   = dd.company_cd  
+               
+               AND cu.company_cd   = pm.company_cd
+               AND cu.detail_cd    = pm.currency_cd
+                
+               {#1}
+               {#2}
+               {#3}
+               {#4}
+               {#5}        
+             ORDER BY pm.po_no ASC                      		 	 			 			 			 
+		]]>
+        <append where="false" condition="${purDept}.NOTEMPTY" id="#1">
+        <![CDATA[
+   			AND pm.pur_dept_cd =  ${purDept}
+        ]]>
+	    </append>	
+        <append where="false" condition="${fromDate}.NOTEMPTY" id="#2">
+        <![CDATA[
+  			AND pm.regdate     >= REPLACE(${fromDate},'/','')
+        ]]>
+	    </append>	   
+        <append where="false" condition="${toDate}.NOTEMPTY" id="#3">
+        <![CDATA[
+   			AND pm.regdate     <= REPLACE(${toDate},'/','')     
+        ]]>
+	    </append>	
+        <append where="false" condition="${vendCd}.NOTEMPTY" id="#4">
+        <![CDATA[
+   			AND pm.vend_cd     =  ${vendCd} 
+        ]]>
+	    </append>	
+        <append where="false" condition="${pstatus}.NOTEMPTY" id="#5">
+        <![CDATA[
+   			AND pm.status      =  ${pstatus} 
+        ]]>
+	    </append>		    	    	        			           		
+    </statement>  
+    
+    <!--P/O RegsiTration Main -->
+    <statement name="retrievePurchOrderRegDetailList">
+        <![CDATA[
+            SELECT '0' chk,
+                   pd.company_cd,
+                   pd.po_no,
+                   pd.po_seq,
+                   pd.mater_cd, 
+                   (SELECT DECODE(${lang},'kr',mi.mater_nm_kr,
+                                          'en',mi.mater_nm_en,mater_nm_lo)                                                                                    
+                      FROM tb_mater_info mi
+                     WHERE mi.company_cd = pd.company_cd
+                       AND mi.mater_cd   = pd.mater_cd) mater_nm,                   
+                   pd.po_desc,
+                   pd.qty,
+                   pd.unit,
+                   pd.vat_cd,
+                   pd.vat_amt,
+                   lgiusf.F_GETCOMMNAME('COMM',pd.company_cd ,${lang},'2007',pd.vat_cd) vat_nm,                   
+                   pd.price, 
+                   pd.amount,
+                   pd.tran_tax_rate,
+                   pd.tran_tax_amt,
+                   pm.currency_cd,
+                   aa.attr1 curr_Type,                      
+                   pd.receipt_qty,
+                   pd.receipt_cls_yn, 
+                   decode(pd.receipt_qty,rd.receipt_qty,'T','F') qty_chk,
+                   sap_price
+              FROM lgiusf.tb_po_detail pd,
+                   lgiusf.tb_po_master pm,
+                   (SELECT * 
+                      FROM tb_receipt_detail rtd
+                     WHERE rtd.receipt_seq = (SELECT MAX(rdd.receipt_seq) 
+                                               FROM tb_receipt_detail rdd
+                                              WHERE rdd.company_cd = rtd.company_cd
+                                                AND rdd.po_no      = rtd.po_no
+                                                AND rdd.po_seq     = rtd.po_seq)) rd,
+                  (SELECT ss.company_cd
+                         ,ss.detail_cd
+                         ,ss.attr1
+                     FROM lgiusf.tb_comm_cd_detail ss
+                    WHERE company_cd = ${companyCd} 
+                      AND ss.group_cd = '2004' 
+                      AND ss.useyn ='Y'
+                   ) aa                                                
+             WHERE pm.company_cd = pd.company_cd
+               AND pm.po_no      = pd.po_no
+               AND pm.company_cd = aa.company_cd(+)
+               AND pm.currency_cd  = aa.detail_cd(+)
+               AND pd.company_cd = rd.company_cd(+)
+               AND pd.po_no      = rd.po_no(+)
+               AND pd.po_seq     = rd.po_seq(+)                              
+               AND pd.company_cd = ${companyCd}
+               AND pd.po_no      = ${poNo} 
+             ORDER BY pd.po_seq ASC    			 			 			 
+		]]> 		    	    	        			           		
+    </statement>    
+    
+    <!--P/O RegsiTration Main -->
+    <statement name="retrievePurchOrderRegAppList">
+        <![CDATA[
+			SELECT decode(vd.main_yn,'Y','T','F') chk,
+                   vd.company_cd,
+                   vd.vend_cd, 
+                   vd.vend_seq,
+                   vd.vend_person,
+                   vd.email_addr,
+                   vd.tel_no,
+                   vd.fax_no,                   
+                   decode(vd.main_yn,'Y','T','N','F') main_yn,
+                   decode(vd.main_yn,'Y','1','2') sort
+              FROM lgiusf.tb_vend_master vm,
+                   lgiusf.tb_vend_detail vd
+             WHERE vm.company_cd  = vd.company_cd
+               AND vm.company_cd  = ${companyCd} 
+               AND vm.vend_cd     = vd.vend_cd                  
+               AND vm.useyn='Y'
+               AND vd.useyn='Y'
+			   AND vm.vend_cd = ${vendCd}
+			 ORDER BY sort,vend_seq ASC			 			 			 
+		]]> 		    	    	        			           		
+    </statement>          
+     
+    <!-- P/O RegsiTration Cud -->
+    <statement name="cudPurchOrderRegMainInsert">
+        <![CDATA[    
+			INSERT INTO tb_po_master(
+						 company_cd,
+						 po_no,
+						 pur_dept_cd,
+						 vend_cd,
+						 currency_cd,
+						 deli_loct,
+						 pay_term,
+						 deli_date,
+						 email_send_date,
+						 parvw,
+						 pernr,
+						 ekorg,
+						 absgr,
+						 status,
+						 trans_date,
+						 trans_time,
+						 prog_status_date,
+						 prog_status_time,
+						 sap_po_no,
+						 sap_rtn_msg,
+						 regid,
+						 regdate,
+						 regtime, 
+						 pur_group,
+						 plant_cd,
+						 sap_if_status,
+						 discount_amt,						 
+						 pr_no,
+						 reference_no,
+						 iv_close,
+						 attr2)
+			      VALUES(
+						 ${companyCd},
+						 ${poNo},
+						 ${purDeptCd},
+						 ${vendCd},
+						 ${currencyCd},
+						 ${deliLoct},
+						 ${payTerm},
+						 ${deliDate},
+						 ${emailSendDate},
+						 'PE',
+                         ${userId},
+						 ${companyCd},
+						 ${absgr},
+						 ${pstatus},
+						 ${transDate},
+						 ${transTime},
+						 ${progStatusDate},
+						 ${progStatusTime},
+						 ${sapPoNo},
+						 ${sapRtnMsg},
+						 ${userId},
+						 TO_CHAR(SYSDATE,'YYYYMMDD'),
+						 TO_CHAR(SYSDATE,'HH24MMSS'), 
+						 ${purGroup},
+						 (SELECT detail_cd 
+			                FROM lgiusf.tb_comm_cd_detail
+			               WHERE company_cd = ${companyCd} 
+			                 AND group_cd = '2008'
+			                 AND useyn ='Y'),
+						 ${sapIfStatus},
+						 ${discountAmt},
+						 ${prNo},
+						 ${refNo},
+						 ${ivClose},
+						 ${poType}) 			 			       
+		]]>     
+    </statement>
+  
+    <!-- P/O RegsiTration Cud -->
+    <statement name="cudPurchOrderRegMainUpdate">
+        <![CDATA[
+			UPDATE tb_po_master
+			   SET  pur_dept_cd       =     ${purDeptCd},
+			        vend_cd           =     ${vendCd},
+			        currency_cd       =     ${currencyCd},
+			        deli_loct         =     ${deliLoct},
+			        pay_term          =     ${payTerm},
+			        deli_date         =     ${deliDate},
+			        email_send_date   =     ${emailSendDate},
+			        parvw             =     'PE',
+			        pernr             =     ${pernr},
+			        ekorg             =     ${companyCd},
+			        absgr             =     ${absgr},
+			        status            =     ${pstatus},
+			        trans_date        =     ${transDate},
+			        trans_time        =     ${transTime},
+			        prog_status_date  =     ${progStatusDate},
+			        prog_status_time  =     ${progStatusTime},
+			        sap_po_no         =     ${sapPoNo},
+			        sap_rtn_msg       =     ${sapRtnMsg},
+			        modid             =     ${userId},
+			        moddate           =     TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        modtime           =     TO_CHAR(SYSDATE,'HH24MMSS'),
+			        pur_group         =     ${purGroup},
+			        plant_cd          =     ${plantCd},
+			        sap_if_status     =     ${sapIfStatus},
+			        discount_amt      =     ${discountAmt},
+			        pr_no             =     ${prNo}, 
+				    reference_no	  =     ${refNo},
+				    iv_close	      =     ${ivClose},
+				    attr2    	      =     ${poType}
+			  WHERE company_cd        =     ${companyCd}
+			    AND po_no             =     ${poNo}
+		]]>     
+    </statement>
+ 
+    <!-- P/O RegsiTration Cud -->
+    <statement name="cudPurchOrderRegMainDel">
+        <![CDATA[
+	 		 DELETE tb_po_master			
+			  WHERE company_cd        =     ${companyCd}
+			    AND po_no             =     ${poNo}
+		]]>     
+    </statement> 
+ 
+    <!-- P/O RegsiTration Cud -->
+    <statement name="cudPurchOrderRegMainDTInsert">
+        <![CDATA[
+			INSERT INTO TB_PO_DETAIL(
+			       company_cd,
+			       po_no,
+			       po_seq,
+			       mater_cd,
+			       po_desc,
+			       qty,
+			       unit,
+			       vat_cd,
+			       vat_amt,
+			       price,
+			       amount,
+			       tran_tax_rate,
+			       tran_tax_amt,
+			       receipt_qty,
+			       receipt_cls_yn, 
+			       regid,
+			       regdate,
+			       regtime)
+			VALUES(
+			       ${companyCd},
+			       ${poNo},
+		           (SELECT LPAD(NVL(MAX(TO_NUMBER(po_seq))+10,'10'),5,0) po_seq 
+		              FROM tb_po_detail
+                     WHERE company_cd = ${companyCd}
+                       AND po_no      = ${poNo}),
+			       ${materCd},
+			       ${poDesc},
+			       ${qty},
+			       ${unit},
+			       ${vatCd},
+			       ${vatAmt},
+			       ${price},
+			       ${amount},
+			       ${tranTaxRate},
+			       ${tranTaxAmt},
+			       0,
+			       ${receiptClsYn}, 
+			       ${userId},
+			       TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       TO_CHAR(SYSDATE,'HH24MMSS'))
+		]]>     
+    </statement> 
+     
+    <!-- P/O RegsiTration Cud -->
+    <statement name="cudPurchOrderRegDTUpdate">
+        <![CDATA[
+			UPDATE tb_po_detail
+			   SET mater_cd       = ${materCd},
+			       po_desc        = ${poDesc},
+			       qty            = ${qty},
+			       unit           = ${unit},
+			       vat_cd         = ${vatCd},
+			       vat_amt        = ${vatAmt},
+			       price          = ${price},
+			       amount         = ${amount},
+			       tran_tax_rate  = ${tranTaxRate},
+			       tran_tax_amt   = ${tranTaxAmt},
+			       receipt_qty    = 0,
+			       receipt_cls_yn = ${receiptClsYn}, 
+			       modid          = ${userId},
+			       moddate        = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       modtime        = TO_CHAR(SYSDATE,'HH24MMSS')
+			 WHERE company_cd     = ${companyCd}
+			   AND po_no          = ${poNo}   
+			   AND po_seq         = ${poSeq} 
+		]]>     
+    </statement>     
+    
+    <!--P/O RegsiTration  prod check -->
+    <statement name="cudPurchOrderRegDTDel">
+        <![CDATA[
+			DELETE lgiusf.tb_po_detail          
+			 WHERE company_cd     = ${companyCd}
+			   AND po_no          = ${poNo}   
+			   AND po_seq         = ${poSeq} 
+		]]>  	       		
+    </statement>      
+     
+    <!--P/O RegsiTration  prod check -->
+    <statement name="cudPurchOrderRegDTDelAll">
+        <![CDATA[
+			DELETE lgiusf.tb_po_detail          
+			 WHERE company_cd     = ${companyCd}
+			   AND po_no          = ${poNo}    
+		]]>  	       		
+    </statement>      
+     
+    <!--P/O RegsiTration  Select Insert -->
+    <statement name="cudPurchOrderRegAppInsert">
+        <![CDATA[
+			INSERT INTO lgiusf.tb_vend_detail( 
+			       company_cd, 
+			       vend_cd,
+			       vend_seq,
+			       vend_person,
+			       email_addr,
+			       tel_no,
+			       fax_no,
+			       main_yn,
+			       useyn,
+			       regid,
+			       regdate,
+			       regtime)
+			VALUES(
+			       ${companyCd}, 
+			       ${vendCd},
+			       (SELECT LPAD(NVL(MAX(TO_NUMBER(a.vend_seq))+1,'1'),4,0) vend_seq  
+		              FROM lgiusf.tb_vend_detail a
+		             WHERE a.company_cd = ${companyCd} 
+		               AND a.vend_cd    = ${vendCd}),
+			       ${vendPerson},
+			       ${emailAddr},
+			       ${telNo},
+			       ${faxNo},
+			       decode(${mainYn},'T','Y','Y','Y','N'),
+			       nvl(${useyn},'Y'),     
+			       ${userId},
+			       TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       TO_CHAR(SYSDATE,'HH24MMSS'))
+		]]> 	       		
+    </statement>  
+    
+    <!--P/O RegsiTration  Select Update -->
+    <statement name="cudPurchOrderRegAppUpDate">
+        <![CDATA[
+			UPDATE lgiusf.tb_vend_detail    
+			   SET vend_person =        ${vendPerson},
+			       email_addr  =        ${emailAddr}, 
+			       tel_no      =        ${telNo},     
+			       fax_no      =        ${faxNo},     
+			       main_yn     =        decode(${mainYn},'T','Y','Y','Y','N'),
+			       useyn       =        nvl(${useyn},'Y'),     
+			       modid       =        ${userId},     
+			       moddate     =        TO_CHAR(SYSDATE,'YYYYMMDD'),   
+			       modtime     =        TO_CHAR(SYSDATE,'HH24MMSS')
+			 WHERE company_cd  =        ${companyCd} 
+			   AND vend_cd     =        ${vendCd}    
+			   AND vend_seq    =        ${vendSeq}
+		]]> 	       		
+    </statement>      
+    
+    <!--P/O RegsiTration  prod check -->
+    <statement name="cudPurchOrderRegAppDel">
+        <![CDATA[
+			DELETE lgiusf.tb_vend_detail          
+			 WHERE company_cd  =        ${companyCd} 
+			   AND vend_cd     =        ${vendCd}    
+			   AND vend_seq    =        ${vendSeq}
+		]]>  	       		
+    </statement>           
+     
+    <!-- PO No Search -->
+    <statement name="cudPurchOrderRegGetPONo">
+        <![CDATA[
+            SELECT NVL(MAX(TO_NUMBER(po_no))+1,TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMM'))||'0001') po_no 
+              FROM tb_po_master
+             WHERE company_cd =${companyCd}
+               AND substr(po_no,0,6) = TO_CHAR(sysdate,'YYYYMM')  
+		]]>
+    </statement>       
+     
+    <!--P/O RegsiTration  Select Update -->
+    <statement name="cudPurchOrderRegSapSend">
+        <![CDATA[
+            UPDATE lgiusf.tb_po_master    
+               SET sap_if_status    =    ${sapIfStatus},
+               	   sap_po_no        =    ${sapPoNo},
+                   sap_rtn_msg      =    ${sapRtnMsg},
+                   status           =    ${pstatus},     
+                   trans_date       =    ${transDate},   
+                   trans_time       =    TO_CHAR(SYSDATE,'HH24MMSS'),
+                   prog_status_date =    TO_CHAR(SYSDATE,'YYYYMMDD'),   
+                   prog_status_time =    TO_CHAR(SYSDATE,'HH24MMSS')
+              WHERE company_cd      =    ${companyCd}
+                AND po_no           =    ${poNo}
+		]]> 	       		
+    </statement>   
+    
+    <!--P/O RegsiTration  Select Update -->
+    <statement name="cudPurchOrderRegTransDate">
+        <![CDATA[
+			SELECT TO_CHAR(SYSDATE,'YYYYMMDD') trans_date FROM DUAL
+		]]> 	       		
+    </statement>  
+    
+    <!--P/O RegsiTration  Select retrievePurchOrderRegMaterCombo -->
+    <statement name="retrievePurchOrderRegMaterCombo">
+        <![CDATA[
+        {#1}
+				SELECT company_cd,
+		               mater_cd,
+		               decode(${lang},'kr',mater_nm_kr,
+		                              'en',mater_nm_en,mater_nm_lo) mater_nm,
+		               unit,
+		               mater_type,
+		               area_cd,
+		               div_cd,
+		               block_cd,
+		               year_cd,
+		               ha,
+		               useyn,
+		               regid,
+		               regdate                     
+		          FROM lgiusf.tb_mater_info
+		         WHERE useyn='Y'
+		           AND mater_type='3400' 
+		           AND company_cd = ${companyCd}
+		         ORDER BY mater_nm ASC
+		]]>
+				<append where="false" condition="${firstVal}.NOTEMPTY" 	id="#1">
+          SELECT  
+              '' AS company_cd,
+              '' AS  mater_cd,
+              '--'||${firstVal}||'--' AS   mater_nm,
+              '' AS unit,
+              '' AS mater_type,
+              '' AS area_cd,
+              '' AS div_cd,
+              '' AS block_cd,
+              '' AS year_cd,
+              null AS ha,
+              '' AS useyn,
+              '' AS regid,
+              '' AS regdate
+            FROM  dual
+           UNION ALL
+		        </append>
+    </statement>         
+     
+    <!--P/O RegsiTration  Select retrievePurchOrderRegVatVCombo -->
+    <statement name="retrievePurchOrderRegVatVCombo">
+        <![CDATA[
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   TO_NUMBER(sort) sort     
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.company_cd = ${companyCd} 
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y' 
+               AND cd.group_cd   = '2007'
+               AND cd.useyn      = 'Y'
+               AND cd.detail_cd  LIKE 'V%'
+             ORDER BY SORT
+		]]> 	       		
+    </statement>        
+    <!-- P/O RegsiTration Cud -->
+    <statement name="cudPurchOrderRegUpdateSendDate">
+        <![CDATA[
+			UPDATE tb_po_master
+			   SET email_send_date   =      TO_CHAR(SYSDATE,'YYYYMMDD')			        
+			  WHERE company_cd       =     ${companyCd}
+			    AND po_no            =     ${poNo}
+		]]>     
+    </statement>
+    <!-- P/O RegsiTration Cud -->
+    <statement name="cudPurchOrderRegUpdateSapPrice">
+        <![CDATA[
+			UPDATE lgiusf.tb_po_detail
+			   SET sap_price  = ${rSapPrice}
+			 WHERE company_cd = ${rCompanyCd}
+			   AND po_no      = ${rPoNo}
+			   AND po_seq     = ${rPoSeq}           
+		]]>     
+    </statement>       
+    
+    <!-- P/O 전용 -->
+    <statement name="retrievePurchOrderRegDeptCombo">
+        <![CDATA[
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   cd.attr9,
+                   TO_NUMBER(sort) sort     
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y'
+               AND cd.company_cd = ${companyCd} 
+               AND cd.group_cd   = '2001'
+               AND cd.useyn      = 'Y'
+               AND cd.attr9 is not null
+              ORDER BY SORT          
+		]]>     
+    </statement>   
+    
+    <!-- Tax List -->
+    <statement name="retrievePurchOrderRegTaxList">
+        <![CDATA[
+		   SELECT MAX(ra.company_cd) company_cd
+			     ,MAX(ra.po_no) po_no
+			     ,MAX(ra.tax_seq) tax_seq
+			     ,MAX(ra.wt_type) wt_type
+			     ,MAX(ra.wt_cd) wt_cd
+			     ,MAX(ra.wt_rate) wt_rate
+			     ,MAX(ra.wt_base_amt) wt_base_amt
+			     ,MAX(ra.wt_tax_amt) wt_tax_amt 
+			     ,MAX(ra.attr1) attr1
+			     ,MAX(ra.attr2) attr2
+			     ,MAX(ra.attr3) attr3
+			     ,MAX(ra.attr4) attr4
+			     ,MAX(ra.attr5) attr5
+			     ,MAX(ra.attr6) attr6
+			     ,MAX(ra.attr7) attr7
+			     ,MAX(ra.attr8) attr8
+			     ,MAX(ra.attr9) attr9
+			     ,MAX(ra.attr10) attr10
+			 FROM (SELECT '' company_cd
+			             ,'' po_no
+			             ,'1' tax_seq
+			             ,'' wt_type
+			             ,'' wt_cd
+			             ,0 wt_rate
+			             ,0 wt_base_amt
+			             ,0 wt_tax_amt 
+			             ,'' attr1
+			             ,'' attr2
+			             ,'' attr3
+			             ,'' attr4
+			             ,'' attr5
+			             ,'' attr6
+			             ,'' attr7
+			             ,'' attr8
+			             ,'' attr9
+			             ,'' attr10 
+			         FROM dual
+			        union all
+			       SELECT pt.company_cd
+			             ,pt.po_no
+			             ,pt.tax_seq
+			             ,pt.wt_type
+			             ,pt.wt_cd
+			             ,pt.wt_rate
+			             ,pt.wt_base_amt
+			             ,pt.wt_tax_amt 
+			             ,pt.attr1
+			             ,pt.attr2
+			             ,pt.attr3
+			             ,pt.attr4
+			             ,pt.attr5
+			             ,pt.attr6
+			             ,pt.attr7
+			             ,pt.attr8
+			             ,pt.attr9
+			             ,pt.attr10 
+			         FROM tb_po_tax pt
+			        WHERE pt.company_cd = ${companyCd} 
+			          AND pt.po_no      = ${poNo} 
+			          AND pt.tax_seq    = (SELECT MAX(ptt.tax_seq)
+			                                 FROM tb_po_tax ptt
+			                                WHERE ptt.company_cd = pt.company_cd
+			                                  AND ptt.po_no      = pt.po_no) 
+			      ) ra                                    
+		]]>     
+    </statement>   
+    
+    <!-- Tax Merge -->
+    <statement name="cudPurchOrderRegTaxMerge">
+        <![CDATA[
+            MERGE INTO tb_po_tax pt
+                  USING ( SELECT ${companyCd}     AS companyCd
+                                ,${poNo}          AS poNo
+                                ,${taxSeq}         AS taxSeq 
+                           FROM DUAL
+                         ) temp
+                     ON (
+                         pt.company_cd    = temp.companyCd
+                         AND pt.po_no     = temp.poNo
+                         AND pt.tax_seq    = temp.taxSeq                        
+                         )
+            WHEN MATCHED THEN
+							UPDATE SET pt.wt_type          = ${wtType} 
+									      ,pt.wt_cd            = ${wtCd}
+									      ,pt.wt_rate          = ${wtRate}
+									      ,pt.wt_base_amt      = ${wtBaseAmt}
+									      ,pt.wt_tax_amt       = ${wtTaxAmt} 
+									      ,pt.attr1            = ${attr1}
+									      ,pt.attr2            = ${attr2}
+									      ,pt.attr3            = ${attr3}
+									      ,pt.attr4            = ${attr4}
+									      ,pt.attr5            = ${attr5}
+									      ,pt.attr6            = ${attr6}
+									      ,pt.attr7            = ${attr7}
+									      ,pt.attr8            = ${attr8}
+									      ,pt.attr9            = ${attr9}
+									      ,pt.attr10           = ${attr10}
+									      ,pt.modid            = ${userId}
+									      ,pt.moddate          = TO_CHAR(SYSDATE,'YYYYMMDD')
+									      ,pt.modtime          = TO_CHAR(SYSDATE,'HH24MISS')   
+            WHEN NOT MATCHED THEN
+                 INSERT 
+                       ( pt.company_cd
+					      ,pt.po_no
+					      ,pt.tax_seq
+					      ,pt.wt_type
+					      ,pt.wt_cd
+					      ,pt.wt_rate
+					      ,pt.wt_base_amt
+					      ,pt.wt_tax_amt 
+					      ,pt.attr1
+					      ,pt.attr2
+					      ,pt.attr3
+					      ,pt.attr4
+					      ,pt.attr5
+					      ,pt.attr6
+					      ,pt.attr7
+					      ,pt.attr8
+					      ,pt.attr9
+					      ,pt.attr10 
+					      ,pt.regid
+					      ,pt.regdate
+					      ,pt.regtime
+					      )values(
+					       ${companyCd}             
+					      ,${poNo}
+					      ,${taxSeq}
+					      ,${wtType}
+					      ,${wtCd}
+					      ,${wtRate}
+					      ,${wtBaseAmt}
+					      ,${wtTaxAmt} 
+					      ,${attr1}
+					      ,${attr2}
+					      ,${attr3}
+					      ,${attr4}
+					      ,${attr5}
+					      ,${attr6}
+					      ,${attr7}
+					      ,${attr8}
+					      ,${attr9}
+					      ,${attr10}
+					      ,${userId}
+					      ,TO_CHAR(SYSDATE,'YYYYMMDD')
+					      ,TO_CHAR(SYSDATE,'HH24MISS') 
+					      )
+		]]>     
+    </statement>       
+    
+    <!-- Tax Delete -->
+    <statement name="cudPurchOrderRegTaxDel">
+        <![CDATA[
+			DELETE FROM tb_po_tax
+			 WHERE company_cd = ${companyCd}
+			   AND po_no      = ${poNo} 
+		]]>     
+    </statement>      
+    
+    <!-- Currency po 특화 -->
+    <statement name="retrievePurchOrderRegCurrList">
+        <![CDATA[
+           SELECT cd.detail_cd code,
+                  decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                 'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                  NVL(cd.attr1,'N') attr1,     
+                  NVL(cd.attr2,'1') attr2,                 
+                  TO_NUMBER(sort) sort     
+             FROM lgiusf.tb_comm_cd_master cm,
+                  lgiusf.tb_comm_cd_detail cd
+            WHERE cm.company_cd = cd.company_cd  
+              AND cm.company_cd = ${companyCd} 
+              AND cm.group_cd   = cd.group_cd
+              AND cm.useyn      = 'Y' 
+              AND cd.group_cd   = '2004'
+              AND cd.useyn      = 'Y' 
+		]]>     
+    </statement>                   
+</statements>

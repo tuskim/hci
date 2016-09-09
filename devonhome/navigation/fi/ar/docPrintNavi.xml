@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Document Print List -->
+
+   	<!-- Document Print List -->  
+	<action-name name="docPrint">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/docPrint.jsp</return-url>
+   	</action-name>
+    <action-name name="fi.ar.retrieveDocPrintList">
+    	<command>fi.ar.cmd.RetrieveDocPrintListCmd</command>
+	</action-name>
+    <action-name name="fi.ar.retrieveDocPrintListOutPut">
+    	<command>fi.ar.cmd.RetrieveDocPrintListOutPutCmd</command>
+	</action-name>   	
+    <action-name name="fi.ar.retrieveDocTypeWebComboList">
+    	<command>fi.ar.cmd.RetrieveDocTypeWebComboListCmd</command>
+	</action-name>   		
+</navigation-mapper>

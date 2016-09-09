@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Document Print List for Web -->
+
+   	<!-- Document Print List -->   
+    <action-name name="fi.ar.retrieveDocPrintWebPopListOutPut">
+    	<command>fi.ar.cmd.RetrieveDocPrintWebPopListOutPutCmd</command>
+	</action-name> 
+</navigation-mapper>

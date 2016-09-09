@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigation-mapper>
+          
+    <!-- Internal Order Code List 팝업 화면 호출 -->
+    <action-name name="retrieveInternalOrderCodeListPopup">
+        <command>fi.at.cmd.RetrieveIoListCmd</command>
+        <return-url>/jsp/fi/at/pop_IoList.jsp</return-url>
+    </action-name>                
+   	
+   	<!-- Request Information (자산취득요청) 화면 호출 -->  
+	<action-name name="assetAcqRequestScn">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/at/assetAcqRequest.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- Requested Asset List (자산취득요청 정보 조회) 화면 호출 -->  
+	<action-name name="assetAcqRequestListScn">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/at/assetAcqRequestList.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- Requested Asset List (자산 매각 폐기 요청 정보 조회) 화면 호출 -->  
+	<action-name name="assetListScn">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/at/assetList.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- Request Information (자산취득요청) 등록-->  
+    <action-name name="fi.at.cudAssetAcqRequest">
+    	<command>fi.at.cmd.CudAssetAcqRequestCmd</command>   
+		<return-url>/jsp/fi/at/assetAcqRequestProcess.jsp</return-url>
+    </action-name>
+   	
+	<!-- Requested Asset List (요청된 자산취득 목록) 정보 조회 -->
+    <action-name name="fi.at.retrieveRequestedAssetList">
+    	<command>fi.at.cmd.RetrieveRequestedAssetListCmd</command>
+	</action-name>   
+   	
+   	<!-- Requested Asset List 화면 : 그리드 내 첨부된 파일 다운로드 -->
+   	<action-name name="fi.at.assetAcqRequestDownloadFile">
+     	<command>fi.at.cmd.AssetAcqRequestDownloadFileCmd</command>
+     	<return-type>null</return-type>
+   	</action-name>
+   	
+   	<!-- Requested Asset List 화면 : Requested Asset 정보 삭제 -->
+    <action-name name="fi.at.cudRequestedAsset">
+    	<command>fi.at.cmd.CudRequestedAssetCmd</command>
+	</action-name>
+	
+	<!-- Asset List 화면 - Current Asset List 조회 -->
+    <action-name name="fi.at.retrieveCurrentAssetList">
+    	<command>fi.at.cmd.RetrieveCurrentAssetListCmd</command>
+	</action-name>
+   	
+   	<!-- Asset List 화면 - 매각 요청 정보 등록 -->  
+    <action-name name="fi.at.cudDisposalRequest">
+    	<command>fi.at.cmd.CudAssetDisposalRequestCmd</command>   
+		<return-url>/jsp/fi/at/assetDisposalRequestProcess.jsp</return-url>
+    </action-name>
+    
+    <!-- Asset List 화면 - 자산번호 매각, 폐기 신청 여부 확인 (중복체크) -->
+	<action-name name="fi.at.retrieveAssetNoRequestCheck">
+		<command>fi.at.cmd.RetrieveAssetNoRequestCheckCmd</command>
+	</action-name>
+	
+	<!-- Asset List 화면 - 폐기 요청 정보 등록 -->  
+    <action-name name="fi.at.cudRetirementRequest">
+    	<command>fi.at.cmd.CudAssetRetirementRequestCmd</command>   
+		<return-url>/jsp/fi/at/assetRetirementRequestProcess.jsp</return-url>
+    </action-name>
+   	
+</navigation-mapper>

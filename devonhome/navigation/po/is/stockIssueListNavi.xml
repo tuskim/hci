@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+    <!-- stock issue Request List-->
+   	<action-name name="stockIssueList"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/stockIssueList.jsp</return-url>
+   	</action-name>
+  	
+    <!-- stock issue Request-->
+   	<action-name name="po.is.retrieveStockIssueRequestList"> 
+    	<command>po.is.cmd.RetrieveStockIssueRequestListCmd</command>
+   	</action-name>
+  	
+   	<!-- 출고SAP Cancel -->
+  	<action-name name="po.is.cudStockIssueSAPCancel">
+		<command>po.is.cmd.CudStockIssueSAPCancelCmd</command>
+	</action-name>
+	
+
+</navigation-mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigation-mapper>
+     
+    <!-- ****************************** -->
+    <!-- Temp Common Page               -->
+    <!-- ****************************** -->
+    <action-name name="tempCommPopup">
+        <command-no>0</command-no>
+        <return-url>/jsp/cm/cd/tempCommPopup.jsp</return-url>
+    </action-name> 
+
+    <!-- ****************************** -->
+    <!-- Account Code List              -->
+    <!-- ****************************** -->
+    <action-name name="retrieveAccountCodeListPopup">
+        <command>cm.cd.cmd.RetrieveAccountCodeListPopupCmd</command>
+        <return-url>/jsp/cm/cd/pop_SapAccountCodeList.jsp</return-url>
+    </action-name> 
+
+    <!-- ****************************** -->
+    <!-- Material Code List              -->
+    <!-- ****************************** -->
+    <action-name name="retrieveMaterialCodeListPopup">
+        <command>cm.cd.cmd.RetrieveMaterialCodeListPopupCmd</command>
+        <return-url>/jsp/cm/cd/pop_MaterialCodeList.jsp</return-url>
+    </action-name> 
+
+    <!-- ****************************** -->
+    <!-- Vendor Code List              -->
+    <!-- ****************************** -->
+    <action-name name="retrieveVendorCodeListPopup">
+        <command>cm.cd.cmd.RetrieveVendorCodeListPopupCmd</command>
+        <return-url>/jsp/cm/cd/pop_VendorCodeList.jsp</return-url>
+    </action-name> 
+    
+    <!-- ****************************** -->
+    <!-- Vendor Detail List              -->
+    <!-- ****************************** -->
+    <action-name name="retrieveVendorDetailList">
+        <command>cm.cd.cmd.RetrieveVendorDetailListCmd</command>
+    </action-name> 
+
+    <!-- ****************************** -->
+    <!-- Vendor Detail Save              -->
+    <!-- ****************************** -->
+    <action-name name="VendorDetailMgnt">
+        <command>cm.cd.cmd.VendorDetailMgntCmd</command>
+    </action-name> 
+                    
+     <!-- ****************************** -->
+    <!-- Account Mgnt      				 -->
+    <!-- ****************************** -->                              	
+   	<action-name name="cm.cm.RetrieveSapAcctCd">
+    	<command>cm.cm.cmd.RetrieveSapAcctCdCmd</command>
+   	</action-name>	
+   	
+     <!-- ****************************** -->
+    <!-- Mater type for Po 				 -->
+    <!-- ****************************** -->                              	
+   	<action-name name="cm.cd.retrieveMaterPopupPoCombo">
+    	<command>cm.cd.cmd.RetrieveMaterPopupPoComboCmd</command>
+   	</action-name>	   	
+     <!-- ****************************** -->
+    <!-- Mater type for Po 				 -->
+    <!-- ****************************** -->                              	
+   	<action-name name="retrieveMaterialCodeListPopupCon">
+    	<command>cm.cd.cmd.RetrieveMaterialCodeListPopupConCmd</command>
+   	</action-name>	
+   	 <!-- ****************************** -->
+    <!-- Mater type for Sale(Product Material -->
+    <!-- ****************************** -->                              	
+   	<action-name name="retrieveProductMaterialCodeListPopupCon">
+    	<command>cm.cd.cmd.RetrieveProductMaterialCodeListPopupConCmd</command>
+   	</action-name>	
+   	
+</navigation-mapper>

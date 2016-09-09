@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LGI>
+    <PTPAM>
+	    <message>
+	    	<po_create>등록 하시겠습니까?</po_create>
+	    	<po_delete>삭제 하시겠습니까?</po_delete>
+	    	<po_create_ok>성공적으로 등록 되었습니다.</po_create_ok>
+	    	<po_create_fail>등록에 실패했습니다.</po_create_fail>
+	    	<po_process_ok>성공적으로 처리되었습니다.</po_process_ok>
+	    	<po_process_fail>처리에 실패했습니다.</po_process_fail>
+	    	<menu_ahthor>사용 권한이 없습니다.</menu_ahthor>
+	    </message>
+    </PTPAM>
+</LGI>

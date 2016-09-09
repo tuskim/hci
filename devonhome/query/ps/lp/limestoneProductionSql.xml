@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>	 
+<!-- Limestone Productiont-->
+
+    <!-- Limestone Production Master 조회-->
+    <statement name="retrieveLimestoneProductionList">
+        <![CDATA[
+			SELECT
+			       M.COMPANY_CD
+				  ,M.SYSKEY
+				  ,SUBSTR(M.PROD_DATE,0,4)||'/'||SUBSTR(M.PROD_DATE,5,2)||'/'||SUBSTR(M.PROD_DATE,7,2) AS PROD_DATE
+				  ,M.POST_DATE
+				  ,SUBSTR(M.PROD_DATE,0,4)||'/'||SUBSTR(M.PROD_DATE,5,2)||'/'||SUBSTR(M.PROD_DATE,7,2) AS PROD_DATE_OLD
+				  ,M.LIMESTONE_QTY
+				  ,M.STATUS
+				  ,M.GI_IF_DOC_SEQ
+				  ,M.RE_IF_DOC_SEQ
+				  ,M.GI_IF_RVS_DOC_SEQ
+				  ,M.RE_IF_RVS_DOC_SEQ
+				  ,M.SAP_RTN_MSG
+			FROM TB_LIMESTONE_PROD_MASTER M
+			WHERE COMPANY_CD = ${companyCd}
+			  AND DELETE_FLAG = 'N'
+ 			   	   {#1}
+			       {#2}
+			       {#3}
+		     ORDER BY M.SYSKEY
+        ]]>  
+	    <append condition="${productDateFrom}.NOTEMPTY" id="#1">       
+			 <![CDATA[ AND M.PROD_DATE >= replace(${productDateFrom},'/','')  ]]>
+	    </append>  
+	     <append condition="${productDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND M.PROD_DATE <= replace(${productDateTo},'/','')  ]]>
+	    </append>  
+	    <append condition="${status}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND M.STATUS = ${status}   ]]>
+	    </append>  
+	    
+    </statement> 
+ 
+     <!-- Limestone Production Excel 조회-->
+    <statement name="retrieveLimestoneProductionExcelList">
+        <![CDATA[
+       SELECT X.SYSKEY,
+              X.PROD_DATE,
+              X.STATUS,
+              X.LIMESTONE_QTY
+         FROM
+        (
+			SELECT M.SYSKEY,
+			       M.PROD_DATE,
+			       M.STATUS,
+			       MAX(NVL(M.LIMESTONE_QTY, 0)) AS LIMESTONE_QTY
+			  FROM TB_LIMESTONE_PROD_MASTER M
+			 WHERE M.COMPANY_CD = ${companyCd}
+			   AND M.DELETE_FLAG = 'N'
+ 			   	   {#1}
+			       {#2}
+			       {#3}
+			 GROUP BY M.SYSKEY, M.PROD_DATE, M.STATUS
+		     ORDER BY M.SYSKEY
+		) X
+        ]]>  
+	    <append condition="${productDateFrom}.NOTEMPTY" id="#1">       
+			 <![CDATA[ AND M.PROD_DATE >= replace(${productDateFrom},'/','')  ]]>
+	    </append>  
+	     <append condition="${productDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND M.PROD_DATE <= replace(${productDateTo},'/','')  ]]>
+	    </append>  
+	    <append condition="${status}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND M.STATUS = ${status}   ]]>
+	    </append>  
+	    
+    </statement> 
+
+    <!-- Limestone Production Date Duplicate Check-->
+    <statement name="retrieveLimestoneProductionProdDate">
+        <![CDATA[
+			SELECT PROD_DATE
+			  FROM TB_LIMESTONE_PROD_MASTER
+			 WHERE 1 = 1
+			   AND DELETE_FLAG = 'N'
+			   AND STATUS != '05'
+			   AND COMPANY_CD = ${companyCd} 
+			   AND PROD_DATE = REPLACE(${prodDate}, '/', '')
+		]]> 		    	    	        			           		
+    </statement> 
+            
+     <!-- Limestone Information 조회-->
+    <statement name="retrieveLimestoneProductionInfo">
+        <![CDATA[
+     	SELECT
+			 I.COMPANY_CD
+			,I.SYSKEY
+			,I.MATER_SEQ
+			,MI.MATER_CD
+			,MI.MATER_NM_EN AS MATER_NM
+			,MI.UNIT
+			,I.PROD_IN_QTY
+			,I.STOR_LOCT
+			,I.ATTR1
+		FROM TB_LIMESTONE_PROD_INPUT I,
+		     TB_LIMESTONE_PROD_MASTER M,
+		     TB_MATER_INFO MI
+		WHERE I.COMPANY_CD = M.COMPANY_CD
+		  AND I.SYSKEY = M.SYSKEY
+		  AND MI.COMPANY_CD = I.COMPANY_CD
+		  AND MI.MATER_CD = I.MATER_CD
+		  AND I.COMPANY_CD = ${companyCd}
+		  AND I.SYSKEY = ${syskey}
+		ORDER BY I.SYSKEY,I.MATER_SEQ
+        ]]> 
+    </statement> 
+        
+
+    <!-- Limestone Production List Add Row -->
+    <statement name="retrieveLimestoneProductionAddMaster">
+        <![CDATA[
+		SELECT ('LP'||NVL(MAX(TO_NUMBER(SUBSTR(SYSKEY , 3, 7))) + 1,TO_NUMBER(TO_CHAR(SYSDATE, 'YYMM')) || '001')) AS SYSKEY
+              ,TO_CHAR(SYSDATE, 'YYYY')||'/'||TO_CHAR(SYSDATE, 'MM')||'/'||TO_CHAR(SYSDATE, 'DD') PROD_DATE
+              ,TO_CHAR(SYSDATE, 'YYYY')||'/'||TO_CHAR(SYSDATE, 'MM')||'/'||TO_CHAR(SYSDATE, 'DD') POST_DATE
+              ,'' AS PROD_DATE_OLD
+              ,0 AS LIMESTONE_QTY
+              ,'00' AS STATUS
+              ,'' AS GI_IF_DOC_SEQ
+              ,'' AS RE_ID_DOC_SEQ
+			  ,'' AS GI_IF_RVS_DOC_SEQ
+			  ,'' AS RE_IF_RVS_DOC_SEQ
+              ,'' AS SAP_RTN_MSG
+		 FROM TB_LIMESTONE_PROD_MASTER
+	    WHERE COMPANY_CD =  ${companyCd}
+	 	  AND SUBSTR(SYSKEY , 3, 4) = TO_CHAR(SYSDATE, 'YYMM')
+        ]]> 
+    </statement> 
+    
+    <!-- Limestone Information Add Row -->
+    <statement name="retrieveLimestoneProductionAddResult">
+    	<![CDATA[
+		SELECT '10' AS MATER_SEQ
+		       ,(SELECT ('LP'||NVL(MAX(TO_NUMBER(SUBSTR(SYSKEY , 3, 7))) + 1,TO_NUMBER(TO_CHAR(SYSDATE, 'YYMM')) || '001')) FROM TB_LIMESTONE_PROD_MASTER M WHERE COMPANY_CD = ${companyCd} AND SUBSTR(SYSKEY , 3, 4) = TO_CHAR(SYSDATE, 'YYMM')) AS SYSKEY
+		       ,M.MATER_CD
+		       ,M.MATER_NM_EN AS MATER_NM
+		       ,M.UNIT
+		       ,0 AS PROD_IN_QTY
+		       ,'1002' AS STOR_LOCT
+		       -- ,(SELECT  DECODE('EN','KR',CD.DETAIL_CD_NM_KR,'EN',CD.DETAIL_CD_NM_EN, CD.DETAIL_CD_NM_LO) NAME FROM LGIUSF.TB_COMM_CD_DETAIL CD WHERE COMPANY_CD = M.COMPANY_CD AND DETAIL_CD = '3002') AS STOR_LOCT
+		       ,'' AS ATTR1
+		  FROM TB_MATER_INFO M
+		 WHERE COMPANY_CD = ${companyCd}
+		   AND MATER_CD = '63202402'
+    	]]>
+    </statement>
+    
+    
+	<!-- LIMESTONE PRODUCTION Master Insert-->
+	<statement name="insertLimestoneProdMaster">
+        <![CDATA[
+        	INSERT INTO TB_LIMESTONE_PROD_MASTER(
+	        	COMPANY_CD
+	        	,SYSKEY
+	        	,PROD_DATE
+	        	,POST_DATE
+	        	,LIMESTONE_QTY
+	        	,STATUS
+	        	,REGID
+				,REGDATE
+				,REGTIME
+			)
+	        VALUES(
+	          	 ${companyCd}
+				,${syskey}
+				,${prodDate}
+				,${prodDate}
+				,${limestoneQty}
+				,${status}
+                ,${userId}
+                ,TO_CHAR(SYSDATE,'YYYYMMDD')
+                ,TO_CHAR(SYSDATE,'HH24MISS')
+        	)
+        ]]>
+	</statement>
+
+    <!-- LIMESTONE PRODUCTION INPUT Insert-->
+    <statement name="insertLimestoneProdInput">
+        <![CDATA[
+        	INSERT INTO TB_LIMESTONE_PROD_INPUT(
+				COMPANY_CD
+				,SYSKEY
+				,MATER_SEQ
+				,MATER_CD
+				,PROD_IN_QTY
+				,STOR_LOCT
+				,ATTR1
+				,PLANT_CD
+				,REGID
+				,REGDATE
+				,REGTIME
+        	) 
+        	VALUES(
+	          	 ${companyCd}
+				,${syskey}
+				,${materSeq}
+				,${materCd}
+				,${prodInQty}
+				,${storLoct}
+				,${attr1}
+				,'GA10'
+                ,${userId}
+                ,TO_CHAR(SYSDATE,'YYYYMMDD')
+                ,TO_CHAR(SYSDATE,'HH24MISS')
+        	)
+
+        ]]> 
+    </statement> 
+
+    
+    <!-- LIMESTONE PRODUCTION Master Update-->
+    <statement name="updateLimestoneProdMaster">
+    	<![CDATA[
+    		UPDATE TB_LIMESTONE_PROD_MASTER
+    		   SET PROD_DATE   = ${prodDate},
+    		       POST_DATE   = ${prodDate},
+    		       LIMESTONE_QTY = ${limestoneQty},
+    		       MODID       = ${userId},
+    		       MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD  = ${companyCd}
+    		   AND SYSKEY      = ${syskey} 
+    		   AND STATUS      = '00'
+        ]]>
+    </statement>
+
+    <!-- LIMESTONE PRODUCTION INPUT  Update-->
+    <statement name="updateLimestoneProdInput">
+    	<![CDATA[
+    		UPDATE TB_LIMESTONE_PROD_INPUT
+    		   SET PROD_IN_QTY  = ${prodInQty},
+    		       ATTR1        = ${attr1},
+    		       MODID        = ${userId},
+    		       MODDATE      = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME      = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD   = ${companyCd}
+    		   AND MATER_SEQ    = ${materSeq}
+    		   AND SYSKEY       = ${syskey}    	
+        ]]>
+    </statement>
+    
+    
+    <!-- LIMESTONE PRODUCTION Master Delete-->
+    <statement name="deleteLimestoneProdMaster">
+    	<![CDATA[
+    		UPDATE TB_LIMESTONE_PROD_MASTER
+    		   SET DELETE_FLAG = 'Y',
+    		       MODID       = ${userId},
+    		       MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD  = ${companyCd}
+    		   AND SYSKEY      = ${syskey} 
+    		   AND DELETE_FLAG = 'N'
+        ]]>
+    </statement>
+    
+    <!-- LIMESTONE PRODUCTION Master Approval-->
+    <statement name="approvalLimestoneProdMaster">
+    	<![CDATA[
+    		UPDATE TB_LIMESTONE_PROD_MASTER
+    		   SET STATUS      = '01',
+    		       MODID       = ${userId},
+    		       MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD  = ${companyCd}
+    		   AND SYSKEY      = ${syskey}
+			   AND DELETE_FLAG = 'N'
+    		   AND STATUS = '00'
+        ]]>
+    </statement>
+ 
+     <!-- LIMESTONE PRODUCTION Master Reject-->
+    <statement name="rejectLimestoneProdMaster">
+    	<![CDATA[
+    		UPDATE TB_LIMESTONE_PROD_MASTER
+    		   SET STATUS      = '00',
+    		       MODID       = ${userId},
+    		       MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD  = ${companyCd}
+    		   AND SYSKEY      = ${syskey}
+			   AND DELETE_FLAG = 'N'
+    		   AND STATUS      = '01'
+        ]]>
+    </statement>
+ 
+ 
+   <!--########## SAP SEND ##########-->  
+    <statement name="checkSendingStatus"> 
+       <![CDATA[	
+		    SELECT STATUS
+		  	  FROM TB_LIMESTONE_PROD_MASTER
+		 	 WHERE COMPANY_CD   = ${companyCd}
+		   	   AND SYSKEY 		= ${syskey}
+     	]]>		
+    </statement>
+
+    <!-- sending update  [미사용]-->
+    <statement name="cudLimestoneProductionSendingStatus"> 
+       <![CDATA[	
+	     	UPDATE TB_LIMESTONE_PROD_MASTER
+			   SET 
+			       STATUS   	= '02',
+			       MODID	    = ${userId},
+			       MODDATE 	 	 = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       MODTIME 	 	 = TO_CHAR(SYSDATE,'HH24MISS'),
+			       TRANS_DATE    = TO_CHAR(SYSDATE,'YYYYMMDD')
+		 	 WHERE COMPANY_CD 	 = ${companyCd}
+		   	   AND SYSKEY 		 = ${syskey}
+     	]]>		
+    </statement> 
+    
+    <!-- SAP Send시 생산입고 조회 -->
+    <statement name="cudLimestoneProductionIputSapSend"> 
+       <![CDATA[	
+            SELECT SYSKEY
+                  ,COMPANY_CD
+                  ,MATER_SEQ
+                  ,MATER_CD
+                  ,'11110' AS KOSTL
+                  ,PLANT_CD
+                  ,STOR_LOCT
+                  ,PROD_IN_QTY
+              FROM TB_LIMESTONE_PROD_INPUT
+             WHERE COMPANY_CD = ${companyCd}
+               AND SYSKEY     = ${syskey}
+     	]]>     	
+    </statement>
+
+
+
+    <!-- SAP Send succuess  update  -->
+    <statement name="cudLimestoneProductionAfterSapSuccess"> 
+       <![CDATA[	
+	     	UPDATE TB_LIMESTONE_PROD_MASTER
+			   SET 
+			       FISCAL_YEAR 	= NVL(${fiscalYear},''),
+			       {#1}
+			       GI_IF_STATUS  = NVL(${returnType},''),
+			       GI_IF_DOC_SEQ = NVL(${returnSapGiNo},''),
+			       RE_IF_STATUS  = NVL(${returnType},''),
+			       RE_IF_DOC_SEQ = NVL(${returnSapGrNo},''),
+			       SAP_RTN_MSG   = NVL(${returnMsg},''),
+			       MODID	     = ${userId},
+			       MODDATE 	 	 = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       MODTIME 	 	 = TO_CHAR(SYSDATE,'HH24MISS'),
+			       TRANS_DATE    = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       IFSTCD 		 = 'Y'
+             WHERE COMPANY_CD    = ${companyCd}
+               AND SYSKEY        = ${syskey}
+     	]]>		
+	    <append condition="${returnStatus}.NOTEMPTY" id="#1">       
+			  <![CDATA[  STATUS	= ${returnStatus}, ]]>
+	    </append>
+    </statement> 
+
+    <!-- SAP Cancel cancel  update  -->
+    <statement name="cudLimestoneProductionAfterSapCancel"> 
+       <![CDATA[	
+	     	UPDATE TB_LIMESTONE_PROD_MASTER
+			   SET 
+			       STATUS		     = '05',
+			       CANCEL_TYPE       = 'X',
+			       GI_IF_RVS_STATUS  = NVL(${returnType},''),
+			       GI_IF_RVS_DOC_SEQ = NVL(${returnSapGiNo},''),
+			       RE_IF_RVS_STATUS  = NVL(${returnType},''),
+			       RE_IF_RVS_DOC_SEQ = NVL(${returnSapGrNo},''),
+			       SAP_RTN_MSG       = NVL(${returnMsg},''),
+			       MODID	         = ${userId},
+			       MODDATE 	  	     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       MODTIME 	  	     = TO_CHAR(SYSDATE,'HH24MISS'),
+			       TRANS_DATE        = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       IFSTCD 		     = 'Y'
+		 	 WHERE COMPANY_CD  	     = ${companyCd}
+               AND SYSKEY            = ${syskey}
+     	]]>
+
+	    
+    </statement> 
+
+    <!-- SAP Cancel I/F Error  -->
+    <statement name="cudLimestoneProductionAfterSapError"> 
+       <![CDATA[	
+	     	UPDATE TB_LIMESTONE_PROD_MASTER
+			   SET 
+			       SAP_RTN_MSG   = NVL(${returnMsg},''),
+			       MODID	     = ${userId},
+			       MODDATE 	 	 = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       MODTIME 	 	 = TO_CHAR(SYSDATE,'HH24MISS'),
+			       TRANS_DATE    = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       IFSTCD 		 = 'Y'
+		 	 WHERE COMPANY_CD  	 = ${companyCd}
+               AND SYSKEY        = ${syskey}
+     	]]>		
+    </statement>
+    
+</statements>

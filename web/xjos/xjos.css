@@ -1,0 +1,73 @@
+<!--  xjos.css for xjos 3.0 -->
+  .xjs_xJos  {}
+  .xjs_required  { background-image : url(required03.gif); background-position:top right; background-repeat:no-repeat;}
+
+  .xjs_flat_box  { border:1 solid black; background-color:white; }
+  .xjs_flat_button { height:19px; border-width:1; border-style:ridge; border-color:#d0d0d0; background-color:#dfdfdf;}
+
+  .xjs_show      { display: inline; } <!-- block /inline /inline-block /list-item /table-header-group /table-footer-group -->
+  .xjs_hide      { display: none;}
+  .xjs_readonly  { BACKGROUND-COLOR: #FFFFCC;}
+  .xjs_disable   { BACKGROUND-COLOR: #CCCCCC;}
+  .xjs_error     { BACKGROUND-COLOR: #EEFFB6;}
+  
+  .xjs_lable     { border:0 solid black; background-color:transparent; }
+  
+  .xjs_right     { text-align : right;}
+  .xjs_center    { text-align : center;}  
+  .xjs_left      { text-align : left;}
+
+  .xjs_imeKor     { ime-mode:active }
+  .xjs_imeEng     { ime-mode:inactive }
+  .xjs_imeDis     { ime-mode:disabled }
+
+  .xjs_dek        { POSITION:absolute;VISIBILITY:hidden;Z-INDEX:200;overflow:hidden;}
+  .xjs_dek_table  { border-width:1; border-style:ridge; border-color:#d0d0d0; background-color:#ffffff; color: blue;}
+  .xjs_dek_skin   { border-width:0; background-color:; color: blue; }
+
+  .xjs_source     { line-height : 17px; padding :5px; margin :5px; border-width:1; width:100%; border-style:ridge; border-color:#d0d0d0; background-color:#E4E4E4;}
+  .xjs_result     { line-height : 17px; padding :5px; margin :5px; border-width:1; width:100%; border-style:ridge; border-color:#d0d0d0; background-color:#D9FFD9;}
+  .xjs_descript   { line-height : 17px; }
+ 
+
+<!--  normal css -->
+
+  BODY         { FONT-FAMILY: Tahoma,Verdana,MS Sans Serif,Courier New; FONT-SIZE: 9pt }
+  A:link       { COLOR: #0000FF; TEXT-DECORATION: none }
+  A:visited    { COLOR: #660033; TEXT-DECORATION: none }
+	A:hover      { COLOR: #597AFF; TEXT-DECORATION: none }
+  .B           { COLOR: #ff0000; FONT-WEIGHT: normal }
+  FONT.table   {  COLOR: black }
+  FONT.strong  {  COLOR: #ffffff; FONT-WEIGHT: bold }
+  .input.text  { BACKGROUND-COLOR: #f0f0f0; BORDER-BOTTOM: #101010 1px solid; BORDER-LEFT: #101010 1px solid; BORDER-RIGHT: #101010 1px solid; BORDER-TOP: #101010 1px solid; COLOR: #000000 }
+  .input.file  { BACKGROUND-COLOR: #f0f0f0; BORDER-BOTTOM: #101010 1px solid; BORDER-LEFT: #101010 1px solid; BORDER-RIGHT: #101010 1px solid; BORDER-TOP: #101010 1px solid; COLOR: #000000 }
+  .select      { BACKGROUND-COLOR: #f0f0f0; BORDER-BOTTOM: #101010 1px solid; BORDER-LEFT: #101010 1px solid; BORDER-RIGHT: #101010 1px solid; BORDER-TOP: #101010 1px solid; COLOR: #000000 }
+  .textarea    { BACKGROUND-COLOR: #f0f0f0; BORDER-BOTTOM: #101010 1px solid; BORDER-LEFT: #101010 1px solid; BORDER-RIGHT: #101010 1px solid; BORDER-TOP: #101010 1px solid; COLOR: #000000 }
+  #DRAG        {LEFT: 100px; POSITION: absolute; TOP: 120px; Z-INDEX: 50 }
+  #READ        { LEFT: 100px; POSITION: absolute; TOP: 150px; Z-INDEX: 10 }
+  .small       { font-family:돋움; font-size:8pt  }
+  .norm        { font-family:굴림; font-size:9pt  }
+  .big         { font-family:굴림; font-size:14pt  }
+  .button      { height:19px; border-width:1; border-style:ridge; border-color:#d0d0d0; background-color:#dfdfdf;}
+  .editbox     { border:1 solid black; background-color:white; }
+  .admin       { border:1 solid black; background-color:white; }
+  .text1       { color:#000000; }
+  .text2       { color:#000000; }
+  .article     { BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px solid; FILTER: revealTrans(transition=23,duration=0.5) blendTrans(duration=0.5); POSITION: absolute; VISIBILITY: hidden }
+  .iframestyle { OVERFLOW: visible; PADDING-BOTTOM: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px  }
+  .notice      { BACKGROUND-COLOR: #f0f0f0; OVERFLOW: visible }
+  .title       { BACKGROUND-COLOR: #5c81aa }
+  .footer      { COLOR: black; FONT-SIZE: 8pt }
+  .info        { BACKGROUND-COLOR: #5a5a5a }
+  .retable     { BACKGROUND-COLOR: #f0f0f0 }
+  .rcontent    { BACKGROUND-COLOR: #f0f0f0 }
+  .outter      { BACKGROUND-COLOR: #c0c0c0 }
+  .cell        { BACKGROUND-COLOR: #c0c0c0 }
+  .select      { background-color:white;}
+   p,br,body,table,td,select,input,form,textarea,option { font-family:굴림; font-size:9pt; line-height : 17px; }
+  
+  .gray         { color:#99999; }
+  .darkgray     { color:#666666; }
+  .whitelink    { text-decoration:none;cursor:hand;font:bold xx-small Verdana;color:#FFFFFF; }
+  .homepage { behavior:url('#default#homePage'); }
+  .curosrhand { cursor:hand;}    

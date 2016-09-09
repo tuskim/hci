@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- conDocHistory -->
+
+	<!-- Approval doc history -->  
+	<action-name name="conDocHistory">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/conDocHistory.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- retrieve Approval doc history  -->
+    <action-name name="fi.ar.retrieveConDocHistoryList">
+    	<command>fi.ar.cmd.RetrieveConDocHistoryCmd</command>
+	</action-name>
+
+   	
+   	
+</navigation-mapper>

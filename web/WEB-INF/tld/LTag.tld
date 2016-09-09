@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="EUC-KR" ?>
+
+
+<!DOCTYPE taglib
+  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+<!--
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+-->
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>1.2</jsp-version>
+    <short-name>DevOn</short-name>
+    <uri>/devon</uri>    
+    <display-name>DevOn TagLib</display-name>
+    <description>DevOn TagLibrary</description>
+
+   	<!-- Page -->
+    <tag>
+        <name>page</name>
+        <tag-class>devonframework.front.taglib.paging.LPageTag</tag-class>
+        <body-content>jsp</body-content>
+        <attribute>
+        	<name>pageNavigation</name>
+        	<required>true</required>
+        	<rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <!-- Page Navigation -->
+    <tag>
+        <name>pageOut</name>
+        <tag-class>devonframework.front.taglib.paging.LPageOutTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <!-- Page Sort -->
+    <tag>
+        <name>pageSort</name>
+        <tag-class>devonframework.front.taglib.paging.LPageSortTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>title</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>column</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <!-- Page Repeator -->
+    <tag>
+        <name>pageRepeator</name>
+        <tag-class>devonframework.front.taglib.paging.LPageRepeatorTag</tag-class>
+        <body-content>jsp</body-content>
+        <attribute>
+            <name>message</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>preMessageProperty</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>postMessageProperty</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <!-- Page Data -->
+    <tag>
+        <name>pageData</name>
+        <tag-class>devonframework.front.taglib.paging.LPageDataTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>var</name>
+            <required>true</required>
+        </attribute>
+    </tag>
+
+    <!-- Add Page Hidden Param without PageNavigation Object -->
+    <tag>
+        <name>pageAddHiddenParam</name>
+        <tag-class>devonframework.front.taglib.paging.LPageAddHiddenParamTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <!-- Message -->
+    <tag>
+    	<name>message</name>
+    	<tag-class>devonframework.front.taglib.message.LMessageTag</tag-class>
+    	<body-content>jsp</body-content>
+    	<attribute>
+    		<name>code</name>
+    		<required>false</required>
+    		<rtexprvalue>true</rtexprvalue>
+    	</attribute>    	
+    	<attribute>
+    		<name>language</name>
+    		<required>false</required>
+    		<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    		<name>country</name>
+    		<required>false</required>
+    		<rtexprvalue>true</rtexprvalue>
+    	</attribute>    	
+    	<attribute>
+    		<name>module</name>
+    		<required>false</required>
+    		<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>
+
+    <!-- Message Argument -->
+    <tag>
+    	<name>messageArg</name>
+    	<tag-class>devonframework.front.taglib.message.LMessageArgTag</tag-class>
+    	<body-content>empty</body-content>
+    	<attribute>
+    		<name>value</name>
+	    	<required>true</required>
+	    	<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>
+
+   <!-- ComboList -->
+    <tag>
+    	<name>comboList</name>
+    	<tag-class>devonframework.front.taglib.renderer.combolist.LComboListTag</tag-class>
+    	<body-content>jsp</body-content>
+    	<attribute>
+    		<name>value</name>
+	    	<required>true</required>
+	    	<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+ 	   	<attribute>
+    		<name>selectedCode</name>
+	    	<required>false</required>
+	    	<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>
+    
+    <!-- ComboList selectedCode -->
+    <tag>
+    	<name>selectedCode</name>
+    	<tag-class>devonframework.front.taglib.renderer.combolist.LComboListSelectedCodeTag</tag-class>
+    	<body-content>jsp</body-content>
+    </tag>
+    
+    <!-- Mask selectedCode -->
+    <tag>
+    	<name>mask</name>
+    	<tag-class>devonframework.front.taglib.renderer.mask.LMaskTag</tag-class>
+    	<body-content>jsp</body-content>
+    	<attribute>
+    		<name>mask</name>
+	    	<required>true</required>
+	    	<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>  
+    
+    <!-- Format selectedCode -->
+    <tag>
+    	<name>decimal</name>
+    	<tag-class>devonframework.front.taglib.renderer.mask.LDecimalTag</tag-class>
+    	<body-content>jsp</body-content>
+    	<attribute>
+    		<name>format</name>
+	    	<required>true</required>
+	    	<rtexprvalue>true</rtexprvalue>
+    	</attribute>    	
+    </tag> 
+    
+    <!-- phone selectedCode -->
+    <tag>
+    	<name>phone</name>
+    	<tag-class>devonframework.front.taglib.renderer.mask.LMaskPhoneTag</tag-class>
+    	<body-content>jsp</body-content>
+    </tag> 
+          
+    <!-- phone selectedCode -->
+    <tag>
+    	<name>won</name>
+    	<tag-class>devonframework.front.taglib.renderer.mask.LWonTag</tag-class>
+    	<body-content>jsp</body-content>
+    	<attribute>
+    		<name>kanji</name>
+	    	<required>false</required>
+	    	<rtexprvalue>false</rtexprvalue>
+    	</attribute>      	
+    </tag>
+    
+    <!-- escape selectedCode -->
+    <tag>
+    	<name>escape</name>
+    	<tag-class>devonframework.front.taglib.renderer.mask.LEscapeTag</tag-class>
+    	<body-content>jsp</body-content>    	
+    </tag>
+    
+    <!-- n2br selectedCode -->
+    <tag>
+    	<name>n2br</name>
+    	<tag-class>devonframework.front.taglib.renderer.mask.LN2BrTag</tag-class>
+    	<body-content>jsp</body-content>    	
+    </tag>    
+</taglib>

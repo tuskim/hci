@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+   <action-name name="commLoginUserCmd">
+  		<command>cm.lo.login.cmd.commLoginUserCmd</command>
+  		<return-url>/loginProcess.jsp</return-url>
+  	</action-name>
+  	
+  	<action-name name="comm10LoginSSOUser">
+  		<command>comm.cmd.comm10LoginSSOUserCmd</command>
+  		<return-url>/loginProcess.jsp</return-url>
+  	</action-name>
+  	
+  	<action-name name="commLogoutUserCmd">
+  		<command>cm.lo.login.cmd.commLogoutUserCmd</command>
+  		<return-url>/index.jsp</return-url>
+  	</action-name>
+ 
+  	<action-name name="commRetrieveMenuCmd">
+  		<command-no>0</command-no>
+  		<return-url>/jsp/cm/lo/top.jsp</return-url>
+  	</action-name>
+  	
+  	<action-name name="commRetrieveLeftMenuCmd">
+  		<command-no>0</command-no>
+  		<return-url>/jsp/cm/lo/leftmenu.jsp</return-url>
+  	</action-name>
+  	
+   <action-name name="cm.lo.login.commRetrieveUserId">
+    <command>cm.lo.login.cmd.commRetrieveUserIdCmd</command>
+   </action-name>
+   
+   <action-name name="cm.lo.login.commRetrieveUserPw">
+    <command>cm.lo.login.cmd.commRetrieveUserPwCmd</command>
+   </action-name>   
+
+	<action-name name="unblocking">
+    	<command>cm.lo.login.cmd.unblocking</command>
+    	<return-url>/index.jsp</return-url>
+   </action-name>
+	
+</navigation-mapper>
+

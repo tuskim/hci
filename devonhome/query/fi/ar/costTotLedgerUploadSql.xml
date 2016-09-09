@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Cost Total Ledger Excel Upload -->
+
+    <!-- Cost Total Ledger Excel Upload Master Search -->
+    <statement name="retrieveCostTotLedger">
+        <![CDATA[
+			SELECT dtl.company_cd,
+			       dtl.dept_cd,
+			       dtl.doc_ym,
+			       dtl.doc_seq,
+			       dtl.doc_num,
+			       mst.doc_date,
+			       dtl.sap_acct_cd,
+			       lgiusf.F_GETCOMMNAME('SAPACCT',${companyCd},'en',dtl.sap_acct_cd,'') acct_nm,
+			       dtl.debit_amt,
+			       dtl.credit_amt,
+			       dtl.attr8 cost_center,
+			       dtl.attr9 int_order,
+			       dtl.doc_desc,
+			       mst.currency_cd,
+			       mst.post_date,
+			       dtl.attr3 vat,
+			       dtl.attr4 base,  
+			       dtl.attr5 code,
+			       dtl.attr6 rate,
+			       dtl.spgl_no,
+			       dtl.sap_acct_v,
+			       dtl.sap_acct_c,
+			       mst.create_date,
+			       dtl.error_msg
+			  FROM lgiusf.tb_doc_temp_master mst,
+			       lgiusf.tb_doc_temp_detail dtl
+			 WHERE mst.company_cd  = dtl.company_cd
+			   AND mst.dept_cd 	   = dtl.dept_cd
+			   AND mst.doc_ym      = dtl.doc_ym
+			   AND mst.doc_seq     = dtl.doc_seq
+			   AND mst.company_cd  = ${companyCd}
+			   AND mst.dept_cd     = ${deptCd}
+			   AND mst.create_date = ${createDate}
+			 ORDER BY dtl.dept_cd, 
+			          dtl.doc_ym,
+			          dtl.doc_seq,
+			          dtl.doc_num
+		]]>
+
+    </statement>  
+
+
+    <!-- Cost Total Ledger Excel Upload Temp Insert -->
+    <statement name="insertCostTotTempUpload">
+        <![CDATA[
+			INSERT into lgiusf.tb_doc_upload ( 
+			       company_cd,
+			       dept_cd,
+			       doc_ym,
+			       doc_seq,
+			       doc_num,
+			       create_date,
+			       doc_date,
+			       post_date,
+			       debit_amt,
+			       credit_amt,
+			       cost_center,
+			       internal_order,
+			       doc_desc,
+			       currency_cd,
+			       vat_cd,
+			       tax_base_amt,
+			       withholding_cd,
+			       withholding_rate,
+			       spgl_no,
+			       sap_acct_v,
+			       sap_acct_c,
+			       sap_acct_cd)
+			values (${companyCd},
+			       ${deptCd},
+			       ${docYm},
+			       ${docSeq},
+			       '',
+			       ${createDate},
+			       case when length(${docDate}) = 1 or length(${docDate}) = 2 then ${docYm}||lpad(${docDate},2,'0')
+			            else ${docDate}
+			       end,
+			       ${postDate},
+			       ROUND(TO_NUMBER(NVL(${debitAmt},0)),0),
+			       ROUND(TO_NUMBER(NVL(${creditAmt},0)),0),
+			       ${costCenter},
+			       ${intOrder},
+			       ${docDesc},
+			       ${currencyCd},
+			       ${vat},
+			       decode(${base}, null, '0.0', ${base}),
+			       ${code},
+			       decode(${rate}, null, '0.0', ${rate}),
+			       ${spglNo},
+			       ${sapAcctV},
+			       ${sapAcctC},
+			       ${sapAcctCd})
+		]]>     
+    </statement>
+
+
+
+    <!-- Cost Total Ledger Excel Upload Master Insert -->
+    <statement name="insertMsCostTotLedgerUpload">
+        <![CDATA[
+			INSERT INTO lgiusf.tb_doc_temp_master (
+			            company_cd,
+			            dept_cd,
+			            doc_ym,
+			            doc_seq,
+			            create_type,
+			            attr2,
+			            create_date,
+			            currency_cd,
+			            doc_date,
+			            post_date )
+			     SELECT company_cd,
+			            dept_cd,
+			            doc_ym,
+			            doc_seq,
+			            '2' create_type,
+			            'A' doc_type,
+			            create_date,
+			            currency_cd,
+			            doc_date,
+			            post_date
+			      FROM (
+			             SELECT t.*, ROW_NUMBER() OVER (PARTITION BY company_cd, dept_cd, doc_seq 
+			                                                ORDER BY company_cd, dept_cd, doc_seq ) cnt
+			               FROM lgiusf.tb_doc_upload t
+						  WHERE company_cd = ${companyCd}
+						    AND dept_cd    = ${deptCd}
+			            )
+			     WHERE cnt = 1
+		]]>     
+    </statement>  
+
+    <!-- Cost Total Ledger Excel Upload Detail Insert -->
+    <statement name="insertDtlCostTotLedgerUpload">
+        <![CDATA[
+			INSERT into lgiusf.tb_doc_temp_detail (
+			       company_cd,
+			       dept_cd,
+			       doc_ym,
+			       doc_seq,
+			       doc_num,
+			       acct_cd,
+			       attr3,
+			       attr4,
+			       attr5,
+			       attr6,
+			       spgl_no,
+			       sap_acct_v,
+			       sap_acct_c,
+			       sap_acct_cd,
+			       debit_amt,
+			       credit_amt,
+			       doc_desc,
+			       attr8,
+			       attr9 )
+			SELECT company_cd,
+			       dept_cd,
+			       doc_ym,
+			       doc_seq,
+			       LPAD(ROW_NUMBER() OVER (PARTITION BY company_cd, dept_cd, doc_ym, doc_seq 
+			                                   ORDER BY company_cd, dept_cd, doc_ym, doc_seq DESC),3,'0') doc_num,
+			       acct_cd,
+			       vat_cd,
+			       tax_base_amt,
+			       withholding_cd,
+			       withholding_rate,			       
+			       spgl_no,
+			       sap_acct_v,
+			       sap_acct_c,
+			       sap_acct_cd,
+			       debit_amt,
+			       credit_amt,
+			       doc_desc,
+			       cost_center,
+			       internal_order
+			  FROM lgiusf.tb_doc_upload
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+		]]>     
+    </statement>
+
+    <!-- Cost Total Ledger Excel Upload Detail Delete -->
+    <statement name="deleteCostTotLedgerTempUpload">
+        <![CDATA[
+			DELETE FROM lgiusf.tb_doc_upload
+		]]>     
+    </statement>
+
+    <!-- Cost Total Ledger Excel Upload Master Validation -->
+    <statement name="retrieveCostTotUploadValidation">
+        <![CDATA[
+			SELECT up.company_cd,
+			       up.dept_cd,
+			       up.doc_ym,
+			       up.doc_seq,
+				   ( 
+				     SELECT decode(count(*), 0, 'Y', 'N')
+				       FROM lgiusf.tb_doc_temp_master
+				      WHERE company_cd = up.company_cd
+				        AND dept_cd    = up.dept_cd
+				        AND doc_ym     = up.doc_ym
+				        AND doc_seq    = up.doc_seq 
+				   ) avail_check_temp,
+				   ( 
+				     SELECT decode(count(*), 0, 'Y', 'N')
+				       FROM lgiusf.tb_doc_master
+				      WHERE company_cd = up.company_cd
+				        AND dept_cd    = up.dept_cd
+				        AND doc_ym     = up.doc_ym
+				        AND doc_seq    = up.doc_seq 
+				   ) avail_check
+			  FROM lgiusf.tb_doc_upload up,
+			       lgiusf.tb_local_account ac
+			 WHERE up.company_cd = ac.company_cd(+)
+			   AND up.acct_cd    = ac.acct_cd(+)
+			   AND up.company_cd = ${companyCd}
+			   AND up.dept_cd    = ${deptCd}
+		]]>     
+    </statement>
+    
+    <!-- ***************************************** -->
+    <!-- Max docSeq 조회 쿼리                      -->
+    <!-- ***************************************** -->
+    <statement name="retrieveMaxDocSeqInfo">
+        <![CDATA[
+			SELECT LPAD(TO_NUMBER(NVL(MAX(sub.doc_seq),1000000))+1,7,'0') as doc_seq
+			  FROM
+			      (      
+			       SELECT doc_seq
+			         FROM lgiusf.tb_doc_master
+			        WHERE company_cd          = ${companyCd}         
+			          AND doc_ym              = ${docYm}
+			          AND substr(doc_seq,1,1) = '1' 
+			       UNION ALL
+			       SELECT doc_seq
+			         FROM lgiusf.tb_doc_temp_master
+			        WHERE company_cd          = ${companyCd}			   
+			          AND doc_ym              = ${docYm}  
+			      )sub	   			   
+        ]]>			    	   	    
+    </statement>        
+    
+</statements>

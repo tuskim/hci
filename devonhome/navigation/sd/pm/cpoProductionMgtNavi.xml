@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+	<!-- CPO Production Management-->
+   <!-- CPO Production Management 조회 첫 페이지--> 	
+   <action-name name="cpoProductionMgt">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/sd/pm/cpoProductionMgt.jsp</return-url>
+  	</action-name>
+  	
+  	<!-- CPO Production Main 조회-->
+  	<action-name name="sd.pm.retrieveCpoMgt">
+		<command>sd.pm.cmd.RetrieveCpoMgtCmd</command>
+	</action-name>  	
+	
+	<!-- FFB Production Input ds_main1 조회-->
+  	<action-name name="sd.pm.retrieveFfbInMgt">
+		<command>sd.pm.cmd.RetrieveCpoMgtDs1Cmd</command>
+	</action-name>
+	
+	<!-- CPO Production Output  detail 조회-->
+  	<action-name name="sd.pm.retrieveCpoProductionOutMgt">
+		<command>sd.pm.cmd.RetrieveCpoMgtDetailCmd</command>
+	</action-name>
+	
+    <!-- CPO Mgt main List 삭제-->  
+	<action-name name="sd.pm.cpoMgtDel">
+  		<command>sd.pm.cmd.CpoMgtDelCmd</command> 
+   	</action-name>  
+   	
+   <!-- FFB Material List -->
+  	<action-name name="sd.pm.retrieveFfbMaterialList">
+		<command>sd.pm.cmd.RetrieveFfbMaterialListCmd</command>
+	</action-name>  
+	
+	<!-- cpo Mgt main1, detail List insert/update-->
+  	<action-name name="sd.pm.cudCpoMgt">
+		<command>sd.pm.cmd.CudCpoMgtCmd</command>
+	</action-name>
+	
+    <!-- Mater type for CPO Production Management--> 				 
+   	<action-name name="cm.cd.retrieveCPOProdMaterialCombo">
+    	<command>cm.cd.cmd.RetrieveCPOProdMaterialComboCmd</command>
+   	</action-name>	   	
+
+    <!-- Mater type for CPO Production Management--> 				 
+   	<action-name name="cm.cd.retrieveCPOProdMaterialList">
+    	<command>cm.cd.cmd.RetrieveCPOProdMaterialListCmd</command>
+   	</action-name>	   	
+
+    <!-- SAP send for CPO Production Management--> 				 
+   	<action-name name="sd.pm.cudCpoProductionSapSend">
+    	<command>sd.pm.cmd.CudCpoProductionSapSendCmd</command>
+   	</action-name>	   	
+
+    <!-- SAP Cancel  for CPO Production Management--> 				 
+   	<action-name name="sd.pm.cudCpoProductionSapCancel">
+    	<command>sd.pm.cmd.CudCpoProductionSapCancelCmd</command>
+   	</action-name>	   	
+   	
+   	<!-- CPO Prod History 조회 첫 페이지--> 	
+    <action-name name="cpoProdHistory">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/sd/pm/cpoProdHistory.jsp</return-url>
+  	</action-name>	   			
+   	
+   	<!--CPO Prod History 조회-->
+  	<action-name name="sd.pm.retrieveCpoProdHistory">
+		<command>sd.pm.cmd.RetrieveCpoProdHistoryCmd</command>
+	</action-name>	
+
+</navigation-mapper>
+

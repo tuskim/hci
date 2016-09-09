@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+   <!-- Cement Sample Issue 첫 페이지 호출--> 	
+   <action-name name="cementSampleIssue">
+ 		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/sd/si/cementSampleIssue.jsp</return-url>
+  	</action-name>
+ 
+
+
+
+ 
+   	<!-- 조회-->
+  	<action-name name="sd.si.retrieveCementSampleIssueMasterList">
+		<command>sd.si.cmd.RetrieveCementSampleIssueMasterListCmd</command>
+	</action-name>
+
+  	<action-name name="sd.si.retrieveSampleIssueDetailList">
+		<command>sd.si.cmd.RetrieveCementSampleIssueDetailListCmd</command>
+	</action-name>
+
+
+
+
+
+
+   	<!-- 저장-->
+  	<action-name name="sd.si.cudCementSampleIssue">
+		<command>sd.si.cmd.CudCementSampleIssueCmd</command>
+	</action-name>
+
+
+
+
+
+
+   	<!-- SAP -->
+  	<action-name name="sd.si.cudCementSampleIssueSapSend">
+		<command>sd.si.cmd.CudCementSampleIssueSapSendCmd</command>
+	</action-name>
+
+  	<action-name name="sd.si.cudCementSampleIssueSapCancel">
+		<command>sd.si.cmd.CudCementSampleIssueSapCancelCmd</command>
+	</action-name>
+ 
+ 
+ 
+ 
+   	
+ </navigation-mapper>

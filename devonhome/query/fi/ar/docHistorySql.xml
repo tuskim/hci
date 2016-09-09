@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Document History List -->
+
+     <!-- 조회 : Document history 조회-->
+    <statement name="retrieveDocHistoryList">
+        <![CDATA[
+			SELECT  m.dept_cd,
+       			    m.doc_seq,
+       		        m.create_date,
+       		        m.approval_date,
+       				m.doc_date,
+      				m.post_date,
+       				m.currency_cd,
+       				(SELECT sum(d.debit_amt) 
+       				   FROM tb_doc_detail d
+       			      WHERE m.company_cd = d.company_cd
+       					AND m.dept_cd = d.dept_cd
+       				    AND m.doc_ym = d.doc_ym
+       					AND m.doc_seq = d.doc_seq) amount,
+       				m.prog_status,
+       				to_DATE(CREATE_DATE,'RRRRMMDD')- to_DATE(DOC_dATE,'RRRRMMDD') credate_doc_term,
+       				to_DATE(approval_date,'RRRRMMDD')- to_DATE(CREATE_DATE,'RRRRMMDD') credate_app_term,
+       				CASE WHEN to_DATE(CREATE_DATE,'RRRRMMDD')-to_DATE(DOC_dATE,'RRRRMMDD')>5 THEN 'TRUE' ELSE 'FALSE' END as term,
+       				CASE WHEN to_DATE(approval_date,'RRRRMMDD')-to_DATE(CREATE_DATE,'RRRRMMDD')>3 THEN 'TRUE' ELSE 'FALSE' END as term2,
+       				CASE WHEN (TO_DATE(CREATE_DATE,'RRRRMMDD')-TO_DATE(DOC_dATE,'RRRRMMDD')>5 
+            		 	  AND TO_DATE(approval_date,'YYYYMMDD')-TO_DATE(CREATE_DATE,'RRRRMMDD')>3) THEN 'Input & approval delayed.'
+   					 WHEN TO_DATE(CREATE_DATE,'RRRRMMDD')-TO_DATE(DOC_dATE,'RRRRMMDD')>5     THEN 'Input Delayed.'
+            		 WHEN TO_DATE(approval_date,'YYYYMMDD')-TO_DATE(CREATE_DATE,'RRRRMMDD')>3  THEN 'Approval Delayed.'
+					 END as message
+  			  FROM  tb_doc_master m
+ 			 WHERE  company_Cd= ${companyCd}
+			     {#1}
+			     {#2}
+				 {#3}
+		  ORDER BY dept_cd, doc_seq,create_date,doc_date, post_date,currency_cd, amount
+        ]]>  
+        <append condition="${deptCd}.NOTEMPTY" id="#1">       
+			   AND m.dept_cd like '%'||${deptCd}||'%'
+	    </append>
+	    <append condition="${docDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND m.doc_date >= replace(${docDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${docDateFrom}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND m.doc_date <= replace(${docDateFrom},'/','')  ]]>
+	    </append> 	
+    </statement> 
+  
+</statements>

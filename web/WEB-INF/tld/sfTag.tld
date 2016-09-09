@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="EUC-KR" ?>
+<!DOCTYPE taglib
+  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>1.2</jsp-version>
+    <short-name>SFLGE</short-name>
+    <uri>/sf</uri>    
+    <display-name>SFLGE TagLib</display-name>
+    <description>SFLGE TagLibrary</description>
+ 
+    <!-- Message -->
+    <tag>
+    	<name>saymessage</name>
+    	<tag-class>devonframework.front.taglib.saymessage.LSayMessageTag</tag-class>
+    	<body-content>empty</body-content>
+    	<attribute>
+    		<name>code</name>
+    		<required>false</required>
+    		<rtexprvalue>true</rtexprvalue>
+    	</attribute>    	
+    	<attribute>
+    		<name>language</name>
+    		<required>false</required>
+    		<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    		<name>country</name>
+    		<required>false</required>
+    		<rtexprvalue>true</rtexprvalue>
+    	</attribute>    	
+    	<attribute>
+    		<name>module</name>
+    		<required>false</required>
+    		<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>
+
+
+</taglib>

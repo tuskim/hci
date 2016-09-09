@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!--Raw Mix Production  -->
+
+
+
+   	<!--Raw Mix Production  -->  
+	<action-name name="rawmixProduction">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/ps/rp/rawmixProduction.jsp</return-url>
+   	</action-name>
+
+
+
+
+
+   	
+   	<!--Raw Mix Production Retrieve -->  
+	<action-name name="ps.rp.retrieveRawmixProductionMasterList">
+    	<command>ps.rp.cmd.RetrieveRawmixProductionMasterListCmd</command> 
+   	</action-name>   
+
+	<action-name name="ps.rp.retrieveRawmixProductionExcelList">
+    	<command>ps.rp.cmd.RetrieveRawmixProductionExcelListCmd</command> 
+   	</action-name>   
+
+	<action-name name="ps.rp.retrieveRawmixProductionAddRow">
+    	<command>ps.rp.cmd.RetrieveRawmixProductionAddRowCmd</command> 
+   	</action-name>   
+   	
+	<action-name name="ps.rp.retrieveRawmixProductionDetailList">
+    	<command>ps.rp.cmd.RetrieveRawmixProductionDetailListCmd</command> 
+   	</action-name> 
+   	
+	<action-name name="ps.rp.retrieveRawmixProductionResultList">
+    	<command>ps.rp.cmd.RetrieveRawmixProductionResultListCmd</command> 
+   	</action-name> 
+
+
+   	
+
+
+   	
+   	<!--Raw Mix Production Cud -->  
+	<action-name name="ps.rp.cudRawmixProduction">
+    	<command>ps.rp.cmd.CudRawmixProductionCmd</command> 
+   	</action-name>       
+
+	<action-name name="ps.rp.cudRawmixProductionStatus">
+    	<command>ps.rp.cmd.CudRawmixProductionStatusCmd</command> 
+   	</action-name>       
+
+	<action-name name="ps.rp.cudRawmixProductionSap">
+    	<command>ps.rp.cmd.CudRawmixProductionSapCmd</command> 
+   	</action-name>       
+   	
+	<action-name name="ps.rp.cudRawmixProductionSapSend">
+    	<command>ps.rp.cmd.CudRawmixProductionSapSendCmd</command> 
+   	</action-name>       	 
+
+
+
+   	   	    
+</navigation-mapper>

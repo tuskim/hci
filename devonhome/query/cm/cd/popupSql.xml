@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<statements>
+    
+    <!-- ****************************** -->
+    <!-- 팝업 Local Acccount Code List  -->
+    <!-- ****************************** -->
+    <statement name="retrieveLocAccountCodeListPopup">
+        <![CDATA[
+			SELECT acct_cd code,
+			       decode(${lang}, 'kr',acct_nm_kr,
+			                       'en',acct_nm_en, acct_nm_lo) name,
+			       acct_sap_cd,
+			       attr1 area,
+			       attr2 div,
+			       attr3 block,
+			       attr4 block2,
+			       attr5 year,
+			       attr6 tm,
+			       useyn
+			  FROM lgiusf.tb_local_account
+			 WHERE company_cd = ${companyCd}
+			   AND attr7 = 'N'  --PMS 제외 여부
+			   {#1}
+			   {#2}
+        ]]>
+
+	    <append condition="${acctNm}.NOTEMPTY&amp;${lang}.EQ.kr" id="#1">
+			   AND UPPER(acct_nm_kr) like '%'||${acctNm}||'%'
+	    </append>
+
+	    <append condition="${acctNm}.NOTEMPTY&amp;${lang}.EQ.en" id="#1">
+			   AND UPPER(acct_nm_en) like '%'||${acctNm}||'%'
+	    </append>
+
+	    <append condition="${acctNm}.NOTEMPTY&amp;${lang}.EQ.lo" id="#1">
+			   AND UPPER(acct_nm_lo) like '%'||${acctNm}||'%'
+	    </append>
+
+	    <append condition="${acctCd}.NOTEMPTY" id="#2">       
+			   AND UPPER(acct_cd like) '%'||UPPER(${acctCd})||'%'
+	    </append>
+	    
+    </statement>
+
+    <!-- ****************************** -->
+    <!-- 팝업 SAP Acccount Code List  -->
+    <!-- ****************************** -->
+    <statement name="retrieveSapAccountCodeListPopup">
+        <![CDATA[
+			SELECT acct_sap_cd code,
+			       decode(${lang}, 'kr',acct_nm_kr,
+			                       'en',acct_nm_en, acct_nm_lo) name,
+			       useyn,
+			       attr1 sp,
+			       attr2 chkyn,
+			       decode(NVL(attr6,'0'), '0', 'N', attr6) check_duedate
+			  FROM lgiusf.tb_sap_account t
+			 WHERE company_cd = ${companyCd}
+			 --AND SUBSTR(acct_sap_cd, 0,1) <> 8
+			   {#1}
+			   {#2}
+        ]]>
+
+	    <append condition="${acctNm}.NOTEMPTY&amp;${lang}.EQ.kr" id="#1">
+			   AND UPPER(acct_nm_kr) like '%'||${acctNm}||'%'
+	    </append>
+
+	    <append condition="${acctNm}.NOTEMPTY&amp;${lang}.EQ.en" id="#1">
+			   AND UPPER(acct_nm_en) like '%'||${acctNm}||'%'
+	    </append>
+
+	    <append condition="${acctNm}.NOTEMPTY&amp;${lang}.EQ.lo" id="#1">
+			   AND UPPER(acct_nm_lo) like '%'||${acctNm}||'%'
+	    </append>
+
+	    <append condition="${acctCd}.NOTEMPTY" id="#2">       
+			   AND UPPER(acct_sap_cd) like '%'||UPPER(${acctCd})||'%'
+	    </append>
+	    
+    </statement>
+
+    <!-- ****************************** -->
+    <!-- 팝업 Material Code List  -->
+    <!-- ****************************** -->
+    <statement name="retrieveMaterialCodeListPopup">
+        <![CDATA[
+			SELECT mater_cd,
+			       decode(${lang}, 'kr',mater_nm_kr,
+			                       'en',mater_nm_en, mater_nm_lo) mater_nm,
+			       unit,			       
+			       mater_type,
+			       useyn
+			  FROM lgiusf.tb_mater_info
+			 WHERE company_cd = ${companyCd}
+			   {#1}
+			   {#2}
+			   {#3}
+			  ORDER BY mater_cd,mater_nm,mater_type
+        ]]>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.kr" id="#1">
+			   AND UPPER(mater_nm_kr) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.en" id="#1">
+			   AND UPPER(mater_nm_en) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.lo" id="#1">
+			   AND UPPER(mater_nm_lo) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materCd}.NOTEMPTY" id="#2">       
+			   AND mater_cd = ${materCd}
+	    </append>
+	    <append condition="${materType}.NOTEMPTY" id="#3">       
+			   AND mater_type = ${materType}
+	    </append>		    
+	    
+    </statement>
+
+    <!-- ****************************** -->
+    <!-- 팝업 Vendor Code List  -->
+    <!-- ****************************** -->
+    <statement name="retrieveVendorCodeListPopup">
+        <![CDATA[
+			SELECT vend_cd,
+			       decode(${lang}, 'kr',vend_nm_kr,
+			                       'en',vend_nm_en, vend_nm_lo) vend_nm,
+				   country_cd,
+				   vend_desc,
+				   useyn,
+				   company_cd,
+				   addr1,
+				   addr2,
+				   tel_no,
+			       useyn
+			  FROM lgiusf.tb_vend_master
+			 WHERE company_cd = ${companyCd}
+			   {#1}
+			   {#2}
+			   {#3}
+			   
+        ]]>
+
+	    <append condition="${vendNm}.NOTEMPTY&amp;${lang}.EQ.kr" id="#1">
+			   AND UPPER(vend_nm_kr) like '%'||${vendNm}||'%'
+	    </append>
+
+	    <append condition="${vendNm}.NOTEMPTY&amp;${lang}.EQ.en" id="#1">
+			   AND UPPER(vend_nm_en) like '%'||${vendNm}||'%'
+	    </append>
+
+	    <append condition="${vendNm}.NOTEMPTY&amp;${lang}.EQ.lo" id="#1">
+			   AND UPPER(vend_nm_lo) like '%'||${vendNm}||'%'
+	    </append>
+
+	    <append condition="${vendCd}.NOTEMPTY" id="#2">       
+			   AND vend_cd = ${vendCd}
+	    </append>
+	    
+	    <append condition="${useyn}.NOTEMPTY" id="#3">       
+			   AND useyn = ${useyn}
+	    </append>
+	    
+    </statement>
+
+    <!-- ****************************** -->
+    <!-- 팝업 Vendor Detail List  -->
+    <!-- ****************************** -->
+    <statement name="retrieveVendorDetailList">
+        <![CDATA[
+			SELECT VEND_SEQ
+			 	      ,VEND_PERSON
+			 	      ,EMAIL_ADDR
+			 	      ,D.TEL_NO
+			 	      ,FAX_NO
+			 	      ,MAIN_YN
+			 	      ,D.USEYN
+			FROM TB_VEND_DETAIL D
+				    ,TB_VEND_MASTER M
+			WHERE D.COMPANY_CD = M.COMPANY_CD
+			     AND D.VEND_CD = M.VEND_CD
+			     AND D.COMPANY_CD = ${companyCd}
+			     AND D.VEND_CD = ${vendCd}
+		    ORDER BY VEND_SEQ
+        ]]>
+	    
+    </statement>
+    <!-- ****************************** -->
+    <!-- 팝업 Mater type List  -->
+    <!-- ****************************** -->
+    <statement name="retrieveMaterPopupPoCombo">
+        <![CDATA[
+        	{#1}
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   TO_NUMBER(sort) sort     
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y'
+               AND cd.company_cd = ${companyCd} 
+               AND cd.group_cd   = ${groupCd}
+               AND cd.detail_cd  IN ('3110','3400')
+               AND cd.useyn      = 'Y'
+             ORDER BY sort, code
+			   
+		]]> 
+		<append where="false" condition="${firstVal}.NOTEMPTY" 	id="#1">
+			SELECT 	'' AS  code,
+					'--'||${firstVal}||'--' AS  name,
+					 0 sort
+			  FROM	dual
+			 UNION ALL
+        </append>
+    </statement>      
+    
+    <!-- ****************************** -->
+    <!-- 팝업 Material Code List Con -->
+    <!-- ****************************** -->
+    <statement name="retrieveMaterialCodeListPopupCon">
+        <![CDATA[
+		SELECT *
+		  FROM(	
+			SELECT mater_cd,
+			       decode(${lang}, 'kr',mater_nm_kr,
+			                       'en',mater_nm_en, mater_nm_lo) mater_nm,
+			       unit,			       
+			       mater_type,
+			       useyn
+			  FROM lgiusf.tb_mater_info
+			 WHERE company_cd = ${companyCd}
+			   AND mater_type IN ('3110','3400','7900')
+			   )
+		 WHERE 1=1
+			   {#1}
+			   {#2}
+			   {#3}
+			  ORDER BY mater_cd,mater_nm,mater_type
+        ]]>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.kr" id="#1">
+			   AND UPPER(mater_nm) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.en" id="#1">
+			   AND UPPER(mater_nm) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.lo" id="#1">
+			   AND UPPER(mater_nm) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materCd}.NOTEMPTY" id="#2">       
+			   AND mater_cd = ${materCd}
+	    </append>
+	    <append condition="${materType}.NOTEMPTY" id="#3">       
+			   AND mater_type = ${materType}
+	    </append>		    
+	    
+    </statement>
+    
+    <!-- ****************************** -->
+    <!-- 팝업 Product Material Code List Con 제품 -->
+    <!-- ****************************** -->
+    <statement name="retrieveProductMaterialCodeListPopupCon">
+        <![CDATA[
+		SELECT *
+		  FROM(	
+			SELECT mater_cd,
+			       decode(${lang}, 'kr',mater_nm_kr,
+			                       'en',mater_nm_en, mater_nm_lo) mater_nm,
+			       unit,			       
+			       mater_type,
+			       useyn
+			  FROM lgiusf.tb_mater_info
+			 WHERE company_cd = ${companyCd}
+			   AND mater_type IN ('7900','7920')
+			   )
+		 WHERE 1=1
+			   {#1}
+			   {#2}
+			   {#3}
+			  ORDER BY mater_cd,mater_nm,mater_type
+        ]]>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.kr" id="#1">
+			   AND UPPER(mater_nm) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.en" id="#1">
+			   AND UPPER(mater_nm) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materNm}.NOTEMPTY&amp;${lang}.EQ.lo" id="#1">
+			   AND UPPER(mater_nm) like '%'||UPPER(${materNm})||'%'
+	    </append>
+
+	    <append condition="${materCd}.NOTEMPTY" id="#2">       
+			   AND mater_cd = ${materCd}
+	    </append>
+	    <append condition="${materType}.NOTEMPTY" id="#3">       
+			   AND mater_type = ${materType}
+	    </append>		    
+	    
+    </statement>        
+</statements>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>	 
+<!-- Coal Productiont-->
+
+    <!-- Coal Production Master 조회-->
+    <statement name="retrieveRentalUnitMgntList">
+        <![CDATA[
+			SELECT
+			        'F' as chk
+					,COMPANY_CD
+					,TYPE
+					,TYPE BF_TYPE
+					,TYPE_SEQ
+					,WORK_CD
+					,UNIT_CATE
+					,CONTRACT
+					,OWNER
+					,CONDITION
+					,PURPOSE
+					,RENT_PRICE
+					,CURR_CD
+					,MEASURE
+					,FROM_DATE
+					,TO_DATE
+					,MIN_CHARGE
+					,MIN_CHARGE_HR
+					,REMARK
+					,USE_YN
+					,REGID
+					,REGDATE
+					,REGTIME
+
+			FROM TB_RENTAL_UNIT
+			WHERE COMPANY_CD = ${companyCd}
+ 			   	   {#1}
+			       {#2}
+			       {#3}
+			       {#4}
+			       {#5}
+		     ORDER BY WORK_CD, UNIT_CATE, TYPE
+        ]]>  
+	    <append condition="${workLocation}.NOTEMPTY" id="#1">       
+			 	AND WORK_CD = ${workLocation}   
+	    </append>  
+	    <append condition="${unit}.NOTEMPTY" id="#2">       
+			 	AND UNIT_CATE = ${unit}   
+	    </append>  
+	    <append condition="${type}.NOTEMPTY" id="#3">       
+			 	AND TYPE LIKE '%' || ${type}  || '%'
+	    </append>  
+	    <append condition="${contractDateTo}.NOTEMPTY" id="#4">       
+			 <![CDATA[ AND TO_DATE <= replace(${contractDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${contractDateFrom}.NOTEMPTY" id="#5">       
+			 <![CDATA[ AND FROM_DATE >= replace(${contractDateFrom},'/','')  ]]>
+	    </append>  
+	    
+    </statement> 
+     
+    <!-- Coal Production Master Syskey 조회-->
+    <statement name="retrieveRentalUnitMgntTypeSeq">
+        <![CDATA[
+			SELECT NVL( MAX( TYPE_SEQ ) , '0' ) + 1 AS TYPE_SEQ
+			FROM  TB_RENTAL_UNIT
+			WHERE TYPE = ${type}
+        ]]> 
+    </statement> 
+     
+     
+    <!-- Coal Production Master Insert-->
+    <statement name="insertRentalUnitMgnt">
+        <![CDATA[
+        	INSERT INTO TB_RENTAL_UNIT(
+					COMPANY_CD
+					,TYPE
+					,TYPE_SEQ
+					,WORK_CD
+					,UNIT_CATE
+					,CONTRACT
+					,OWNER
+					,CONDITION
+					,PURPOSE
+					,RENT_PRICE
+					,CURR_CD
+					,MEASURE
+					,FROM_DATE
+					,TO_DATE
+					,MIN_CHARGE
+					,MIN_CHARGE_HR
+					,REMARK
+					,USE_YN
+					,REGID
+					,REGDATE
+					,REGTIME
+        	) 
+        	VALUES(
+	          	 ${companyCd}
+				,${type}
+				,(		SELECT NVL( MAX( TYPE_SEQ ) , '0' ) + 1 AS TYPE_SEQ
+						FROM  TB_RENTAL_UNIT
+						WHERE TYPE = ${type}
+				 )
+				,${workCd}
+				,${unitCate}
+				,${contract}
+				,${owner}
+				,${condition}
+				,${purpose}
+				,${rentPrice}
+				,${currCd}
+				,${measure}
+				,${fromDate}
+				,${toDate}
+				,${minCharge}
+				,${minChargeHr}
+				,${remark}
+				,${useYn}
+                ,${userId}
+                ,TO_CHAR(SYSDATE,'YYYYMMDD')
+                ,TO_CHAR(SYSDATE,'HH24MISS')
+
+        	)
+        ]]> 
+    </statement> 
+     
+     
+    <!-- Coal Production Master Update-->
+    <statement name="updateRentalUnitMgnt">
+        <![CDATA[
+        	UPDATE TB_RENTAL_UNIT
+        	SET    WORK_CD = ${workCd}
+					,UNIT_CATE = ${unitCate}
+					,CONTRACT = ${contract}
+					,OWNER = ${owner}
+					,CONDITION = ${condition}
+					,PURPOSE = ${purpose}
+					,RENT_PRICE = ${rentPrice}
+					,CURR_CD = ${currCd}
+					,MEASURE = ${measure}
+					,FROM_DATE = ${fromDate}
+					,TO_DATE = ${toDate}
+					,MIN_CHARGE = ${minCharge}
+					,MIN_CHARGE_HR = ${minChargeHr}
+					,REMARK = ${remark}
+					,USE_YN = ${useYn}
+					,MODID = ${userId}
+					,MODDATE = TO_CHAR(SYSDATE,'YYYYMMDD')
+					,MODTIME  = TO_CHAR(SYSDATE,'HH24MISS')
+					,TYPE = ${type}
+			WHERE COMPANY_CD = ${companyCd}
+				AND TYPE = ${bfType}
+				AND TYPE_SEQ = ${typeSeq}
+        ]]> 
+    </statement> 
+
+
+</statements>

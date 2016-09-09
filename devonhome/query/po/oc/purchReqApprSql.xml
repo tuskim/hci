@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Purch Request Manage -->
+
+    <!-- Search Purch Request Manage -->
+    <statement name="retrievePurchReqMstAppr">
+        <![CDATA[
+			SELECT mst.company_cd,
+			       mst.pr_no,
+			       mst.req_dept_cd,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2001',mst.req_dept_cd) req_dept_nm,
+			       mst.requester,
+			       to_char(to_date(mst.req_date,'yyyymmdd'),'yyyy/mm/dd') req_date,
+			       to_char(to_date(mst.deli_req_date,'yyyymmdd'),'yyyy/mm/dd') deli_req_date,
+			       mst.budget,
+			       mst.pur_dept_cd,
+			       mst.pur_comment,
+			       mst.status,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2201',mst.status) status_nm,
+			       dtl.idr_amt
+			  FROM lgiusf.tb_pr_master mst,
+				  ( SELECT company_cd,
+				           pr_no,
+				           sum(idr_amt) idr_amt 
+				      FROM lgiusf.tb_pr_detail 
+				     GROUP BY company_cd, pr_no ) dtl
+			 WHERE mst.company_cd  = dtl.company_cd
+			   AND mst.pr_no       = dtl.pr_no
+			   AND mst.company_cd  = ${companyCd}
+			   AND mst.req_dept_cd = ${reqDeptCd}
+			   AND mst.req_date BETWEEN ${orderDateFrom} AND ${orderDateTo}
+			   {#1}
+			   {#2}
+			   {#3}
+		]]>
+
+        <append where="false" condition="${prNo}.NOTEMPTY" id="#1">
+               AND pr_no       = ${prNo}
+	    </append>
+
+        <append where="false" condition="${status}.NOTEMPTY" id="#2">
+               AND status      = ${status}
+	    </append>
+
+		<!--  GMO (O120) -->
+        <append where="false" condition="${deptCd}.EQ.O120" id="#3">
+			   AND ( mst.pur_dept_cd = ${deptCd} OR
+			         mst.status in ('01','02') )
+	    </append>
+
+        <append where="false" condition="${deptCd}.NE.O120" id="#3">
+			   AND mst.pur_dept_cd = ${deptCd}
+	    </append>
+
+    </statement>  
+
+
+    <!-- Search Purch Request Detail Manage -->
+    <statement name="retrievePurchReqDtlAppr">
+        <![CDATA[
+			SELECT company_cd,
+			       pr_no,
+			       pr_detail_no,
+			       mater_type,
+			       mater_cd,
+			       lgiusf.F_GETCOMMNAME('MAT', ${companyCd}, ${lang}, mater_cd, '') mater_nm,
+			       urgent_type,
+			       vend_cd,
+			       lgiusf.F_GETCOMMNAME('VEND', ${companyCd}, ${lang}, vend_cd, '') vend_nm,
+			       pr_desc,
+			       unit,
+			       qty,
+			       vat_cd,
+			       currency_cd,
+			       price,
+			       amount,
+			       idr_amt,
+			       deli_loct,
+			       po_status
+			  FROM lgiusf.tb_pr_detail
+			 WHERE company_cd = ${companyCd}
+			   AND pr_no      = ${prNo}
+		]]>
+    </statement>
+
+
+    <!-- Update Purch Request Master Manage -->
+    <statement name="updatePurchReqMstAppr">
+        <![CDATA[
+			UPDATE lgiusf.tb_pr_master
+			   SET pur_dept_cd     = ${pur_dept_cd},
+			       modid           = ${userId},
+			       moddate         = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime         = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd      = ${companyCd}
+			   AND pr_no           = ${prNo}
+		]]>     
+    </statement> 
+
+    <!-- Update Purch Request Master Approcal -->
+    <statement name="updatePurchReqMstApprApply">
+        <![CDATA[
+			UPDATE lgiusf.tb_pr_master
+			   SET status          = ${status},
+			       modid           = ${userId},
+			       moddate         = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime         = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd      = ${companyCd}
+			   AND pr_no           = ${prNo}
+		]]>     
+    </statement>
+
+    <!-- Update Purch Request Detail Manage -->
+    <statement name="updatePurchReqDtlAppr">
+        <![CDATA[
+			UPDATE lgiusf.tb_pr_detail
+			   SET mater_type    = ${materType},
+			       mater_cd      = ${materCd},
+			       vend_cd       = ${vendCd},
+			       urgent_type   = ${urgentType},
+			       pr_desc       = ${prDesc},
+			       qty           = ${qty},
+			       currency_cd   = ${currencyCd},
+			       vat_cd        = ${vatCd},
+			       price         = ${price},
+			       amount        = ${amount},
+			       idr_amt       = ${idrAmt},
+			       deli_loct     = ${deliLoct},
+			       modid         = ${userId},
+			       moddate       = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime       = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd    = ${companyCd}
+			   AND pr_no         = ${prNo}
+			   AND pr_detail_no  = ${prDetailNo}
+		]]>     
+    </statement>    
+
+    
+</statements>

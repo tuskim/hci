@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- purchase Request Approval -->
+
+   	<!-- purchase Request Approval Init -->  
+	<action-name name="purchReqAppr">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/oc/purchReqAppr.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- purchase Request Approval Master Retrieve -->  
+	<action-name name="po.oc.retrievePurchReqMstAppr">
+    	<command>po.oc.cmd.RetrievePurchReqMstApprCmd</command> 
+   	</action-name>   	
+
+   	<!-- purchase Request Approval Detail Retrieve -->  
+	<action-name name="po.oc.retrievePurchReqDtlAppr">
+    	<command>po.oc.cmd.RetrievePurchReqDtlApprCmd</command> 
+   	</action-name>   	
+   	
+   	<!-- purchase Request Approval Save -->  
+	<action-name name="po.oc.cudPurchReqAppr">
+    	<command>po.oc.cmd.CudPurchReqApprCmd</command> 
+   	</action-name>      	
+    
+   	<!-- purchase Request Approval Apply -->  
+	<action-name name="po.oc.cudPurchReqApprApply">
+    	<command>po.oc.cmd.CudPurchReqApprApplyCmd</command> 
+   	</action-name>      	
+
+   	<!-- purchase Request Approval Cancel -->  
+	<action-name name="po.oc.cudPurchReqApprCancel">
+    	<command>po.oc.cmd.CudPurchReqApprCancelCmd</command> 
+   	</action-name>
+   	    
+</navigation-mapper>

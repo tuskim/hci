@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigation-mapper>
+
+  <!-- ****************************** -->
+  <!-- E-mail Send                    -->
+  <!-- ****************************** -->
+    <action-name name="email.sendEmailMgnt">
+        <command>email.cmd.SendEmailMgntCmd</command>
+        <return-url>/jsp/po/oc/preView.jsp</return-url>
+    </action-name>
+                       
+</navigation-mapper>

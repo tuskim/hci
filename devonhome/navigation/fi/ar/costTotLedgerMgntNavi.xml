@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Cost Total Ledger Mgnt -->
+
+   	<!-- Cost Total Ledger Mgnt -->  
+	<action-name name="costTotLedgerMgnt">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/costTotLedgerMgnt.jsp</return-url>
+   	</action-name>
+   
+   	<!-- Cost Total Ledger Master Mgnt Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerMstMgnt">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerMstMgntCmd</command>
+	</action-name> 
+
+   	<!-- Cost Total Ledger Detail Mgnt Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerDtlMgnt">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerDtlMgntCmd</command>
+	</action-name>
+
+   	<!-- Cost Total Ledger Barge Mgnt Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerBargeMgnt">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerBargeMgntCmd</command>
+	</action-name>
+	
+    <!-- Cost Total Ledger Detail Mgnt Save -->  
+    <action-name name="fi.ar.cudCostTotLedgerMgnt">
+    	<command>fi.ar.cmd.CudCostTotLedgerMgntCmd</command>
+   	</action-name>
+   	
+   	<!-- Cost Total Ledger Mgnt Delete -->
+    <action-name name="fi.ar.deleteCostTotLedgerMgnt">
+    	<command>fi.ar.cmd.DelCostTotLedgerMgntCmd</command>
+	</action-name>
+	
+	<action-name name="fi.ar.DownloadFile">
+    	<command>fi.ar.cmd.DownloadFileCmd</command>
+     	<return-type>null</return-type>
+	</action-name>
+	
+	<action-name name="fi.ar.retrieveCostTotLedgerMstExcelList">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerMstExcelListCmd</command>
+	</action-name>
+
+</navigation-mapper>

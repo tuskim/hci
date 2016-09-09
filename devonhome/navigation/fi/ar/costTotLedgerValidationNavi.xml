@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Cost Total Ledger Validation -->
+
+   	<!-- Cost Total Ledger Validation -->  
+	<action-name name="costTotLedgerValidation">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/costTotLedgerValidation.jsp</return-url>
+   	</action-name>
+   
+   	<!-- Cost Total Ledger Master Validation Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerMstValidation">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerMstValidationCmd</command>
+	</action-name>
+
+   	<!-- Cost Total Ledger Detail Validation Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerDtlValidation">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerDtlValidationCmd</command>
+	</action-name>
+
+    <!-- Cost Total Ledger Detail Validation Save -->  
+    <action-name name="fi.ar.cudCostTotLedgerValidation">
+    	<command>fi.ar.cmd.CudCostTotLedgerValidationCmd</command>
+   	</action-name>
+   	
+   	<!-- Cost Total Ledger Validation Delete -->
+    <action-name name="fi.ar.deleteCostTotLedgerValidation">
+    	<command>fi.ar.cmd.DelCostTotLedgerValidationCmd</command>
+	</action-name>
+
+   	<!-- Cost Total Ledger Validation Check Validation -->
+    <action-name name="fi.ar.cudCostTotLedgerCheckValidation">
+    	<command>fi.ar.cmd.CudCostTotLedgerCheckValidationCmd</command>
+	</action-name>
+
+   	<!-- Cost Total Ledger Validation Trans Validation -->
+    <action-name name="fi.ar.cudCostTotLedgerTransValidation">
+    	<command>fi.ar.cmd.CudCostTotLedgerTransValidationCmd</command>
+	</action-name>
+		
+</navigation-mapper>

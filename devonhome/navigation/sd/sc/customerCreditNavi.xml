@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+   <!-- customer Credit Limit 첫 페이지 호출--> 	
+   <action-name name="customerCreditList">
+ 		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/sd/sc/RetrieveCustomerCreditList.jsp</return-url>
+  	</action-name>
+  	
+   <!--Retrieve customer Credit Limit List --> 	
+   <action-name name="retrieveCustomerCreditList">
+   		<command>sd.sc.cmd.RetrieveCustomerCreditListCmd</command>
+  	</action-name>
+
+ 
+ </navigation-mapper>

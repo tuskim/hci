@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 2015.10.08 hskim CSR:C20151005_87394 파일정책 Board 관련 필터링 확장자 추가 -->
+<!-- 2016.04.04 hskim CSR:C20160330_24662 파일정책 Board 관련 필터링 White List 방식으로 변경 -->
+
+<framework>
+  <persistent>
+    <!-- DevOn Framework이 제공하는 Connection Pool 관리 방식 가운데 JNDI(WAS제공 Connection Pool) / JDBC(DevOn Framework 제공 Connection Pool) 두 가지 방식 중 하나를 설정한다.
+         default 설정은 JDBC(DevOn Framework이 제공하는 Connection Pool)이다. 
+         default-pool에서 한가지 방식을 설정 하여도 다른 방식의 Pool을 사용 가능하다. -->
+    <default-pool>JNDI</default-pool>
+    
+    <!-- Connection과 관련하여 dbwrap에 자동으로 로그를 남겨주는 LConnection을 사용할 지 여부를 설정하는 부분이다.
+         default 설정은 false이고, true로 설정하는 경우 LConnection을 사용하여 dbwrap 레벨에 자동으로 로그를 남겨준다.
+                  물론 이 경우 dbwrap의 tracelevel이 true인 경우만 로그가 남는다. -->
+    <db-trace>true</db-trace>
+    
+    <!-- DevOn Framework에서 XLOG를 함께 사용하는 경우 XLOG 활성화 여부 설정 -->
+    <xlog-enable>false</xlog-enable> 
+	
+	<!-- DataSource Configuration Information -->
+    <jndi-datasource name = "default">
+      <url>defaultDs</url>
+    </jndi-datasource>
+    
+	  <!-- DevOn Framework Connection Pool Configuration Information -->
+    <jdbc-datasource>
+      <pool>
+        <max-active-connections> 10 </max-active-connections>
+        <max-idle-connections> 5 </max-idle-connections>
+        <max-checkout-time> 20000 </max-checkout-time>
+        <wait-time> 15000 </wait-time>
+        <ping-query> SQL SELECT 1 FROM DUAL</ping-query>
+        <ping-enabled> false </ping-enabled>
+        <ping-connection-time> 0 </ping-connection-time>
+        <ping-connections-notused> 0 </ping-connections-notused>
+        <quiet-mode> true </quiet-mode>
+      </pool>
+      <!-- Connection Pool을 여러개 관리하려는 경우 해당 spec을 설정한다. -->
+      <spec name = "default">
+        <driver>oracle.jdbc.driver.OracleDriver</driver>
+        <url>jdbc:oracle:thin:@165.244.231.230:1521:LGISE5</url>
+        <user>lgiusg</user>
+        <password>sg30q</password>
+      </spec>
+      <spec name = "oracle">
+        <driver>oracle.jdbc.driver.OracleDriver</driver>
+        <url>jdbc:oracle:thin:@127.0.0.1:1521:XE</url>
+        <user>administratrator</user>
+        <password>system</password>
+      </spec>
+    </jdbc-datasource>
+
+    <!--Resultset converter Information-->
+    <!-- LResultSetConverter를 AutoDAO를 통해서 사용하든, 직접 DAO를 만들어 사용하든  변환 규칙을 작성한 클래스를 설정한다.
+         DevOn Framework에서는 LDefaultNaming 클래스를 샘플로 제공하며
+                  필요하다면 프로젝트에서 별도의 Naming rule 클래스를 개발하고 이를 등록하여 사용 가능하다. -->
+    <resultset-converter>
+      <naming>devonframework.persistent.util.LDefaultNaming</naming>
+    </resultset-converter>
+
+    <!-- Outer Query Dynamic Xml Information -->
+    <!-- LQueryDynamicFactory를 사용하여 *.xml file에서 쿼리를 읽어오는 경우  spec 단위로 *.xml 파일이 저장되어 있는 directory를 설정한다.
+                 단, 여기서 사용하는 xml query는 dynamic query binding 기능을 제공한다.
+                 따라서 XML에 작성하는 쿼리는 CDATA로 싸서 작성해야 한다. -->
+    <dynamic-query>
+        <directory>#home/query</directory>
+        <!-- Dynamic Query와 AutoDao를 연동하여 사용하는 경우 아래 옵션이 true면 파라미터 바인딩을 AutoDao에 위임하게 되고
+         false면 LQuery에서 파라미터 바인딩 완료된 쿼리를 리턴하게 된다. 따라서 AutoDAO를 사용하지 않는 경우는 false라고 설정한다.
+         default는 true이다. -->
+        <auto-dao>true</auto-dao>
+    </dynamic-query>
+
+		<auto-dao>
+    	  <!-- AutoDAO에서 사용할 query 방식 설정
+       *.sql 방식, dynamic 방식 가운데 한 가지만 선택해야 한다. -->
+	      <query-type> dynamic </query-type>
+	      <query-binding> bind </query-binding>
+	  </auto-dao>
+	</persistent>
+
+  <front>
+   <!-- Navigation Component Setting -->
+	 <navigation name="dev">
+	    <!-- navigation 정보를 담고 있는 xml 파일이 저장된 디렉토리 설정 -->
+    	<directory>#home/navigation</directory>
+    	<!-- encoding-type 설정 -->
+    	<encoding-type>UTF-8</encoding-type>
+    	<!-- default-handler 설정 : default는 forward 이다.
+                      이는 각 Navigation 파일의 action 설정마다 별도로 Handler를 설정하면 우선순위가 뒤진다.
+                      즉, 각 Action 별 handler 설정이 우선이며, 별도의 설정이 없는 경우 여기서 설정한 handler 방식을 따르게 된다. -->
+    	<default-handler>forward</default-handler>
+    </navigation>
+
+    <navigation name="ajax">
+    	<directory>#home/navigation</directory>
+    	<encoding-type>utf-8</encoding-type>
+    	<default-handler>null</default-handler>
+    </navigation>
+
+    <navigation name="gau">
+    	<directory>#home/navigation</directory>
+    	<encoding-type>UTF-8</encoding-type>
+    	<default-handler>null</default-handler>
+    </navigation>
+
+    <!-- DevOn Framework가 기본적으로 제공하는 Handler 클래스들을 등록한 것이다.
+         handler name 값을 Action 정의 시 사용하면 되겠다. -->
+    <navigation-handlers>
+    	<handler name="forward">devonframework.front.channel.handler.LFowardHandler</handler>
+    	<handler name="alertAndBack">devonframework.front.channel.handler.LAlertAndBackHandler</handler>
+    	<handler name="alertAndGoUrl">devonframework.front.channel.handler.LAlertAndGoUrlHandler</handler>
+    	<handler name="historyBack">devonframework.front.channel.handler.LHistoryBacktHandler</handler>
+    	<handler name="null">devonframework.front.channel.handler.LNullHandler</handler>
+    	<handler name="redirect">devonframework.front.channel.handler.LRedirectHandler</handler>
+    </navigation-handlers>
+
+    <!-- File Upload Configuration -->
+    <upload>
+
+      <!-- File이 Upload되는 물리적인 경로 설정
+     {date:yyyyMMdd}라고 주면 해당 일자 별로 sub directory가 생성된다. -->
+      <target-directory>
+        #home/doc
+      </target-directory>
+      <!-- Upload하는 file의 size 제한값, 단위는 byte이다.
+      -1이라는 설정은 size 제한을 하지 않겠다는 의미이다. -->
+      <maxsize>-1</maxsize>
+      <!-- 0byte 크기의 File Upload의 허용 여부이다.
+      default는 boolean 값이므로 false이며, 이는 허용하지 않겠다는 의미이다.-->
+      <zero-allow>false</zero-allow>
+      <!-- File Upload 시 내부적으로 사용하는 threshold의 size이다. 단위는 byte이다. -->
+      <size-threshold>1024</size-threshold>
+      <!-- multipart/formdata의 header encoding을 설정해주는 부분이다. -->
+      <header-encoding>UTF-8</header-encoding>
+      <!-- File Upload 시 임시로 사용하는 디렉토리이다. -->
+      <temporary-directory>#home</temporary-directory>
+
+      <policy name="default">
+        <class>devonframework.front.fileupload.policy.strategy.LPerfectPolicy</class>
+        <allow>*</allow>
+        <deny>*.jsp;*.class;*.java;*.cgi;*.asp;*.php;*.inc</deny>
+        <filename-pattern>
+          {prefix}[{date:yyyyMMddHHmmssSSS}].{ext}
+        </filename-pattern>
+        <!-- 파일명 중복시 sequece로 구분할지 여부 -->
+        <seq-allow>false</seq-allow>
+        <target-directory>#home/doc</target-directory>
+        <maxsize>-1</maxsize>
+        <zero-allow>true</zero-allow>
+        <size-threshold>1024</size-threshold>
+        <header-encoding>UTF-8</header-encoding>
+        <temporary-directory>#home</temporary-directory>
+      </policy>
+
+      <policy name="perfect">
+        <class>devonframework.front.fileupload.policy.strategy.LPerfectPolicy</class>
+        <allow>*</allow>
+        <deny>*.jsp;*.class;*.java;*.cgi;*.asp;*.php;*.inc</deny>
+        <filename-pattern>
+          {prefix}[{date:yyyyMMddHHmmssSSS}].{ext}
+        </filename-pattern>
+        <seq-allow>true</seq-allow>
+        <target-directory>#home/upload</target-directory>
+        <maxsize>-1</maxsize>
+        <zero-allow>false</zero-allow>
+        <size-threshold>1024</size-threshold>
+        <header-encoding>UTF-8</header-encoding>
+        <temporary-directory>#home</temporary-directory>
+      </policy>
+
+	  <!-- 2015.10.08 hskim CSR:C20151005_87394 -->
+      <policy name="board">
+        <class>devonframework.front.fileupload.policy.strategy.LPerfectPolicy</class>
+        <allow>*.ppt;*.pptx;*.doc;*.docx;*.xls;*.xlsx;*.jpg;*.png;*.gif</allow>
+        <deny>*</deny>
+        <filename-pattern>
+          {prefix}{date:ddHHmmss}.{ext}
+        </filename-pattern>
+        <!-- 파일명 중복시 sequece로 구분할지 여부 -->
+        <seq-allow>false</seq-allow>
+         <target-directory>#home/doc/board</target-directory>
+        <!--<target-directory>/data2/lils/doc/board/{date:yyyyMM}</target-directory> -->
+        <maxsize>-1</maxsize>
+        <zero-allow>true</zero-allow>
+        <size-threshold>1024</size-threshold>
+        <header-encoding>UTF-8</header-encoding>
+        <temporary-directory>#home</temporary-directory>
+      </policy>
+
+      <policy name="etc">
+        <class>devonframework.front.fileupload.policy.strategy.LPerfectPolicy</class>
+        <allow>*</allow>
+        <deny>*.jsp;*.class;*.java;*.cgi;*.asp;*.php;*.inc</deny>
+        <filename-pattern>
+          {prefix}[{date:yyyyMMddHHmmssSSS}].{ext}
+        </filename-pattern>
+        <!-- 파일명 중복시 sequece로 구분할지 여부 -->
+        <seq-allow>false</seq-allow>
+        <target-directory>#home/doc/etc</target-directory>
+        <maxsize>-1</maxsize>
+        <zero-allow>true</zero-allow>
+        <size-threshold>1024</size-threshold>
+        <header-encoding>UTF-8</header-encoding>
+        <temporary-directory>#home</temporary-directory>
+      </policy>
+    </upload>
+
+    <!-- File Download Configuration -->
+    <download name="default">
+    	<header-encoding>UTF-8</header-encoding>
+        <allow>*.*</allow>
+        <deny>*</deny>
+    </download>
+
+    <download name="etc">
+    	<header-encoding>UTF-8</header-encoding>
+        <allow>*.*</allow>
+        <deny>*</deny>
+    </download>
+
+    <!-- Page Configuration Information -->
+    <page>
+      <spec name="default">
+      	<!-- 페이징 처리 수정 2008-12-26 이진영  -->
+      	<!-- 한 페이지에 출력하는 데이터의 건수(rows of records) -->
+        <row-size> 10 </row-size>
+        <!-- 한 페이지에 출력하는 페이지 인덱스의 갯수 -->
+        <page-size> 10 </page-size>
+        <!-- AutoDAO를 사용하지 않고 별도의 DAO 혹은 PageStatement를 사용하는 경우에 대한 설정
+             DevOn Framework에서는 Common, Oracle, DB2, MSSQL, mySQL용 DAO 및 PageStatement를 제공한다. -->
+        <statement> devonframework.persistent.paging.dao.LOraclePageStatement </statement>
+        <dao> devonframework.persistent.paging.dao.LOraclePageDao </dao>
+        <!-- PageNavigation 객체의 사용 방식에 대한 설정, GET / POST / POST(WSG) -->
+        <navigation> comm.util.LDefaultPageNavigationByPost </navigation>
+      </spec>
+
+      <!-- 페이징 처리 추가 2008-12-31 이진영  -->
+      <spec name="webPage">
+      	<row-size> 10 </row-size>
+        <page-size> 5 </page-size>
+        <statement> devonframework.persistent.paging.dao.LOraclePageStatement </statement>
+        <dao> devonframework.persistent.paging.dao.LOraclePageDao </dao>
+        <navigation> comm.util.LDefaultPageNavigationByPost </navigation>
+      </spec>
+    </page>
+  </front>
+
+  <!-- LMessage component setting -->
+  <message>
+    <!-- 메시지를 물리적으로 관리하는 방식을 의미한다.
+                  즉, 파일로 관리하는 경우와 DB로 관리하는 경우를 이며  파일로 관리하는 경우는 devonframework.service.message.LMessageFile로 세팅하고
+         DB로 관리하는 경우는 devonframework.service.message.LMessageDB로 세팅한다.
+                  클래스 내부에서 로드할 때 참조하여 사용한다. -->
+    <resource-type>devonframework.service.message.LMessageFile</resource-type>
+    <!-- 메시지를 관리하는 방식, 즉 모듈이나 언어별 관리 방식을 의미한다.
+                  디폴트관리방식(하나의 메시지 파일로 관리)의 경우 devonframework.service.message.typehandler.LDefaultType으로 세팅하며
+                 모듈(시스템)별 관리하는 경우 devonframework.service.message.typehandler.LModuleType으로 세팅한다.
+                 언어별로 파일을 쪼개어 관리하는 경우는 devonframework.service.message.typehandler.LLangType으로 세팅하면
+                 클래스를 내부적으로 로드 하여 사용하게 되며
+                 모듈(시스템)별 언어별 관리하는 경우는 devonframework.service.message.typehandler.LModuleLangType으로 세팅하여 사용하면 된다.
+                 한 프로젝트에서 메시지를 관리방식을 한가지로 정하지 않고 모두 통합하여 사용할 경우 devonframework.service.message.typehandler.LPerfectType을 사용한다. -->
+    <resource-manage-type>devonframework.service.message.typehandler.LLangType</resource-manage-type>
+    <!-- 메세지가 저장되어 있는 디렉토리 -->
+    <directory>#home/message</directory>
+    <!-- 메시지 컴포넌트에 대해 LTag 를 사용할 경우 laf.xml 의 set-locale-automaic 프로퍼티를 true 로 지정했을 때에는
+         locale 정보를 명시적으로 주지 않아도 Request 객체 속의 정보를 이용하여 자동으로 세팅하여
+                  해당 message 프로퍼티 파일에서 값을 읽어올 수 있도록 한다 .
+                  만약 LDefaultType 이나 LModuleType 과 같이 다국어와 상관이 없을 경우에는 false 로 설정해야 한다. -->
+    <set-locale-automatic>true</set-locale-automatic>
+    <resource-name>message</resource-name>
+  </message>
+
+	<!-- Mail Component setting -->
+  <mail>
+   <!-- 메일 어플리케이션 개발 시 test 모드를 사용하려면 true라고 설정한다.
+                  실제 운영에서는 false라고 설정한다. -->
+	<test-mode>false</test-mode>
+	<!-- 메일 어플리케이션 개발 시 test 모드에사 사용할 receiver -->
+	<test-receivers>devon@lgcns.com</test-receivers>
+	  <!-- default 설정은 대부분 Java Mail API를 사용하기 위해 필요한 설정들이다. -->
+    <spec name="default">
+      <mail-host>portal.lgi.lg.co.kr</mail-host>
+      <mail-port>25</mail-port>
+      <session-debug-message-flag>true</session-debug-message-flag>
+      <default-sender-mail-address>admin@aaa.co.kr</default-sender-mail-address>
+      <default-sender-name>default sender</default-sender-name>
+      <content-type>7bit</content-type>
+      <plain-content-type>text/plain</plain-content-type>
+      <html-content-type>text/html</html-content-type>
+      <charset-type>UTF-8</charset-type>
+      <encoding-type>Q</encoding-type>
+    </spec>
+    <!-- 각 spec 별 설정은 defualt 설정 보다 우선순위를 가진다. -->
+    <spec name="example">
+      <default-sender-mail-address>example@aaa.co.kr</default-sender-mail-address>
+      <default-sender-name>example sender</default-sender-name>
+    </spec>
+    <body-template name="default">
+      <directory>#home/mail</directory>
+      <html name="default">default.html</html>
+      <img-server-ip>127.0.0.1</img-server-ip>
+      <img-server-port>9568</img-server-port>
+      <save-resolvedhtml-flag>true</save-resolvedhtml-flag>
+      <save-resolvedhtml-dir>#home/mail/save</save-resolvedhtml-dir>
+    </body-template>
+    <body-template name="example">
+      <directory>#home/mail/example</directory>
+      <html name="htmlExample">example.html</html>
+    </body-template>
+  </mail>
+
+  <!--DATE Component setting -->
+  <date>
+    <!-- Component에서 사용할 Date Format 설정 -->
+    <format>YYYYMMDD</format>
+    <holiday-path>#home/conf/products/holiday.conf</holiday-path>
+    <holiday-encoding-type>UTF-8</holiday-encoding-type>
+  </date>
+
+  <!-- LRemoteProxy Component setting -->
+  <remote name="default">
+    <!-- JNDI lookup에 필요한 Initial Context Factory Name -->
+    <context-factory></context-factory>
+    <!-- JNDI lookup에 필요한 Provider Url -->
+    <provider-url></provider-url>
+  </remote>
+  
+  <!-- Gauce setting -->
+  <gauce>
+    <!-- 사용하려는 Gauce 버전 name -->
+    <current-version>gauce40Uni</current-version>
+
+    <!-- GAUCE 3.5 ActiveX Component Class ID -->
+    <version name="gauce35">
+		  <bind>CLSID:9C9AB433-EA85-11D2-A4F9-00608CEBEE49</bind>
+		  <xchart>CLSID:75B5421D-15E1-43FA-990D-C7847D1077F0</xchart>
+		  <luxecombo>CLSID:60109D65-70C0-425C-B3A4-4CB001513C69</luxecombo>
+		  <dataversion>CLSID:3267EA0D-B5D8-11D2-A4F9-00608CEBEE49</dataversion>
+		  <inputfile>CLSID:69F1348F-3EBE-11D3-973D-0060979E2A03</inputfile>
+		  <grid>CLSID:1F57AEAD-DB12-11D2-A4F9-00608CEBEE49</grid>
+		  <imgdataversion>CLSID:BCB3A52D-F8E7-11D3-973E-0060979E2A03</imgdataversion>
+		  <tr>CLSID:0A2233AD-E771-11D2-973D-00104B15E56F</tr>
+		  <emedit>CLSID:E6876E99-7C28-43AD-9088-315DC302C05F</emedit>
+		  <menu>CLSID:7A54CBF0-2CB4-11D4-973E-0060979E2A03</menu>
+		  <radio>CLSID:754F3DC4-0C79-4C92-AD64-A806D8FF2AB0</radio>
+		  <tab>CLSID:ED382953-E907-11D3-B694-006097AD7252</tab>
+		  <textarea>CLSID:91B0A4F0-3206-4564-9BB4-AF9055DEF8A1</textarea>
+		  <treeview>CLSID:4401B994-DD33-11D2-B539-006097ADB678</treeview>
+		  <reports>CLSID:37D13B2F-E5EB-11D2-973D-00104B15E56F</reports>
+    </version>
+
+    <!-- GAUCE 4.0 ActiveX Component Class ID -->
+    <version name="gauce40">
+		  <bind>CLSID:4A35BB2C-B831-4199-A486-FEA332D085D9</bind>
+		  <xchart>CLSID:2A99B1B3-E263-4A00-A167-C1B967716DE2</xchart>
+		  <luxecombo>CLSID:D8BCC087-4710-427D-B2E4-A4B93B6EA197</luxecombo>
+		  <dataversion>CLSID:2506B38B-0FF7-4249-BA3E-8BC1DC399FBB</dataversion>
+		  <inputfile>CLSID:C722848E-C7EE-4DC6-947E-C2CD49BBA9DE</inputfile>
+		  <grid>CLSID:EA8B6EE6-3DD8-4534-B4BB-27148CF0042B</grid>
+		  <imgdataversion>CLSID:2B0B1D8B-CAAA-4E06-BD9A-A09A916BD67A</imgdataversion>
+		  <tr>CLSID:78E24950-4295-43D8-9B1A-1F41CD7130E5</tr>
+		  <emedit>CLSID:4AEAFD66-8D65-41AC-B1D1-57E7FF2A734F</emedit>
+		  <menu>CLSID:216FC5D2-962D-4DD6-A000-02754CF91231</menu>
+		  <radio>CLSID:B22DC058-80A2-438F-A64D-08B3B04AD7E0</radio>
+		  <tab>CLSID:6BA6E0F6-E3A1-45ED-9E03-CBFC682EC63C</tab>
+		  <textarea>CLSID:2F5DF8D9-F63C-460E-B5CB-399E816B0274</textarea>
+		  <treeview>CLSID:6DD1CE9F-1722-46F0-AF93-B2BC58383CD2</treeview>
+		  <reports>CLSID:37D13B2F-E5EB-11D2-973D-00104B15E56F</reports>
+    </version>
+
+    <!-- GAUCE 4.0 Unicode ActiveX Component Class ID -->
+    <version name="gauce40Uni">
+		  <bind>CLSID:2F98EA90-EAE1-4AB5-AE89-DA073D824589</bind>
+		  <xchart>CLSID:4F57AF1B-5470-47EE-A5AA-D1EA4B3C42A6</xchart>
+		  <luxecombo>CLSID:BB4533A0-85E0-4657-9BF2-E8E7B100D47E</luxecombo>
+		  <dataversion>CLSID:AF989B7C-8AC3-40BC-B749-EB335BDFD190</dataversion>
+		  <inputfile>CLSID:5C32688E-CEBE-419D-9C63-0704A2331EEC</inputfile>
+		  <grid>CLSID:71E7ACA0-EF63-4055-9894-229B056E9C31</grid>
+		  <imgdataversion>CLSID:9F0AA341-1D10-4B18-B70B-6AA49CE7F5D6</imgdataversion>
+		  <tr>CLSID:223216F6-B9FE-406D-9ED6-143FCE3A07B8</tr>
+		  <emedit>CLSID:D7779973-9954-464E-9708-DA774CA50E13</emedit>
+		  <menu>CLSID:31538FAB-8051-4CFA-ACA4-B2668718B6F8</menu>
+		  <radio>CLSID:F73C0958-D8FE-43A5-9BB0-0F651C5A2BCC</radio>
+		  <tab>CLSID:90CAA259-71ED-42CB-BEB8-95281CCF9E58</tab>
+		  <textarea>CLSID:1455BE02-C41B-4115-B21C-32380507DC8F</textarea>
+		  <treeview>CLSID:C1781C5C-0C32-40F2-8927-46FE4BCB5B87</treeview>
+		  <reports>CLSID:9683681E-FAD6-45F1-86B3-FD60C7101BC9</reports>
+    </version>
+  </gauce>
+</framework>

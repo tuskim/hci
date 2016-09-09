@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<statements>
+
+	<statement name="retrieveMaterialApprovalList">
+		<![CDATA[
+/*  materialApprovalSql.xml >  retrieveMaterialApprovalList */      
+SELECT M.COMPANY_CD
+      ,M.REQUEST_NO
+      ,M.REQUEST_TYPE
+      ,LGIUSF.F_GETCOMMNAME('COMM', COMPANY_CD, 'en', '2015', M.REQUEST_TYPE) AS REQUEST_TYPE_NM
+      ,M.MATER_NM_EN
+      ,M.MATER_CD
+      ,M.MATER_TYPE
+      ,M.MATER_GROUP
+      ,M.UNIT
+      ,M.STATUS
+      ,M.CANCEL_MSG
+      ,M.SAP_MSG
+  FROM TB_MATER_REQUEST M
+ WHERE M.COMPANY_CD = ${companyCd}
+ {#1}
+ {#2}
+ {#3}
+ {#4}
+ ORDER BY M.REQUEST_NO
+		]]>
+		<append where="false" condition="${fromDate}.NOTEMPTY" id="#1">
+			<![CDATA[ AND M.REGDATE >= ${fromDate} ]]>
+		</append>
+		<append where="false" condition="${toDate}.NOTEMPTY" id="#2">
+			<![CDATA[ AND M.REGDATE <= ${toDate} ]]>
+		</append>
+		<append where="false" condition="${materNm}.NOTEMPTY" id="#3">
+			<![CDATA[ AND M.MATER_NM_EN LIKE '%' || ${materNm} || '%' ]]>
+		</append>
+		<append where="false" condition="${status}.NOTEMPTY" id="#4">
+			<![CDATA[ AND M.STATUS   = ${status} ]]>
+		</append>
+	</statement>
+	
+	
+	
+	
+	
+    <statement name="retrieveMaterialApprovalMasterStatus">
+        <![CDATA[
+/*  materialApprovalSql.xml >  retrieveMaterialApprovalMasterStatus */      
+SELECT STATUS /* 진행상태 01:request, 02:approval, 03:canceled */
+  FROM TB_MATER_REQUEST
+ WHERE 1 = 1
+   AND COMPANY_CD = ${companyCd} 
+   AND REQUEST_NO = ${requestNo}
+		]]> 		    	    	        			           		
+    </statement>  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <statement name="updateMaterialApprovalMasterSapResult"> 
+       <![CDATA[	
+/*  materialApprovalSql.xml >  updateMaterialApprovalMasterSapResult */      
+UPDATE TB_MATER_REQUEST
+   SET STATUS	     = ${status}         
+      ,SAP_MSG       = ${sapMsg}
+      ,MATER_CD	     = DECODE(${returnType}, '00', ${materCd}, MATER_CD)         
+      ,MODID         = ${userId}
+      ,MODDATE       = to_char(SYSDATE, 'yyyymmdd')
+      ,MODTIME       = to_Char(SYSDATE, 'hh24miss')
+ WHERE COMPANY_CD = ${companyCd}
+   AND REQUEST_NO = ${requestNo}
+		]]> 	       		
+    </statement>     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <statement name="mergeMaterialInfo"> 
+       <![CDATA[	
+/*  materialApprovalSql.xml >  mergeMaterialInfo */  
+MERGE INTO TB_MATER_INFO X1
+USING (SELECT COMPANY_CD /*  */
+             ,REQUEST_NO
+             ,MATER_CD /*  */
+             ,'' AS MATER_NM_KR /*  */
+             ,MATER_NM_EN /*  */
+             ,MATER_NM_LO /*  */
+             ,MATER_TYPE /*  */
+             ,UNIT /*  */
+             ,'Y' AS USEYN /*  */
+             ,${userId} AS REGID /*  */
+             ,TO_CHAR(SYSDATE, 'YYYYMMDD') AS REGDATE /*  */
+             ,TO_CHAR(SYSDATE, 'HH24MISS') AS REGTIME /*  */
+             ,${userId} AS MODID /*  */
+             ,TO_CHAR(SYSDATE, 'YYYYMMDD') AS MODDATE /*  */
+             ,TO_CHAR(SYSDATE, 'HH24MISS') AS MODTIME /*  */
+         FROM TB_MATER_REQUEST
+        WHERE 1 = 1
+          AND COMPANY_CD = ${companyCd}
+          AND REQUEST_NO = ${requestNo}) X2
+ON (X1.COMPANY_CD = X2.COMPANY_CD AND X1.MATER_CD = X2.MATER_CD)
+WHEN MATCHED THEN
+  UPDATE
+     SET X1.MATER_NM_KR = X2.MATER_NM_KR
+        ,X1.MATER_NM_EN = X2.MATER_NM_EN
+        ,X1.MATER_NM_LO = X2.MATER_NM_LO
+        ,X1.MATER_TYPE  = X2.MATER_TYPE
+        ,X1.UNIT        = X2.UNIT
+        ,X1.MODID       = X2.MODID
+        ,X1.MODDATE     = X2.MODDATE
+        ,X1.MODTIME     = X2.MODTIME
+WHEN NOT MATCHED THEN
+  INSERT
+    (X1.COMPANY_CD
+    ,X1.MATER_CD
+    ,X1.MATER_NM_KR
+    ,X1.MATER_NM_EN
+    ,X1.MATER_NM_LO
+    ,X1.MATER_TYPE
+    ,X1.UNIT
+    ,X1.USEYN
+    ,X1.REGID
+    ,X1.REGDATE
+    ,X1.REGTIME
+    ,X1.MODID
+    ,X1.MODDATE
+    ,X1.MODTIME)
+  VALUES
+    (X2.COMPANY_CD
+    ,X2.MATER_CD
+    ,X2.MATER_NM_KR
+    ,X2.MATER_NM_EN
+    ,X2.MATER_NM_LO
+    ,X2.MATER_TYPE
+    ,X2.UNIT
+    ,X2.USEYN
+    ,X2.REGID
+    ,X2.REGDATE
+    ,X2.REGTIME
+    ,X2.MODID
+    ,X2.MODDATE
+    ,X2.MODTIME)
+		]]> 	       		
+    </statement>  
+
+
+
+
+    <statement name="updateMaterialInfoYn"> 
+       <![CDATA[	
+/*  materialApprovalSql.xml >  updateMaterialInfoYn */      
+UPDATE TB_MATER_INFO
+   SET USEYN       = ${useyn}
+      ,MODID         = ${userId}
+      ,MODDATE       = to_char(SYSDATE, 'yyyymmdd')
+      ,MODTIME       = to_Char(SYSDATE, 'hh24miss')
+ WHERE COMPANY_CD = ${companyCd}
+   AND MATER_CD = ${materCd}
+		]]> 	       		
+    </statement>       
+
+</statements>

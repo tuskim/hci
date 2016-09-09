@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- clinkerProduction 등록 -->
+
+   <!-- clinkerProduction  조회 첫 페이지--> 	
+   <action-name name="clinkerProduction">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/ps/cp/clinkerProduction.jsp</return-url>
+  	</action-name>
+
+  	<!-- Clinker Production List 조회-->
+   	<action-name name="ps.cp.retrieveClinkerProductionList"> 
+    	<command>ps.cp.cmd.RetrieveClinkerProductionListCmd</command>
+   	</action-name>
+   	
+  	<!-- Use of Material for Clinker 조회-->
+   	<action-name name="ps.cp.retrieveClinkerProductionMaterial"> 
+    	<command>ps.cp.cmd.RetrieveClinkerProductionMaterialCmd</command>
+   	</action-name>
+ 
+   	<!-- Result of Clinker 조회-->
+   	<action-name name="ps.cp.retrieveClinkerProductionResult"> 
+    	<command>ps.cp.cmd.RetrieveClinkerProductionResultCmd</command>
+   	</action-name>
+
+  	<!-- [Add Row] New Data Search-->
+   	<action-name name="ps.cp.retrieveClinkerProductionAddRow"> 
+    	<command>ps.cp.cmd.RetrieveClinkerProductionAddRowCmd</command>
+   	</action-name>
+   	
+   	<!-- Save -->
+  	<action-name name="ps.cp.cudClinkerProductionReg">
+		<command>ps.cp.cmd.CudClinkerProductionRegCmd</command>
+	</action-name>
+
+   	<!-- Delete -->
+  	<action-name name="ps.cp.cudClinkerProductionDel">
+		<command>ps.cp.cmd.CudClinkerProductionDelCmd</command>
+	</action-name>
+	
+   	<!-- Approval -->
+  	<action-name name="ps.cp.cudClinkerProductionApproval">
+		<command>ps.cp.cmd.CudClinkerProductionApprovalCmd</command>
+	</action-name>
+
+   	<!-- Reject -->
+  	<action-name name="ps.cp.cudClinkerProductionReject">
+		<command>ps.cp.cmd.CudClinkerProductionRejectCmd</command>
+	</action-name>
+		
+   	<!-- SAP Send -->
+  	<action-name name="ps.cp.cudClinkerProductionSAPsend">
+		<command>ps.cp.cmd.CudClinkerProductionSAPSendCmd</command>
+	</action-name>
+
+   	<!-- SAP Cancel -->
+  	<action-name name="ps.cp.cudClinkerProductionSAPcancel">
+		<command>ps.cp.cmd.CudClinkerProductionSAPCancelCmd</command>
+	</action-name>
+
+	<!-- Excel down List -->
+   	<action-name name="ps.cp.retrieveClinkerProductionExcelList"> 
+    	<command>ps.cp.cmd.RetrieveClinkerProductionExcelListCmd</command>
+   	</action-name>
+</navigation-mapper>
+

@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Vendor Grouping by P/R Page -->
+
+    <!-- Vendor Grouping by P/R Page Search -->
+    <statement name="retrievePurchOrderGroupList">
+        <![CDATA[
+            SELECT 'F' chk  
+                  ,rm.company_cd
+                  ,rm.pr_no 
+                  ,od.po_no
+                  ,od.po_seq
+                  ,decode(${lang},'en',vm.vend_nm_en
+                                 ,'kr',vm.vend_nm_kr,vm.vend_nm_lo) vend_nm
+                  ,rd.vend_cd   
+                  ,rd.deli_loct
+                  ,lgiusf.f_getcommname('COMM',${companyCd},${lang},'2005',rd.deli_loct) deli_loct_nm      
+                  ,lgiusf.f_getcommname('COMM',${companyCd},${lang},'2004',rd.currency_cd) currency_nm
+                  ,rd.currency_cd      
+                  ,(select decode(${lang},'kr',mi.mater_nm_kr
+                                        ,'en',mi.mater_nm_en,mi.mater_nm_lo) 
+                     from tb_mater_info mi
+                    where mi.company_cd = rd.company_cd
+                      and mi.mater_cd   = rd.mater_cd ) mater_nm                           
+                  ,rd.mater_cd
+                  ,decode(od.urgent_type,'',rd.urgent_type,od.urgent_type) urgent_type      
+                  ,rd.unit      
+                  ,rd.qty      
+                  ,rd.price
+                  ,rd.amount
+                  ,rd.vat_cd             
+                  ,lgiusf.f_getcommname('COMM',${companyCd},${lang},'2001',rm.req_dept_cd) req_dept_nm
+                  ,rm.req_dept_cd
+                  ,rm.req_date
+                  ,rm.deli_req_date
+                  ,rm.requester      
+                  ,rm.budget
+                  ,rm.pur_comment
+                  ,rm.status
+                  ,rm.pur_dept_cd
+                  ,rm.gmo_conid
+                  ,rm.gmo_condate
+                  ,rm.head_conid
+                  ,rm.head_condate    
+                  ,rd.pr_detail_no                                
+                  ,rd.mater_type 
+                  ,rd.pr_desc
+                  ,rd.idr_amt 
+                  ,rd.po_status 
+                  ,rd.regid
+                  ,rd.regdate
+                  ,rd.regtime
+                  ,rd.modid
+                  ,rd.moddate
+                  ,rd.modtime 
+                  ,vm.vend_cd||rd.deli_loct||rd.currency_cd chkFlag
+                  ,DECODE(od.po_no,'',0,1) flag
+              FROM lgiusf.tb_pr_master rm
+                  ,lgiusf.tb_pr_detail rd
+                  ,lgiusf.tb_po_detail od
+                  ,lgiusf.tb_vend_master vm
+             WHERE rm.company_cd = rd.company_cd
+               AND rm.pr_no      = rd.pr_no 
+               AND rd.vend_cd    = vm.vend_cd 
+               AND rm.company_cd = ${companyCd}
+               AND rd.company_cd = od.company_cd(+)
+               AND rd.pr_no      = od.pr_no(+)
+               AND rd.pr_detail_no = od.pr_detail_no(+)
+               AND rm.req_date BETWEEN TO_DATE(${reqFromDate},'yyyy/mm/dd') AND TO_DATE(${reqToDate},'yyyy/mm/dd')
+               {#1}
+               {#2}
+               {#3}
+               {#4}
+               {#5}
+               {#6}
+             ORDER BY company_cd, vend_nm, deli_loct_nm, currency_nm ASC
+		]]>
+        <append where="false" condition="${reqFromDate}.NOTEMPTY" id="#1">
+        <![CDATA[
+             AND rm.req_date >= REPLACE(${reqFromDate},'/','')
+        ]]>
+	    </append>
+        <append where="false" condition="${reqToDate}.NOTEMPTY" id="#2">
+        <![CDATA[
+             AND rm.req_date <= REPLACE(${reqToDate},'/','')
+        ]]> 
+	    </append>		
+        <append where="false" condition="${vendNm}.NOTEMPTY" id="#3">
+              AND DECODE(${lang},'en',vm.vend_nm_en
+                     ,'kr',vm.vend_nm_kr,vm.vend_nm_lo) LIKE '%'||${vendNm}||'%'
+	    </append>
+        <append where="false" condition="${materType}.NOTEMPTY" id="#4">
+             AND rd.mater_type = ${materType}
+	    </append>
+        <append where="false" condition="${deliLoct}.NOTEMPTY" id="#5">
+             AND rd.deli_loct  = ${deliLoct}
+	    </append>	  	    
+        <append where="false" condition="${prStatus}.NOTEMPTY" id="#6">
+             AND rm.status  = ${prStatus}
+	    </append>	    	
+  	        		
+    </statement>  
+     
+
+    <!-- PurchOrderGroup MS insert -->
+    <statement name="insertMSPurchOrderGroup">
+        <![CDATA[
+			INSERT INTO lgiusf.tb_po_master
+			       (
+			        company_cd,
+			        po_no,
+			        mater_type,
+			        pur_dept_cd,
+			        vend_cd,
+			        currency_cd,
+			        deli_loct,
+			        po_cre_date,
+			        pay_term,
+			        deli_date,
+			        po_send_date,
+			        parvw,
+			        pernr,
+			        bukrs,
+			        absgr,
+			        attr1,
+			        attr2,
+			        attr3,
+			        attr4,
+			        attr5,
+			        attr6,
+			        attr7,
+			        attr8,
+			        attr9,
+			        attr10,
+			        status,
+			        trans_date,
+			        trans_time,
+			        prog_status_date,
+			        prog_status_time,
+			        sap_po_no,
+			        sap_rtn_msg,
+			        regid,
+			        regdate,
+			        regtime
+			       )
+			       VALUES
+			       (
+			        ${companyCd},
+			        ${poNo},
+			        ${materType},
+			        ${purDeptCd},
+			        ${vendCd},
+			        ${currencyCd},
+			        ${deliLoct},
+			        TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        'term',
+			        ${deliReqDate},
+			        TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        'PE',
+			        (SELECT lgiusf.f_getcommname('COMM',${companyCd},${lang},'1101','10000000') FROM dual),
+			        ${companyCd},
+			        'A7',
+			        'attr1',
+			        'attr2',
+			        'attr3',
+			        'attr4',
+			        'attr5',
+			        'attr6',
+			        'attr7',
+			        'attr8',
+			        'attr9',
+			        'attr10',
+			        ${status},
+			        TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        TO_CHAR(SYSDATE,'HH24MISS'),
+			        TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        TO_CHAR(SYSDATE,'HH24MISS'),
+			        'SAP PO No',
+			        'sap_rtn_msg',
+			        ${userId},
+			        TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        TO_CHAR(SYSDATE,'HH24MISS')     
+			       )
+		]]>     
+    </statement>
+
+ 
+
+    <!-- PurchOrderGroup MS Update -->
+    <statement name="updateMSPurchOrderGroup">
+        <![CDATA[
+			UPDATE lgiusf.tb_po_master
+			   SET mater_type    =  ${materType},
+			       pur_dept_cd   =  ${purDeptCd},
+			       vend_cd       =  ${vendCd},
+			       currency_cd   =  ${currencyCd},
+			       deli_loct     =  ${deliLoct},
+			       po_cre_date   =  ${poCreDate},
+			       pay_term      =  ${payTerm},
+			       deli_date     =  ${deliReq_date},
+			       po_send_date  =  ${poSend_date},
+			       parvw         =  ${parvw},
+			       pernr         =  ${pernr},
+			       bukrs         =  ${bukrs},
+			       absgr         =  ${absgr},
+			       attr1         =  ${attr1},
+			       attr2         =  ${attr2},
+			       attr3         =  ${attr3},
+			       attr4         =  ${attr4},
+			       attr5         =  ${attr5},
+			       attr6         =  ${attr6},
+			       attr7         =  ${attr7},
+			       attr8         =  ${attr8},
+			       attr9         =  ${attr9},
+			       attr10        =  ${attr10},
+			       status        =  ${status},
+			       trans_date    =  ${transDate},
+			       trans_time    =  ${transTime},
+			       prog_status_date =  ${progStatusDate},
+			       Prog_status_time =  ${ProgStatusTime},
+			       sap_po_no     =  ${sapPoNo},
+			       sap_rtn_msg   =  ${sapRtnMsg},
+			       modid         =  ${userId},
+			       moddate       =  TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       modtime       =  TO_CHAR(SYSDATE,'HH24MISS')
+			 WHERE company_cd    =  ${companyCd}
+			   AND po_no         =  ${po_no}
+		]]>     
+    </statement>
+ 
+    <!-- PurchOrderGroup DT insert -->
+    <statement name="mergeDTPurchOrderGroup">
+        <![CDATA[
+            MERGE INTO tb_po_detail pd
+                  USING ( SELECT ${companyCd}     AS companyCd
+                                ,${poNo}          AS poNo
+                                ,${poSeq}         AS poSeq 
+                           FROM DUAL
+                         ) temp
+                     ON (
+                         pd.company_cd    = temp.companyCd
+                         AND pd.po_no     = temp.poNo
+                         AND pd.po_seq    = temp.poSeq                        
+                         )
+            WHEN MATCHED THEN
+                 UPDATE SET pd.pr_no          = ${prNo},
+                            pd.pr_detail_no   = ${prDetailNo},
+                            pd.req_dept_cd    = ${reqDeptCd},
+                            pd.mater_cd       = ${materCd},
+                            pd.urgent_type    = ${urgentType},
+                            pd.pr_desc        = ${prDesc},
+                            pd.qty            = ${qty},
+                            pd.unit           = ${unit},
+                            pd.vat_cd         = ${vatCd},
+                            pd.price          = ${price},
+                            pd.amount         = ${amount},
+                            pd.receipt_qty    = ${receiptQty},
+                            pd.receipt_cls_yn = ${receiptClsYn},
+                            pd.attr1          = ${attr1},
+                            pd.attr2          = ${attr2},
+                            pd.attr3          = ${attr3},
+                            pd.attr4          = ${attr4},
+                            pd.attr5          = ${attr5},
+                            pd.attr6          = ${attr6},
+                            pd.attr7          = ${attr7},
+                            pd.attr8          = ${attr8},
+                            pd.attr9          = ${attr9},
+                            pd.attr10         = ${attr10},
+                            pd.modid         =  ${userId},
+                            pd.moddate       =  TO_CHAR(SYSDATE,'YYYYMMDD'),
+                            pd.modtime       =  TO_CHAR(SYSDATE,'HH24MISS')
+            WHEN NOT MATCHED THEN
+                 INSERT 
+                       (pd.company_cd,
+                        pd.po_no,
+                        pd.po_seq,
+                        pd.pr_no,
+                        pd.pr_detail_no,
+                        pd.req_dept_cd,
+                        pd.mater_cd,
+                        pd.urgent_type,
+                        pd.pr_desc,
+                        pd.qty,
+                        pd.unit,
+                        pd.vat_cd,
+                        pd.price,
+                        pd.amount,
+                        pd.receipt_qty,
+                        pd.receipt_cls_yn,
+                        pd.attr1,
+                        pd.attr2,
+                        pd.attr3,
+                        pd.attr4,
+                        pd.attr5,
+                        pd.attr6,
+                        pd.attr7,
+                        pd.attr8,
+                        pd.attr9,
+                        pd.attr10,
+                        pd.regid,
+                        pd.regdate,
+                        pd.regtime
+                    )
+                    VALUES
+                    (    
+                        ${companyCd},
+                        ${poNo},
+                        ${poSeq},
+                        ${prNo},
+                        ${prDetailNo},
+                        ${reqDeptCd},
+                        ${materCd},
+                        ${urgentType},
+                        ${prDesc},
+                        ${qty},
+                        ${unit},
+                        ${vatCd},
+                        ${price},
+                        ${amount},
+                        ${receiptQty},
+                        ${receiptClsYn},
+                        'attr1',
+                        'attr2',
+                        'attr3',
+                        'attr4',
+                        'attr5',
+                        'attr6',
+                        'attr7',
+                        'attr8',
+                        'attr9',
+                        'attr10',
+                        ${userId},
+                        TO_CHAR(SYSDATE,'YYYYMMDD'),
+                        TO_CHAR(SYSDATE,'HH24MISS')
+                    )       	
+		]]>     
+    </statement>
+ 
+     
+    <!-- PO No Search -->
+    <statement name="getPONo">
+        <![CDATA[
+            SELECT NVL(MAX(TO_NUMBER(po_no))+1,TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMM'))||'0001') po_no 
+              FROM tb_po_detail
+             WHERE company_cd = ${companyCd}
+		]]>
+    </statement>      
+    
+    <!-- Pr Status Update -->
+    <statement name="updatePRStatus">
+        <![CDATA[
+			UPDATE tb_pr_detail
+			   SET po_status = '01'
+			 WHERE company_cd= ${companyCd}
+			   AND pr_no     = ${prNo} 
+			   AND pr_detail_no=${prDetailNo}
+		]]>
+    </statement>     
+     
+</statements>

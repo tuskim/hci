@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LGI>
+    <PTPAM>
+		<button>
+		<search>검색</search>
+		<save>저장</save>
+		<update>수정</update>
+		<delete>삭제</delete>
+       </button>
+    </PTPAM>
+</LGI>

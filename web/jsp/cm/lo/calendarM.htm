@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+/*
+ *************************************************************************
+ * @source  : calendarM.htm
+ * @desc    : 년/월 입력 화면
+ *------------------------------------------------------------------------
+ * VER  DATE         AUTHOR      DESCRIPTION
+ * ---  -----------  ----------  -----------------------------------------
+ * 1.0  2010.09.06    노태훈       init
+ * ---  -----------  ----------  -----------------------------------------
+ * PT-PAM System
+ * Copyright(c) 2006-2007 LG CNS,  All rights reserved.
+ *************************************************************************
+ */
+--> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>   
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<head>
+<title> -- Calendar --</title>
+<script language="javascript" type="text/javascript">
+var Args = window.dialogArguments; 
+var Today;
+var Today_d; 
+function init(){
+
+
+    // 선택일자 입력 2009.10.22 jdi
+    //Today = GetDate(Args[0]);
+    Args[0] = removeDash(Args[0],"/");
+    Today = new Date(Args[0].substring(0,4), Args[0].substring(4, 6)-1, Args[0].substring(6, 8));   
+ 
+
+    if(Today == null)
+    {
+        Today = new Date();
+    }
+
+    Today_d = Today.getDate();
+    Show_cal_M(Today.getFullYear(),Today.getMonth());	
+}
+function removeDash( str , strDel )
+{
+	var len = str.length;
+	var replace_chr;
+	var cur_chr;
+	var replace_str = '';
+
+	for(var i=0; i < len; i++) {
+		cur_chr = str.charAt(i);
+
+		if( cur_chr == strDel ) {
+		  replace_chr = '';
+		} else {
+		  replace_chr = cur_chr;
+		}
+		replace_str += replace_chr;
+	}
+
+	return replace_str;
+}  
+
+function fnChangeYearM(sYear,sMonth){
+	Show_cal_M(sYear, sMonth);
+}
+
+
+function Calendar_Click(e) {
+	cal_Day = e.title;
+	Args[0] = cal_Day
+	self.close();
+}
+
+function doOver(el) {
+	cal_Day = el.title;
+
+	if (cal_Day.length > 7) {
+		el.style.borderColor = "#FF0000";
+	}
+}
+
+function doOut(el) {
+	cal_Day = el.title;
+
+	if (cal_Day.length > 7) {
+		el.style.borderColor = "#FFFFFF";
+	}
+}
+function Show_cal_M(sYear, sMonth) {
+	var intThisYear = new Number(), intThisMonth = new Number()
+	datToday = new Date();													// 현재 날자 설정
+	
+	intThisYear = parseInt(sYear,10);
+	intThisMonth = parseInt(sMonth,10);
+	
+	if (intThisYear == 0) intThisYear = datToday.getFullYear();				// 값이 없을 경우
+	if (intThisMonth == 0) intThisMonth = parseInt(datToday.getMonth(),10)+1;	// 월 값은 실제값 보다 -1 한 값이 돼돌려 진다.
+			
+	switch(intThisMonth) {
+		case 1:
+				intPrevYear = intThisYear -1;
+				intNextYear = intThisYear;
+				break;
+		case 12:
+				intPrevYear = intThisYear;
+				intNextYear = intThisYear + 1;
+				break;
+		default:
+				intPrevYear = intThisYear;
+				intNextYear = intThisYear;
+				break;
+	}
+	intPPyear = intThisYear-1
+	intNNyear = intThisYear+1
+	 
+
+	m_1.title=intThisYear+"/01";
+	m_2.title=intThisYear+"/02";
+	m_3.title=intThisYear+"/03";
+	m_4.title=intThisYear+"/04";
+	m_5.title=intThisYear+"/05";
+	m_6.title=intThisYear+"/06";
+	m_7.title=intThisYear+"/07";
+	m_8.title=intThisYear+"/08";
+	m_9.title=intThisYear+"/09";
+	m_10.title=intThisYear+"/10";
+	m_11.title=intThisYear+"/11";
+	m_12.title=intThisYear+"/12";	
+ 	
+	var mList="";
+	mList  ="<a style='cursor:hand;' OnClick='parent.Show_cal_M("+intPPyear+","+intThisMonth+");'>◀</a>&nbsp;";
+	mList += "<select name='selYear' STYLE='font-size:11;' OnChange='parent.fnChangeYearM(this.value,"+intThisMonth+");'>";
+ 
+	for (var optYear=(intThisYear-10); optYear<(intThisYear+10); optYear++) {
+			mList += "<option value='"+optYear+"' ";
+	 
+			if (optYear == intThisYear) {
+				mList += " selected>\n";
+ 
+			}
+			else{ 
+				mList += ">\n";
+				 
+			}
+			mList += optYear+"</option>\n";
+		 
+	}
+	mList += "	</select>\n";
+	mList += "<a style='cursor:hand;' OnClick='parent.Show_cal_M("+intNNyear+","+intThisMonth+");'>▶</a>";		
+ 	mms.innerHTML = mList;
+}
+</script>
+</head> 
+<body style="background-color:lightyellow;border:solid black 1px" onload="init()">
+ 
+	<table style="FONT-FAMILY: 굴림; FONT-SIZE: 12px" id=Cal_Table onmouseover=parent.doOver(window.event.srcElement) onmouseout=parent.doOut(window.event.srcElement) border=0 cellSpacing=1 cellPadding=1 width="100%" bgColor=#f4f4f4>
+	
+		<tr height=30 align=middle bgColor=#f4f4f4>
+			<td colSpan=4 align=middle id=mms>
+			</td>
+		</tr>
+		<tr>
+			<td bgColor=#000000 height=1 colSpan=4></td>
+		</tr>
+		<tr height=35 align=middle bgColor=white >
+			<td style="CURSOR: hand" id=m_1 width=62 onclick=parent.Calendar_Click(this);>1</td>
+			<td style="CURSOR: hand" id=m_2  onclick=parent.Calendar_Click(this);>2</td>
+			<td style="CURSOR: hand" id=m_3  onclick=parent.Calendar_Click(this);>3</td>
+			<td style="CURSOR: hand" id=m_4  onclick=parent.Calendar_Click(this);>4</td>
+		</tr>
+		<tr height=35 align=middle bgColor=white>
+			<td style="CURSOR: hand" id=m_5 width=62 onclick=parent.Calendar_Click(this);>5</td>	
+			<td style="CURSOR: hand" id=m_6  onclick=parent.Calendar_Click(this);>6</td>
+			<td style="CURSOR: hand" id=m_7  onclick=parent.Calendar_Click(this);>7</td>
+			<td style="CURSOR: hand" id=m_8  onclick=parent.Calendar_Click(this);>8</td>
+		</tr>
+		<tr height=35 align=middle bgColor=white>
+			<td style="CURSOR: hand" id=m_9 width=62 onclick=parent.Calendar_Click(this);>9</td>
+			<td style="CURSOR: hand" id=m_10  onclick=parent.Calendar_Click(this);>10</td>
+			<td style="CURSOR: hand" id=m_11  onclick=parent.Calendar_Click(this);>11</td>
+			<td style="CURSOR: hand" id=m_12  onclick=parent.Calendar_Click(this);>12</td>
+		</tr>
+	</table>
+</body> 
+</html>

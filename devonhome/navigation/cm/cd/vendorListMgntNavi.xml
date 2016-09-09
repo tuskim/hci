@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigation-mapper>
+     
+
+    <!-- 입고등록-->
+   	<action-name name="vendorListMgnt"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/cm/cd/vendorListMgnt.jsp</return-url>
+   	</action-name>
+   	
+                    
+</navigation-mapper>

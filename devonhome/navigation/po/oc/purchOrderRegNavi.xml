@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!--P/O RegsiTration  -->
+
+   	<!--P/O RegsiTration  -->  
+	<action-name name="purchOrderReg">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/oc/purchOrderReg.jsp</return-url>
+   	</action-name>
+   	
+   	<!--P/O RegsiTration Retrieve -->  
+	<action-name name="po.oc.retrievePurchOrderRegMainList">
+    	<command>po.oc.cmd.RetrievePurchOrderRegMainListCmd</command> 
+   	</action-name>   
+   	
+   	<!--P/O RegsiTration Retrieve -->  
+	<action-name name="po.oc.retrievePurchOrderRegDetailList">
+    	<command>po.oc.cmd.RetrievePurchOrderRegDetailListCmd</command> 
+   	</action-name> 
+   	
+   	<!--P/O RegsiTration Retrieve -->  
+	<action-name name="po.oc.retrievePurchOrderRegAppList">
+    	<command>po.oc.cmd.RetrievePurchOrderRegAppListCmd</command> 
+   	</action-name>    	   		
+   	
+   	<!--P/O RegsiTration Cud -->  
+	<action-name name="po.oc.cudPurchOrderReg">
+    	<command>po.oc.cmd.CudPurchOrderRegCmd</command> 
+   	</action-name>       
+   	
+   	<!--P/O RegsiTration Cud -->  
+	<action-name name="po.oc.cudPurchOrderRegSapSend">
+    	<command>po.oc.cmd.CudPurchOrderRegSapSendCmd</command> 
+   	</action-name>       	 
+   	
+   	<!--P/O RegsiTration mater -->  
+	<action-name name="po.oc.retrievePurchOrderRegMaterCombo">
+    	<command>po.oc.cmd.RetrievePurchOrderRegMaterComboCmd</command> 
+   	</action-name>     
+   	
+   	<!--P/O RegsiTration vat -->  
+	<action-name name="po.oc.retrievePurchOrderRegVatVCombo">
+    	<command>po.oc.cmd.RetrievePurchOrderRegVatVComboCmd</command> 
+   	</action-name>         
+   	
+   	   	<!--P/O RegsiTration send mail -->  
+	<action-name name="po.oc.cudPurchOrderRegSendMail">
+    	<command>po.oc.cmd.CudPurchOrderRegSendMailCmd</command> 
+    	<return-url>/jsp/po/oc/purchOrderRegPreView.jsp</return-url>    	
+   	</action-name>    
+   	
+   	<!--P/O RegsiTration Tax List -->  
+	<action-name name="po.oc.retrievePurchOrderRegTaxList">
+    	<command>po.oc.cmd.RetrievePurchOrderRegTaxListCmd</command> 
+   	</action-name>    	
+   	
+   	<!--P/O RegsiTration Curr List -->  
+	<action-name name="po.oc.retrievePurchOrderRegCurrList">
+    	<command>po.oc.cmd.RetrievePurchOrderRegCurrListCmd</command> 
+   	</action-name>      		    	 	   	   	   	    
+   	   	    
+</navigation-mapper>

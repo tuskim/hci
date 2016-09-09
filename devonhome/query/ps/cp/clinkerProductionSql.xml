@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>	 
+<!-- Clinker Productiont-->
+
+    <!-- Clinker Production Master 조회-->
+    <statement name="retrieveClinkerProductionList">
+        <![CDATA[
+			SELECT
+			       M.COMPANY_CD
+				  ,M.SYSKEY
+				  ,SUBSTR(M.PROD_DATE,0,4)||'/'||SUBSTR(M.PROD_DATE,5,2)||'/'||SUBSTR(M.PROD_DATE,7,2) AS PROD_DATE
+				  ,M.POST_DATE
+				  ,SUBSTR(M.PROD_DATE,0,4)||'/'||SUBSTR(M.PROD_DATE,5,2)||'/'||SUBSTR(M.PROD_DATE,7,2) AS PROD_DATE_OLD
+				  ,M.CLINKER_QTY
+				  ,M.STATUS
+				  ,M.GI_IF_DOC_SEQ
+				  ,M.RE_IF_DOC_SEQ
+				  ,M.GI_IF_RVS_DOC_SEQ
+				  ,M.RE_IF_RVS_DOC_SEQ
+				  ,M.SAP_RTN_MSG
+			FROM TB_CLINKER_PROD_MASTER M
+			WHERE COMPANY_CD = ${companyCd}
+			  AND DELETE_FLAG = 'N'
+ 			   	   {#1}
+			       {#2}
+			       {#3}
+		     ORDER BY M.SYSKEY
+        ]]>  
+	    <append condition="${productDateFrom}.NOTEMPTY" id="#1">       
+			 <![CDATA[ AND M.PROD_DATE >= replace(${productDateFrom},'/','')  ]]>
+	    </append>  
+	     <append condition="${productDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND M.PROD_DATE <= replace(${productDateTo},'/','')  ]]>
+	    </append>  
+	    <append condition="${status}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND M.STATUS = ${status}   ]]>
+	    </append>  
+	    
+    </statement> 
+ 
+     <!-- Clinker Production Excel 조회-->
+    <statement name="retrieveClinkerProductionExcelList">
+        <![CDATA[
+       SELECT X.SYSKEY,
+              X.PROD_DATE,
+              X.STATUS,
+              X.RAWMIX,
+              X.COAL,
+              X.CLINKER_QTY
+         FROM
+        (
+			SELECT M.SYSKEY,
+			       M.PROD_DATE,
+			       M.STATUS,
+			       MAX(DECODE(MATER_SEQ, 10, NVL(PROD_OUT_QTY, 0), 0)) AS RAWMIX,
+			       MAX(DECODE(MATER_SEQ, 20, NVL(PROD_OUT_QTY, 0), 0)) AS COAL,
+			       MAX(NVL(M.CLINKER_QTY, 0)) AS CLINKER_QTY
+			  FROM TB_CLINKER_PROD_OUTPUT O
+			  JOIN TB_CLINKER_PROD_MASTER M
+			    ON O.SYSKEY = M.SYSKEY
+			 WHERE M.COMPANY_CD = ${companyCd}
+			   AND M.DELETE_FLAG = 'N'
+ 			   	   {#1}
+			       {#2}
+			       {#3}
+			 GROUP BY M.SYSKEY, M.PROD_DATE, M.STATUS
+		     ORDER BY M.SYSKEY
+		) X
+        ]]>  
+	    <append condition="${productDateFrom}.NOTEMPTY" id="#1">       
+			 <![CDATA[ AND M.PROD_DATE >= replace(${productDateFrom},'/','')  ]]>
+	    </append>  
+	     <append condition="${productDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND M.PROD_DATE <= replace(${productDateTo},'/','')  ]]>
+	    </append>  
+	    <append condition="${status}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND M.STATUS = ${status}   ]]>
+	    </append>  
+	    
+    </statement> 
+
+    <!-- Clinker Production Date Duplicate Check-->
+    <statement name="retrieveClinkerProductionProdDate">
+        <![CDATA[
+			SELECT PROD_DATE
+			  FROM TB_CLINKER_PROD_MASTER
+			 WHERE 1 = 1
+			   AND DELETE_FLAG = 'N'
+			   AND STATUS != '05'
+			   AND COMPANY_CD = ${companyCd} 
+			   AND PROD_DATE = REPLACE(${prodDate}, '/', '')
+		]]> 		    	    	        			           		
+    </statement> 
+            
+    <!-- Use of Material for Clinker 조회-->
+    <statement name="retrieveClinkerProductionMaterial">
+        <![CDATA[
+		SELECT
+			 O.COMPANY_CD
+			,O.SYSKEY
+			,O.MATER_SEQ
+			,MI.MATER_CD
+			,MI.MATER_NM_EN AS MATER_NM
+			,MI.UNIT
+			,O.PROD_OUT_QTY
+			,O.STOR_LOCT
+			,O.ATTR1
+		FROM TB_CLINKER_PROD_OUTPUT O,
+		     TB_CLINKER_PROD_MASTER M,
+		     TB_MATER_INFO MI
+		WHERE O.COMPANY_CD = M.COMPANY_CD
+		  AND O.SYSKEY = M.SYSKEY
+		  AND MI.COMPANY_CD = O.COMPANY_CD
+		  AND MI.MATER_CD = O.MATER_CD
+		  AND O.COMPANY_CD = ${companyCd}
+		  AND O.SYSKEY = ${syskey}
+		ORDER BY O.SYSKEY, O.MATER_SEQ
+        ]]> 
+    </statement> 
+     
+     <!-- Result of Clinker 조회-->
+    <statement name="retrieveClinkerProductionResult">
+        <![CDATA[
+     	SELECT
+			 I.COMPANY_CD
+			,I.SYSKEY
+			,I.MATER_SEQ
+			,MI.MATER_CD
+			,MI.MATER_NM_EN AS MATER_NM
+			,MI.UNIT
+			,I.PROD_IN_QTY
+			,I.STOR_LOCT
+			,I.ATTR1
+		FROM TB_CLINKER_PROD_INPUT I,
+		     TB_CLINKER_PROD_MASTER M,
+		     TB_MATER_INFO MI
+		WHERE I.COMPANY_CD = M.COMPANY_CD
+		  AND I.SYSKEY = M.SYSKEY
+		  AND MI.COMPANY_CD = I.COMPANY_CD
+		  AND MI.MATER_CD = I.MATER_CD
+		  AND I.COMPANY_CD = ${companyCd}
+		  AND I.SYSKEY = ${syskey}
+		ORDER BY I.SYSKEY,I.MATER_SEQ
+        ]]> 
+    </statement> 
+        
+
+    <!-- Clinker Production List Add Row -->
+    <statement name="retrieveClinkerProductionAddMaster">
+        <![CDATA[
+		SELECT ('CP'||NVL(MAX(TO_NUMBER(SUBSTR(SYSKEY , 3, 7))) + 1,TO_NUMBER(TO_CHAR(SYSDATE, 'YYMM')) || '001')) AS SYSKEY
+              ,TO_CHAR(SYSDATE, 'YYYY')||'/'||TO_CHAR(SYSDATE, 'MM')||'/'||TO_CHAR(SYSDATE, 'DD') PROD_DATE
+              ,TO_CHAR(SYSDATE, 'YYYY')||'/'||TO_CHAR(SYSDATE, 'MM')||'/'||TO_CHAR(SYSDATE, 'DD') POST_DATE
+              ,'' AS PROD_DATE_OLD
+              ,0 AS CLINKER_QTY
+              ,'00' AS STATUS
+              ,'' AS GI_IF_DOC_SEQ
+              ,'' AS RE_ID_DOC_SEQ
+			  ,'' AS GI_IF_RVS_DOC_SEQ
+			  ,'' AS RE_IF_RVS_DOC_SEQ
+              ,'' AS SAP_RTN_MSG
+		 FROM TB_CLINKER_PROD_MASTER
+	    WHERE COMPANY_CD =  ${companyCd}
+	 	  AND SUBSTR(SYSKEY , 3, 4) = TO_CHAR(SYSDATE, 'YYMM')
+        ]]> 
+    </statement> 
+    
+    <!-- Use of Material for Clinker Add Row -->
+    <statement name="retrieveClinkerProductionAddUse">
+    	<![CDATA[
+		SELECT '10' AS MATER_SEQ
+		       ,(SELECT ('CP'||NVL(MAX(TO_NUMBER(SUBSTR(SYSKEY , 3, 7))) + 1,TO_NUMBER(TO_CHAR(SYSDATE, 'YYMM')) || '001')) FROM TB_CLINKER_PROD_MASTER M WHERE COMPANY_CD = ${companyCd} AND SUBSTR(SYSKEY , 3, 4) = TO_CHAR(SYSDATE, 'YYMM')) AS SYSKEY
+		       ,M.MATER_CD
+		       ,M.MATER_NM_EN AS MATER_NM
+		       ,M.UNIT
+		       , 0 AS PROD_OUT_QTY
+		       ,'2002' AS STOR_LOCT
+		       -- ,(SELECT  DECODE('EN','KR',CD.DETAIL_CD_NM_KR,'EN',CD.DETAIL_CD_NM_EN, CD.DETAIL_CD_NM_LO) NAME FROM LGIUSF.TB_COMM_CD_DETAIL CD WHERE COMPANY_CD = M.COMPANY_CD AND DETAIL_CD = '3001') AS STOR_LOCT
+		       ,'' AS ATTR1       
+		  FROM TB_MATER_INFO M
+		 WHERE COMPANY_CD = ${companyCd}
+		   AND MATER_CD = '63202401'
+		UNION ALL
+		SELECT '20' AS MATER_SEQ
+		       ,(SELECT ('CP'||NVL(MAX(TO_NUMBER(SUBSTR(SYSKEY , 3, 7))) + 1,TO_NUMBER(TO_CHAR(SYSDATE, 'YYMM')) || '001')) FROM TB_CLINKER_PROD_MASTER M WHERE COMPANY_CD = ${companyCd} AND SUBSTR(SYSKEY , 3, 4) = TO_CHAR(SYSDATE, 'YYMM')) AS SYSKEY
+		       ,MATER_CD
+		       ,M.MATER_NM_EN AS MATER_NM
+		       ,UNIT
+		       , 0 AS PROD_OUT_QTY
+		       ,'3001' AS STOR_LOCT
+		       -- ,(SELECT  DECODE('EN','KR',CD.DETAIL_CD_NM_KR,'EN',CD.DETAIL_CD_NM_EN, CD.DETAIL_CD_NM_LO) NAME FROM LGIUSF.TB_COMM_CD_DETAIL CD WHERE COMPANY_CD = M.COMPANY_CD AND DETAIL_CD = '3001') AS STOR_LOCT
+		       ,'' AS ATTR1
+		  FROM TB_MATER_INFO M
+		 WHERE COMPANY_CD = ${companyCd}
+		   AND MATER_CD = '61000454'
+    	]]>
+    </statement>
+    
+    <!-- Result of Clinker Add Row -->
+    <statement name="retrieveClinkerProductionAddResult">
+    	<![CDATA[
+		SELECT '10' AS MATER_SEQ
+		       ,(SELECT ('CP'||NVL(MAX(TO_NUMBER(SUBSTR(SYSKEY , 3, 7))) + 1,TO_NUMBER(TO_CHAR(SYSDATE, 'YYMM')) || '001')) FROM TB_CLINKER_PROD_MASTER M WHERE COMPANY_CD = ${companyCd} AND SUBSTR(SYSKEY , 3, 4) = TO_CHAR(SYSDATE, 'YYMM')) AS SYSKEY
+		       ,M.MATER_CD
+		       ,M.MATER_NM_EN AS MATER_NM
+		       ,M.UNIT
+		       ,0 AS PROD_IN_QTY
+		       ,'3002' AS STOR_LOCT
+		       -- ,(SELECT  DECODE('EN','KR',CD.DETAIL_CD_NM_KR,'EN',CD.DETAIL_CD_NM_EN, CD.DETAIL_CD_NM_LO) NAME FROM LGIUSF.TB_COMM_CD_DETAIL CD WHERE COMPANY_CD = M.COMPANY_CD AND DETAIL_CD = '3002') AS STOR_LOCT
+		       ,'' AS ATTR1
+		  FROM TB_MATER_INFO M
+		 WHERE COMPANY_CD = ${companyCd}
+		   AND MATER_CD = '63202400'
+    	]]>
+    </statement>
+    
+    
+	<!-- CLINKER PRODUCTION Master Insert-->
+	<statement name="insertClinkerProdMaster">
+        <![CDATA[
+        	INSERT INTO TB_CLINKER_PROD_MASTER(
+	        	COMPANY_CD
+	        	,SYSKEY
+	        	,PROD_DATE
+	        	,POST_DATE
+	        	,CLINKER_QTY
+	        	,STATUS
+	        	,REGID
+				,REGDATE
+				,REGTIME
+			)
+	        VALUES(
+	          	 ${companyCd}
+				,${syskey}
+				,${prodDate}
+				,${prodDate}
+				,${clinkerQty}
+				,${status}
+                ,${userId}
+                ,TO_CHAR(SYSDATE,'YYYYMMDD')
+                ,TO_CHAR(SYSDATE,'HH24MISS')
+        	)
+        ]]>
+	</statement>
+
+    <!-- CLINKER PRODUCTION OUPUT Insert-->
+    <statement name="insertClinkerProdOutput">
+        <![CDATA[
+        	INSERT INTO TB_CLINKER_PROD_OUTPUT(
+				COMPANY_CD
+				,SYSKEY
+				,MATER_SEQ
+				,MATER_CD
+				,PROD_OUT_QTY
+				,STOR_LOCT
+				,ATTR1
+				,PLANT_CD
+				,REGID
+				,REGDATE
+				,REGTIME
+        	) 
+        	VALUES(
+	          	 ${companyCd}
+				,${syskey}
+				,${materSeq}
+				,${materCd}
+				,${prodOutQty}
+				,${storLoct}
+				,${attr1}
+				,'GA10'
+                ,${userId}
+                ,TO_CHAR(SYSDATE,'YYYYMMDD')
+                ,TO_CHAR(SYSDATE,'HH24MISS')
+        	)
+        ]]> 
+    </statement> 
+     
+    <!-- CLINKER PRODUCTION INPUT Insert-->
+    <statement name="insertClinkerProdInput">
+        <![CDATA[
+        	INSERT INTO TB_CLINKER_PROD_INPUT(
+				COMPANY_CD
+				,SYSKEY
+				,MATER_SEQ
+				,MATER_CD
+				,PROD_IN_QTY
+				,STOR_LOCT
+				,ATTR1
+				,PLANT_CD
+				,REGID
+				,REGDATE
+				,REGTIME
+        	) 
+        	VALUES(
+	          	 ${companyCd}
+				,${syskey}
+				,${materSeq}
+				,${materCd}
+				,${prodInQty}
+				,${storLoct}
+				,${attr1}
+				,'GA10'
+                ,${userId}
+                ,TO_CHAR(SYSDATE,'YYYYMMDD')
+                ,TO_CHAR(SYSDATE,'HH24MISS')
+        	)
+
+        ]]> 
+    </statement> 
+
+    
+    <!-- CLINKER PRODUCTION Master Update-->
+    <statement name="updateClinkerProdMaster">
+    	<![CDATA[
+    		UPDATE TB_CLINKER_PROD_MASTER
+    		   SET PROD_DATE   = ${prodDate},
+    		       POST_DATE   = ${prodDate},
+    		       CLINKER_QTY = ${clinkerQty},
+    		       MODID       = ${userId},
+    		       MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD  = ${companyCd}
+    		   AND SYSKEY      = ${syskey} 
+    		   AND STATUS      = '00'
+        ]]>
+    </statement>
+    <!-- CLINKER PRODUCTION OUPUT  Update-->
+    <statement name="updateClinkerProdOutput">
+    	<![CDATA[
+    		UPDATE TB_CLINKER_PROD_OUTPUT
+    		   SET PROD_OUT_QTY = ${prodOutQty},
+    		       ATTR1        = ${attr1},
+    		       MODID        = ${userId},
+    		       MODDATE      = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME      = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD   = ${companyCd}
+    		   AND MATER_SEQ    = ${materSeq}
+    		   AND SYSKEY       = ${syskey}
+        ]]>
+    </statement>
+    <!-- CLINKER PRODUCTION INPUT  Update-->
+    <statement name="updateClinkerProdInput">
+    	<![CDATA[
+    		UPDATE TB_CLINKER_PROD_INPUT
+    		   SET PROD_IN_QTY  = ${prodInQty},
+    		       ATTR1        = ${attr1},
+    		       MODID        = ${userId},
+    		       MODDATE      = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME      = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD   = ${companyCd}
+    		   AND MATER_SEQ    = ${materSeq}
+    		   AND SYSKEY       = ${syskey}    	
+        ]]>
+    </statement>
+    
+    
+    <!-- CLINKER PRODUCTION Master Delete-->
+    <statement name="deleteClinkerProdMaster">
+    	<![CDATA[
+    		UPDATE TB_CLINKER_PROD_MASTER
+    		   SET DELETE_FLAG = 'Y',
+    		       MODID       = ${userId},
+    		       MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD  = ${companyCd}
+    		   AND SYSKEY      = ${syskey} 
+    		   AND DELETE_FLAG = 'N'
+        ]]>
+    </statement>
+    
+    <!-- CLINKER PRODUCTION Master Approval-->
+    <statement name="approvalClinkerProdMaster">
+    	<![CDATA[
+    		UPDATE TB_CLINKER_PROD_MASTER
+    		   SET STATUS      = '01',
+    		       MODID       = ${userId},
+    		       MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD  = ${companyCd}
+    		   AND SYSKEY      = ${syskey}
+			   AND DELETE_FLAG = 'N'
+    		   AND STATUS = '00'
+        ]]>
+    </statement>
+ 
+     <!-- CLINKER PRODUCTION Master Reject-->
+    <statement name="rejectClinkerProdMaster">
+    	<![CDATA[
+    		UPDATE TB_CLINKER_PROD_MASTER
+    		   SET STATUS      = '00',
+    		       MODID       = ${userId},
+    		       MODDATE     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+    		       MODTIME     = TO_CHAR(SYSDATE,'HH24MISS')
+    		 WHERE COMPANY_CD  = ${companyCd}
+    		   AND SYSKEY      = ${syskey}
+			   AND DELETE_FLAG = 'N'
+    		   AND STATUS      = '01'
+        ]]>
+    </statement>
+ 
+   <!--########## SAP SEND 전에 이전 공정에서 동일 생산일자 기준 SAP전송이 완료(STATUS:04) 상태 ##########-->  
+    <statement name="checkClinkerBeforeProductionStatus"> 
+       <![CDATA[	
+		    SELECT COUNT(*) CNT
+		  	  FROM TB_RAWMIX_PROD_MASTER
+		 	 WHERE COMPANY_CD   = ${companyCd}
+		 	   AND PROD_DATE    = replace(${prodDate},'/','') 
+		   	   AND STATUS       = '04'
+		   	   AND DELETE_FLAG  = 'N'
+     	]]>		
+    </statement> 
+ 
+   <!--########## SAP SEND ##########-->  
+    <statement name="checkSendingStatus"> 
+       <![CDATA[	
+		    SELECT STATUS
+		  	  FROM TB_CLINKER_PROD_MASTER
+		 	 WHERE COMPANY_CD   = ${companyCd}
+		   	   AND SYSKEY 		= ${syskey}
+     	]]>		
+    </statement>
+
+    <!-- sending update  [미사용]-->
+    <statement name="cudClinkerProductionSendingStatus"> 
+       <![CDATA[	
+	     	UPDATE TB_CLINKER_PROD_MASTER
+			   SET 
+			       STATUS   	= '02',
+			       MODID	    = ${userId},
+			       MODDATE 	 	 = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       MODTIME 	 	 = TO_CHAR(SYSDATE,'HH24MISS'),
+			       TRANS_DATE    = TO_CHAR(SYSDATE,'YYYYMMDD')
+		 	 WHERE COMPANY_CD 	 = ${companyCd}
+		   	   AND SYSKEY 		 = ${syskey}
+     	]]>		
+    </statement> 
+    
+    <!-- SAP Send시 원부재료 조회 -->
+    <statement name="cudClinkerProductionOutputSapSend"> 
+       <![CDATA[	
+            SELECT SYSKEY
+                  ,COMPANY_CD
+                  ,MATER_SEQ
+                  ,MATER_CD
+                  ,'11130' AS KOSTL
+                  ,PLANT_CD
+                  ,STOR_LOCT
+                  ,PROD_OUT_QTY
+              FROM TB_CLINKER_PROD_OUTPUT
+             WHERE COMPANY_CD = ${companyCd}
+               AND SYSKEY     = ${syskey}
+     	]]>
+     </statement>	
+     	
+    <!-- SAP Send시 생산입고 조회 -->
+    <statement name="cudClinkerProductionIputSapSend"> 
+       <![CDATA[	
+            SELECT SYSKEY
+                  ,COMPANY_CD
+                  ,MATER_SEQ
+                  ,MATER_CD
+                  ,'11130' AS KOSTL
+                  ,PLANT_CD
+                  ,STOR_LOCT
+                  ,PROD_IN_QTY
+              FROM TB_CLINKER_PROD_INPUT
+             WHERE COMPANY_CD = ${companyCd}
+               AND SYSKEY     = ${syskey}
+     	]]>     	
+    </statement>
+
+
+
+    <!-- SAP Send succuess  update  -->
+    <statement name="cudClinkerProductionAfterSapSuccess"> 
+       <![CDATA[	
+	     	UPDATE TB_CLINKER_PROD_MASTER
+			   SET 
+			       FISCAL_YEAR 	= NVL(${fiscalYear},''),
+			       {#1}
+			       GI_IF_STATUS  = NVL(${returnType},''),
+			       GI_IF_DOC_SEQ = NVL(${returnSapGiNo},''),
+			       RE_IF_STATUS  = NVL(${returnType},''),
+			       RE_IF_DOC_SEQ = NVL(${returnSapGrNo},''),
+			       SAP_RTN_MSG   = NVL(${returnMsg},''),
+			       MODID	     = ${userId},
+			       MODDATE 	 	 = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       MODTIME 	 	 = TO_CHAR(SYSDATE,'HH24MISS'),
+			       TRANS_DATE    = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       IFSTCD 		 = 'Y'
+             WHERE COMPANY_CD    = ${companyCd}
+               AND SYSKEY        = ${syskey}
+     	]]>		
+	    <append condition="${returnStatus}.NOTEMPTY" id="#1">       
+			  <![CDATA[  STATUS	= ${returnStatus}, ]]>
+	    </append>
+    </statement> 
+
+    <!-- SAP Cancel cancel  update  -->
+    <statement name="cudClinkerProductionAfterSapCancel"> 
+       <![CDATA[	
+	     	UPDATE TB_CLINKER_PROD_MASTER
+			   SET 
+			       STATUS		     = '05',
+			       CANCEL_TYPE       = 'X',
+			       GI_IF_RVS_STATUS  = NVL(${returnType},''),
+			       GI_IF_RVS_DOC_SEQ = NVL(${returnSapGiNo},''),
+			       RE_IF_RVS_STATUS  = NVL(${returnType},''),
+			       RE_IF_RVS_DOC_SEQ = NVL(${returnSapGrNo},''),
+			       SAP_RTN_MSG       = NVL(${returnMsg},''),
+			       MODID	         = ${userId},
+			       MODDATE 	  	     = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       MODTIME 	  	     = TO_CHAR(SYSDATE,'HH24MISS'),
+			       TRANS_DATE        = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       IFSTCD 		     = 'Y'
+		 	 WHERE COMPANY_CD  	     = ${companyCd}
+               AND SYSKEY            = ${syskey}
+     	]]>
+
+	    
+    </statement> 
+
+    <!-- SAP Cancel I/F Error  -->
+    <statement name="cudClinkerProductionAfterSapError"> 
+       <![CDATA[	
+	     	UPDATE TB_CLINKER_PROD_MASTER
+			   SET 
+			       SAP_RTN_MSG   = NVL(${returnMsg},''),
+			       MODID	     = ${userId},
+			       MODDATE 	 	 = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       MODTIME 	 	 = TO_CHAR(SYSDATE,'HH24MISS'),
+			       TRANS_DATE    = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       IFSTCD 		 = 'Y'
+		 	 WHERE COMPANY_CD  	 = ${companyCd}
+               AND SYSKEY        = ${syskey}
+     	]]>		
+    </statement>
+    
+</statements>

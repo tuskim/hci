@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<core>	
+  <log>
+    <!-- log 파일이 저장될 기본 directory를 설정한다. -->  
+    <base-target> #home/logs </base-target>
+
+    <!-- log 파일을 생성하는 주기를 설정한다.
+         1시간 or 12시간 or 24시간 단위로 설정 가능하다. -->    
+    <file-date>12</file-date>
+    
+    <!-- 각 logger 별 Setting -->
+    <!-- DevOn Core에서는 기본적으로 devon, sys, err, warn, info, debug, dbwrap, security의 8가지의 logger을 제공한다.
+         새로운 Logger을 정의하여 사용할 수 있다. -->    
+    <logger name="devon">
+      <!-- 해당 Logger를 통한 로깅 여부 설정 --> 
+      <enabled>true</enabled>
+      <appender-ref name="file">true</appender-ref>
+      <appender-ref name="console">true</appender-ref>
+    </logger>
+    <logger name="sys">
+      <enabled>true</enabled>
+      <appender-ref name="file">true</appender-ref>
+      <appender-ref name="console">true</appender-ref>
+    </logger>
+    <logger name="err">
+      <enabled>true</enabled>
+      <appender-ref name="file">true</appender-ref>
+      <appender-ref name="console">true</appender-ref>
+    </logger>
+    <logger name="warn">
+      <enabled>true</enabled>
+      <appender-ref name="file">false</appender-ref>
+      <appender-ref name="console">true</appender-ref>      
+    </logger>
+    <logger name="info">
+      <enabled>true</enabled>
+      <appender-ref name="file">true</appender-ref>
+      <appender-ref name="console">true</appender-ref>      
+    </logger>
+    <logger name="debug">
+      <enabled>true</enabled>
+      <appender-ref name="file">true</appender-ref>
+      <appender-ref name="console">true</appender-ref>
+    </logger>
+    <logger name="dbwrap">
+      <enabled>true</enabled>
+      <appender-ref name="file"> true </appender-ref>
+      <appender-ref name="console">true</appender-ref>      
+    </logger>
+    <logger name="security">
+      <enabled>true</enabled>
+      <appender-ref name="file"> true </appender-ref>
+      <appender-ref name="console"> true </appender-ref>
+    </logger>
+    <logger name="test">
+      <enabled>true</enabled>
+      <appender-ref name="filesize"> true </appender-ref>
+      <appender-ref name="console"> true </appender-ref>
+    </logger>
+    
+    <appender name="file">
+      <class>devon.core.log.appender.LFileAppender</class>
+      <formatter>devon.core.log.LLogFileFormatter</formatter>
+      <!--target>#home/temp</target-->
+    </appender>
+    <appender name="filesize">
+      <class>devon.core.log.appender.LFileSizeAppender</class>
+      <formatter>devon.core.log.LLogFileFormatter</formatter>
+      <!--target>#home/temp</target-->
+      <size>10kb</size>
+    </appender>
+    <appender name="console">
+      <class>devon.core.log.appender.LConsoleAppender</class>
+    </appender>
+    <appender name="errconsole">
+      <class>devon.core.log.appender.LConsoleAppender</class>
+      <target>err</target>
+    </appender>    
+    <!--appender name="db">
+      <class>class="devon.core.log.appender.LDBAppender</class>
+      <formatter>devon.core.log.LLogDBFormatter</formatter>
+    </appender-->
+  </log>
+  <date>
+    <!-- Component에서 사용할 Date Format 설정 -->
+    <format>YYYYMMDD</format>
+    <holiday-path>#home/conf/products/holiday.conf</holiday-path>
+    <holiday-encoding-type>UTF-8</holiday-encoding-type>
+  </date>
+  
+</core>

@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Cost Total Ledger Validation -->
+
+    <!-- Cost Total Ledger Master Search -->
+    <statement name="retrieveCostTotLedgerMstValidation">
+        <![CDATA[
+			SELECT 'F' chk, 
+			       mst.company_cd,
+			       mst.dept_cd,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2001',mst.dept_cd) dept_nm,
+			       mst.doc_ym,
+			       mst.doc_seq,
+			       dtl.amount,
+			       mst.doc_type,
+			       mst.currency_cd,
+			       mst.create_date,
+			       TO_CHAR(to_date(mst.doc_date,'yyyymmdd'),'yyyy/mm/dd')  doc_date,
+			       TO_CHAR(to_date(mst.post_date,'yyyymmdd'),'yyyy/mm/dd') post_date,
+			       mst.error_msg,
+			       mst.vali_success_yn,
+			       decode(mst.vali_success_yn,'Y','Pass',
+			                      'N','Fail', 'Fail') vali_success_nm,
+			       mst.attr2 doc_div,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2013',mst.attr2) doc_div_nm
+			  FROM lgiusf.tb_doc_temp_master mst,
+				(
+				 SELECT company_cd,
+				        dept_cd,
+				        doc_ym,
+				        doc_seq,
+				        sum(debit_amt) amount
+				   FROM lgiusf.tb_doc_temp_detail
+				  WHERE company_cd = ${companyCd}
+					AND dept_cd    = ${deptCd}
+				  GROUP BY company_cd,
+				           dept_cd,
+				           doc_ym,
+				           doc_seq          
+				) dtl
+	         WHERE mst.company_cd  = dtl.company_cd
+	           AND mst.dept_cd     = dtl.dept_cd
+	           AND mst.doc_ym      = dtl.doc_ym
+	           AND mst.doc_seq     = dtl.doc_seq
+	           AND mst.company_cd  = ${companyCd}
+	           AND mst.dept_cd     = ${deptCd}
+	           AND mst.create_date BETWEEN ${orderDateFrom} AND ${orderDateTo}
+			   {#1}
+			 ORDER BY mst.doc_ym, mst.doc_seq   	           
+		]]>
+
+        <append where="false" condition="${valiSuccessYn}.NOTEMPTY" id="#1">
+	           AND mst.vali_success_yn = ${valiSuccessYn}
+	    </append>
+	    
+    </statement>  
+
+
+    <!-- Cost Total Ledger Document Seq -->
+    <statement name="retrieveCostTotLedgerDocSeq">
+        <![CDATA[
+			SELECT LPAD(TO_NUMBER(NVL(MAX(doc_seq),9000000))+1,7,'0') doc_seq
+			  FROM lgiusf.tb_doc_master
+			 WHERE company_cd          = ${companyCd}
+			   AND dept_cd             = ${deptCd}
+			   AND doc_ym              = ${docYm}
+			   AND substr(doc_seq,1,1) = '9'
+		]]>
+    </statement>  
+
+   
+    <!-- Cost Total Ledger Master Delete -->
+    <statement name="deleteCostTotLedgerMstValidation">
+        <![CDATA[
+			DELETE lgiusf.tb_doc_temp_master
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+    <!-- Cost Total Ledger Master Update -->
+    <statement name="updateCostTotLedgerMstValidation">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_temp_master
+			   set doc_date        = ${docDate},
+			       post_date       = ${postDate},
+			       currency_cd     = ${currencyCd},
+			       error_msg       = ${errorMsg},
+			       vali_success_yn = ${valiSuccessYn}
+			 WHERE company_cd      = ${companyCd}
+			   AND dept_cd         = ${deptCd}
+			   AND doc_ym          = ${docYm}
+			   AND doc_seq         = ${docSeq}
+		]]>     
+    </statement>
+
+    <!-- Cost Total Ledger Detail Search -->
+    <statement name="retrieveCostTotLedgerDtlValidation">
+        <![CDATA[
+			SELECT dtl.company_cd,
+			       dtl.dept_cd,
+			       dtl.doc_ym,
+			       dtl.doc_seq,
+			       dtl.doc_num,
+			       dtl.sap_acct_cd,
+			       decode(${lang},'kr',acc.acct_nm_kr,
+			                      'en',acc.acct_nm_en, acc.acct_nm_lo) sap_acct_nm,
+			       dtl.debit_amt,
+			       dtl.credit_amt,
+			       dtl.doc_desc,
+			       dtl.attr3 vat,
+			       dtl.attr4 base,
+			       dtl.attr5 code,
+			       dtl.attr6 rate,
+			       dtl.attr11 due_date,
+			       dtl.spgl_no,
+			       dtl.sap_acct_v,
+			       (SELECT decode(${lang}, 'kr',vend_nm_kr,
+                                           'en',vend_nm_en, vend_nm_lo) sap_acct_v_nm           
+                      FROM lgiusf.tb_vend_master
+                     WHERE useyn = 'Y'
+                       AND company_cd = dtl.company_cd
+                       AND vend_cd = dtl.sap_acct_v
+                   ) as sap_acct_v_nm,			       			       			       			       
+			       dtl.sap_acct_c,
+			       (SELECT decode(${lang}, 'kr',vend_nm_kr,
+                                           'en',vend_nm_en, vend_nm_lo) sap_acct_c_nm           
+                      FROM lgiusf.tb_vend_master
+                     WHERE useyn = 'Y'
+                       AND company_cd = dtl.company_cd
+                       AND vend_cd = dtl.sap_acct_c
+                   ) as sap_acct_c_nm,
+			       dtl.error_msg,
+			       dtl.attr8 cost_center,
+			       acc.attr1 sp,
+			       acc.attr6 check_duedate,
+			       acc.acct_sap_cd,
+			       (
+			         SELECT decode(count(*), 0, 'N', 'Y')
+			           FROM lgiusf.tb_cost_center
+			          WHERE company_cd     = ${companyCd}
+			            AND cost_center_cd = dtl.attr8
+			       ) check_center,
+			       dtl.attr9 int_order,
+			       (SELECT io_name as int_order_nm                            
+                      FROM tb_io_master  
+                     WHERE use_yn = 'Y'
+                       AND company_cd = dtl.company_cd
+                       AND io_cd = dtl.attr9
+			       ) as int_order_nm,
+			       dtl.attr17 as period_cost_from,
+			       dtl.attr18 as period_cost_to
+			  FROM lgiusf.tb_doc_temp_detail dtl,
+			       lgiusf.tb_sap_account acc
+			 WHERE dtl.company_cd  = acc.company_cd(+)
+			   AND dtl.sap_acct_cd = acc.acct_sap_cd(+)
+			   AND dtl.company_cd  = ${companyCd}
+			   AND dtl.dept_cd     = ${deptCd}
+			   AND dtl.doc_ym      = ${docYm}
+			   AND dtl.doc_seq     = ${docSeq}
+		]]>
+    </statement>
+
+
+    <!-- Cost Total Ledger Detail Insert -->
+    <statement name="insertCostTotLedgerDtlValidation">
+        <![CDATA[
+			INSERT into lgiusf.tb_doc_temp_detail (
+			       company_cd,
+			       dept_cd,
+			       doc_ym,
+			       doc_seq,
+			       doc_num,
+			       attr3,
+			       attr4,
+			       attr5,
+			       attr6,
+			       attr11,
+			       spgl_no,
+			       sap_acct_v,
+			       sap_acct_c,
+			       sap_acct_cd,
+			       debit_amt,
+			       credit_amt,
+			       doc_desc,
+			       attr8,
+			       attr9,
+			       attr17,
+			       attr18 )
+			VALUES ( ${companyCd},
+			       ${deptCd},
+			       ${docYm},
+			       ${docSeq},
+			       ( select LPAD(TO_NUMBER(NVL(MAX(doc_num),0))+1,3,'0')
+			         from lgiusf.tb_doc_temp_detail t
+			        where company_cd = ${companyCd}
+			          and dept_cd    = ${deptCd}
+			          and doc_ym     = ${docYm}
+			          and doc_seq    = ${docSeq}),
+			       ${vat},
+			       ${base},
+			       ${code},
+			       ${rate},
+			       ${dueDate},
+			       ${spglNo},
+			       ${sapAcctV},
+			       ${sapAcctC},
+			       ${sapAcctCd},
+			       ${debitAmt},
+			       ${creditAmt},
+			       ${docDesc},
+			       ${costCenter},
+			       ${intOrder},
+			       ${periodCostFrom},
+			       ${periodCostTo} )
+		]]>     
+    </statement>
+
+    <!-- Cost Total Ledger Detail Update -->
+    <statement name="updateCostTotLedgerDtlValidation">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_temp_detail
+			   SET sap_acct_cd = ${sapAcctCd},
+			       debit_amt   = ${debitAmt},
+			       credit_amt  = ${creditAmt},
+			       doc_desc    = ${docDesc},
+			       attr3       = ${vat},
+			       attr4       = ${base},
+			       attr5       = ${code},
+			       attr6       = ${rate},
+			       attr11      = ${dueDate},
+			       spgl_no     = ${spglNo},
+			       sap_acct_v  = ${sapAcctV},
+			       sap_acct_c  = ${sapAcctC},
+			       attr8       = ${costCenter},
+			       attr9       = ${intOrder},
+			       attr17      = ${periodCostFrom},
+			       attr18      = ${periodCostTo}
+			 WHERE company_cd  = ${companyCd}
+			   AND dept_cd     = ${deptCd}
+			   AND doc_ym      = ${docYm}
+			   AND doc_seq     = ${docSeq}
+			   and doc_num     = ${docNum}
+		]]>     
+    </statement>
+
+    <!-- Cost Total Ledger Detail Change After Master Infomation Update -->
+    <statement name="updateCostTotLedgerDtlChgValidation">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_temp_master
+			   SET modid      = ${userId},
+			       moddate    = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime    = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>
+    </statement>
+
+    <!-- Cost Total Ledger Detail Delete -->
+    <statement name="deleteCostTotLedgerAllDtlValidation">
+        <![CDATA[
+			DELETE lgiusf.tb_doc_temp_detail
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+    <!-- Cost Total Ledger Detail Delete -->
+    <statement name="deleteCostTotLedgerDtlValidation">
+        <![CDATA[
+			DELETE lgiusf.tb_doc_temp_detail
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+			   and doc_num    = ${docNum}	
+		]]>     
+    </statement>
+
+
+    <!-- Cost Total Ledger Master Validation Check -->
+    <statement name="retrieveCostTotLedgerMstCheck">
+        <![CDATA[
+			SELECT mst.company_cd,
+			       mst.dept_cd,
+			       mst.doc_ym,
+			       mst.doc_seq,
+			       mst.doc_date,
+			       mst.post_date,
+			       mst.currency_cd,
+			       dtl.debit_amt,
+			       dtl.credit_amt,
+				   ( 
+					 SELECT decode(count(*), 0, 'Y', 'N')
+					   FROM lgiusf.tb_doc_master t
+					  WHERE company_cd = mst.company_cd
+						AND dept_cd    = mst.dept_cd
+						AND doc_ym     = mst.doc_ym
+						AND doc_seq    = mst.doc_seq 
+				   ) avail_check			       
+			  FROM lgiusf.tb_doc_temp_master mst,
+				(
+				 SELECT company_cd,
+				        dept_cd,
+				        doc_ym,
+				        doc_seq,
+				        sum(debit_amt)  debit_amt,
+				        sum(credit_amt) credit_amt
+				   FROM lgiusf.tb_doc_temp_detail
+				  WHERE company_cd = ${companyCd}
+					AND dept_cd    = ${deptCd}
+				  GROUP BY company_cd,
+				           dept_cd,
+				           doc_ym,
+				           doc_seq          
+				) dtl			  
+			 WHERE mst.company_cd  = dtl.company_cd
+	           AND mst.dept_cd     = dtl.dept_cd
+	           AND mst.doc_ym      = dtl.doc_ym
+	           AND mst.doc_seq     = dtl.doc_seq
+	           AND mst.company_cd  = ${companyCd}
+	           AND mst.dept_cd     = ${deptCd}
+			   {#1}
+			   {#2}
+		]]>
+
+        <append where="false" condition="${orderDateFrom}.NOTEMPTY" id="#1">
+	           AND mst.create_date BETWEEN ${orderDateFrom} AND ${orderDateTo}
+	    </append>
+
+        <append where="false" condition="${docSeq}.NOTEMPTY" id="#2">
+	           AND mst.doc_ym      = ${docYm}
+	           AND mst.doc_seq     = ${docSeq}
+	    </append>
+
+    </statement> 
+
+    <!-- Cost Total Ledger Detail Validation Check -->
+    <statement name="retrieveCostTotLedgerDtlCheck">
+        <![CDATA[
+			SELECT dtl.company_cd,
+			       dtl.dept_cd,
+			       dtl.doc_ym,
+			       dtl.doc_seq,
+			       dtl.doc_num,
+			       dtl.sap_acct_cd,
+			       dtl.debit_amt,
+			       dtl.credit_amt,
+			       dtl.attr3 vat,
+			       dtl.attr4 base,
+			       dtl.attr5 code,
+			       NVL(dtl.attr6, '0.0') rate,
+			       dtl.attr11 due_date,
+			       dtl.spgl_no,
+			       dtl.sap_acct_v,
+			       dtl.sap_acct_c,
+			       dtl.attr8 cost_center,			       
+			       dtl.attr9 int_order,
+			       (
+			         SELECT decode(count(*), 0, 'N', 'Y')
+			           FROM lgiusf.tb_io_master
+			          WHERE company_cd = ${companyCd}
+			            AND io_cd      = dtl.attr9
+			            AND use_yn     = 'Y'
+			       ) check_int,			       
+			       acc.attr1 sp,
+			       acc.attr6 check_duedate,
+			       acc.acct_sap_cd,
+			       (
+			         SELECT decode(count(*), 0, 'N', 'Y')
+			           FROM lgiusf.tb_comm_cd_detail cd
+			          WHERE company_cd = ${companyCd}
+			            AND group_cd   = decode(acc.attr1,'D','2009','K','2010','')
+			            AND useyn      = 'Y'
+			            AND detail_cd  = dtl.spgl_no
+			       ) check_spgl,
+			       (
+			         SELECT decode(count(*), 0, 'N', 'Y')
+			           FROM lgiusf.tb_vend_master
+			          WHERE company_cd = ${companyCd}
+			            AND vend_cd    = dtl.sap_acct_v
+			            AND useyn      = 'Y'
+			       ) check_vend,
+			       (
+			         SELECT decode(count(*), 0, 'N', 'Y')
+			           FROM lgiusf.tb_vend_master
+			          WHERE company_cd = ${companyCd}
+			            AND vend_cd    = dtl.sap_acct_c
+			            AND useyn      = 'Y'
+			       ) check_cust,
+			       (
+			         SELECT decode(count(*), 0, 'N', 'Y')
+			           FROM lgiusf.tb_cost_center
+			          WHERE company_cd     = ${companyCd}
+			            AND cost_center_cd = dtl.attr8
+			       ) check_center,
+			       (
+			         SELECT decode(count(*) , 0, 'N', 'Y')
+			           FROM lgiusf.tb_comm_cd_detail cd
+			          WHERE cd.company_cd = ${companyCd} 
+			            AND cd.group_cd   = '2007'
+			            AND cd.useyn      = 'Y'
+			            AND detail_cd     = dtl.attr3
+			       ) check_vatcd,
+			       (
+			         SELECT attr3
+			           FROM lgiusf.tb_sap_account
+			          WHERE company_cd  = ${companyCd}
+			            AND attr3 IS NOT NULL
+			            AND acct_sap_cd = dtl.sap_acct_cd
+			       ) check_vatacct,
+			       (
+			         SELECT decode(count(*) , 0, 'N', 'Y')
+			           FROM lgiusf.tb_comm_cd_detail
+			          WHERE company_cd = ${companyCd}
+			            AND group_cd   = '2011'
+			            AND attr2      = dtl.sap_acct_cd
+			       ) check_withtax,
+			       mst.attr2 doc_div,
+			       dtl.attr17 as period_cost_from,
+			       dtl.attr18 as period_cost_to
+	          FROM lgiusf.tb_doc_temp_detail dtl,
+	               lgiusf.tb_doc_temp_master mst,
+	               lgiusf.tb_sap_account acc
+	         WHERE mst.company_cd  = dtl.company_cd
+	           AND mst.dept_cd     = dtl.dept_cd
+	           AND mst.doc_ym      = dtl.doc_ym
+	           AND mst.doc_seq     = dtl.doc_seq
+	           AND dtl.company_cd  = acc.company_cd(+)
+	           AND dtl.sap_acct_cd = acc.acct_sap_cd(+)
+	           AND dtl.company_cd  = ${companyCd}
+	           AND dtl.dept_cd     = ${deptCd}
+	           {#1}
+		]]>
+
+        <append where="false" condition="${docSeq}.NOTEMPTY" id="#1">
+	           AND dtl.doc_ym     = ${docYm}
+	           AND dtl.doc_seq    = ${docSeq}
+	    </append>
+	    
+    </statement>
+
+   <!-- Cost Total Ledger Account Master Validation Update -->
+    <statement name="updateCostTotLedgerErrorMstValidation">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_temp_master
+			   SET vali_success_yn = ${valiSuccessYn},
+			       error_msg       = ${errorMsg}
+			 WHERE company_cd      = ${companyCd}
+			   AND dept_cd         = ${deptCd}
+			   AND doc_ym          = ${docYm}
+			   AND doc_seq         = ${docSeq}
+		]]>
+    </statement>
+
+   <!-- Cost Total Ledger Account Detail Validation Update -->
+    <statement name="updateCostTotLedgerErrorDtlValidation">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_temp_detail
+			   SET error_msg  = ${errorMsg}
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+			   AND doc_num    = ${docNum}
+		]]>
+    </statement>
+    
+   <!-- Cost Total Ledger Account Master Validation Update -->
+    <statement name="updateCostTotLedgerErrorValidation">
+        <![CDATA[
+			UPDATE lgiusf.tb_doc_temp_master mst
+			   SET vali_success_yn     = (
+				                           SELECT decode(count(*),0,'Y','N') chk
+				                             FROM lgiusf.tb_doc_temp_detail
+				                            WHERE company_cd = mst.company_cd
+				                              AND dept_cd    = mst.dept_cd
+				                              AND doc_ym     = mst.doc_ym
+				                              AND doc_seq    = mst.doc_seq
+				                              AND error_msg is not null 
+				                          )
+			 WHERE company_cd          = ${companyCd}
+			   AND dept_cd             = ${deptCd}
+			   AND doc_ym              = ${docYm}
+			   AND doc_seq             = ${docSeq}
+			   AND mst.vali_success_yn = 'Y'
+		]]>
+    </statement>
+
+    <!-- Cost Total Ledger Excel Upload Master Insert -->
+    <statement name="insertMstCostTotLedgerUpload">
+        <![CDATA[
+			INSERT INTO lgiusf.tb_doc_master (
+			            company_cd,
+			            dept_cd,
+			            doc_ym,
+			            doc_seq,
+			            create_type,
+			            create_date,
+			            currency_cd,
+			            doc_date,
+			            post_date,
+			            del_yn,
+			            prog_status,
+			            prog_status_date,
+			            prog_status_time,
+			            attr2,
+			            regid,
+			            regdate,
+			            regtime )
+			     SELECT company_cd,
+			            dept_cd,
+			            doc_ym,
+			            doc_seq,
+			            '2' create_type,
+			            create_date,
+			            currency_cd,
+			            doc_date,
+			            post_date,
+			            'N',
+			            '10',
+			            TO_CHAR(SYSDATE, 'YYYYMMDD') progStatusDate,
+			            TO_CHAR(SYSDATE, 'HH24MISS') progStatusTime,
+			            attr2,
+			            ${userId} regid,
+			            TO_CHAR(SYSDATE, 'YYYYMMDD') regdate,
+			            TO_CHAR(SYSDATE, 'HH24MISS') regtime
+				   FROM lgiusf.tb_doc_temp_master
+				  WHERE company_cd = ${companyCd}
+					AND dept_cd    = ${deptCd}
+					AND doc_ym     = ${docYm}
+					AND doc_seq    = ${docSeq}
+		]]>
+    </statement>  
+
+    <!-- Cost Total Ledger Excel Upload Detail Insert -->
+    <statement name="insertDtlCostTotLedgerUpload">
+        <![CDATA[
+			INSERT into lgiusf.tb_doc_detail (
+			       company_cd,
+			       dept_cd,
+			       doc_ym,
+			       doc_seq,
+			       doc_num,
+			       acct_cd,
+			       attr3,
+			       attr4,
+			       attr5,
+			       attr6,			       
+			       spgl_no,
+			       sap_acct_v,
+			       sap_acct_c,
+			       sap_acct_cd,
+			       debit_amt,
+			       credit_amt,
+			       attr8,
+			       attr9,
+			       doc_desc,
+			       del_yn,
+			       regid,
+			       regdate,
+			       regtime,
+			       attr17,
+			       attr18 )
+			SELECT company_cd,
+			       dept_cd,
+			       doc_ym,
+			       doc_seq,
+			       LPAD(ROW_NUMBER() OVER (PARTITION BY company_cd, dept_cd, doc_ym, doc_seq 
+			                                   ORDER BY company_cd, dept_cd, doc_ym, doc_seq DESC),3,'0') doc_num,
+			       acct_cd,
+			       attr3,
+			       attr4,
+			       attr5,
+			       attr6,			       
+			       spgl_no,
+			       sap_acct_v,
+			       sap_acct_c,
+			       sap_acct_cd,
+			       debit_amt,
+			       credit_amt,
+			       attr8 cost_center,
+			       attr9 int_order,
+			       doc_desc,
+			       'N' delYn,
+			       ${userId} regid,
+			       TO_CHAR(SYSDATE, 'YYYYMMDD') regdate,
+			       TO_CHAR(SYSDATE, 'HH24MISS') regtime,
+			       attr17,
+			       attr18
+			  FROM lgiusf.tb_doc_temp_detail
+			 WHERE company_cd = ${companyCd}
+			   AND dept_cd    = ${deptCd}
+			   AND doc_ym     = ${docYm}
+			   AND doc_seq    = ${docSeq}
+		]]>     
+    </statement>
+
+        
+</statements>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+    <!-- 입고등록-->
+   	<action-name name="receiptMgnt"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/receiptMgnt.jsp</return-url>
+   	</action-name>
+  	
+   	<!-- PO List 조회-->
+  	<action-name name="po.is.receiptMgnt.retrievePoListGau">
+		<command>po.is.cmd.RetrievePoListGauCmd</command>
+	</action-name>
+
+   	<!-- 입고등록 저장-->
+  	<action-name name="po.is.cmd.cudReceiptMgntCmd">
+		<command>po.is.cmd.CudReceiptMgntCmd</command>
+	</action-name>
+
+    <!-- 입고목록 & 취소 -->
+   	<action-name name="receiptCancelMgnt"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/receiptList.jsp</return-url>
+   	</action-name>
+
+    <!-- 입고 Master목록 조회 -->
+   	<action-name name="po.is.receiptMgnt.retrieveReceiptMstListGau"> 
+    	<command>po.is.cmd.RetrieveReceiptMstListGauCmd</command>
+   	</action-name>           
+
+    <!-- 입고 Detail목록 조회 -->
+   	<action-name name="po.is.receiptMgnt.retrieveReceiptDtlListGau"> 
+    	<command>po.is.cmd.RetrieveReceiptDtlListGauCmd</command>
+   	</action-name>
+
+   	<!-- 입고취소 -->
+  	<action-name name="po.is.cmd.cudReceiptSAPCancelCmd">
+		<command>po.is.cmd.CudReceiptSAPCancelCmd</command>
+	</action-name>
+
+   	
+</navigation-mapper>

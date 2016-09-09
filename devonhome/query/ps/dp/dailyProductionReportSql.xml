@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Daily Production Report Page -->
+
+    <statement name="retrieveDailyProductionReportMasterList">
+        <![CDATA[
+/*  dailyProductionReportSql.xml >  retrieveDailyProductionReportMasterList */      
+SELECT TO_CHAR(to_date(C1.PROD_DATE,'yyyymmdd'),'yyyy/mm/dd') as PROD_DATE 
+      ,C2.LIMESTONE_QTY
+      ,C3.RAWMIX_10_QTY
+      ,C3.RAWMIX_20_QTY
+      ,C3.RAWMIX_30_QTY
+      ,C3.RAWMIX_40_QTY
+      ,C3.RAWMIX_QTY
+      ,C4.CLINKER_10_QTY
+      ,C4.CLINKER_20_QTY
+      ,C4.CLINKER_QTY
+      ,C5.CEMENT_10_QTY
+      ,C5.CEMENT_20_QTY
+      ,C5.CEMENT_30_QTY
+      ,C5.CEMENT_40_QTY
+      ,C5.CEMENT_QTY
+      ,C6.CEMENT_BAG_10_QTY
+      ,C6.CEMENT_BAG_QTY
+  FROM (
+        /******************************************************************************
+        * 기준날짜 : 모든 공정 생산이 없는 날은 제외, 생산이 하나라도 있는 공정은 표시
+        ******************************************************************************/
+        SELECT DISTINCT *
+          FROM (SELECT PROD_DATE
+                   FROM TB_LIMESTONE_PROD_MASTER A1
+                  WHERE A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                    AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')
+                    AND A1.STATUS = '04' /* 04: SAP G/R */
+                 UNION ALL
+                 SELECT PROD_DATE
+                   FROM TB_RAWMIX_PROD_MASTER A1
+                  WHERE A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                    AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')
+                    AND A1.STATUS = '04' /* 04: SAP G/R */
+                 UNION ALL
+                 SELECT PROD_DATE
+                   FROM TB_CLINKER_PROD_MASTER A1
+                  WHERE A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                    AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')
+                    AND A1.STATUS = '04' /* 04: SAP G/R */
+                 UNION ALL
+                 SELECT PROD_DATE
+                   FROM TB_CEMENT_PROD_MASTER A1
+                  WHERE A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                    AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')
+                    AND A1.STATUS = '04' /* 04: SAP G/R */
+                 UNION ALL
+                 SELECT PROD_DATE
+                   FROM TB_CEMENT_BAG_PROD_MASTER A1
+                  WHERE A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                    AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')
+                    AND A1.STATUS = '04' /* 04: SAP G/R */
+                 ) B1) C1
+       /******************************************************************************
+       * 1. LINESTONE
+       ******************************************************************************/
+      ,(SELECT B1.PROD_DATE /* 생산일자 */
+              ,MAX(B1.LIMESTONE_QTY) AS LIMESTONE_QTY /*  생산량 */
+          FROM (SELECT A1.COMPANY_CD
+                      ,A1.PROD_DATE /* 생산일자 */
+                      ,A1.STATUS /* 진행상태( 00:progress, 02:sap sent, 03:sap g/i, 04:sap g/r, 99:sap error ) */
+                      ,A1.LIMESTONE_QTY /*  생산량 */
+                  FROM TB_LIMESTONE_PROD_MASTER A1
+                 WHERE 1 = 1
+                   AND A1.COMPANY_CD = ${companyCd}
+                   AND A1.DELETE_FLAG = 'N'
+                   AND A1.STATUS = '03' /* 03: SAP G/R */
+                   AND A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                   AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')) B1
+         GROUP BY B1.PROD_DATE) C2
+       /******************************************************************************
+       * 2. RAWMIX
+       ******************************************************************************/
+      ,(SELECT B1.PROD_DATE /* 생산일자 */
+              ,SUM(B1.PROD_OUT_10_QTY) AS RAWMIX_10_QTY /* 생산수량 */
+              ,SUM(B1.PROD_OUT_20_QTY) AS RAWMIX_20_QTY /* 생산수량 */
+              ,SUM(B1.PROD_OUT_30_QTY) AS RAWMIX_30_QTY /* 생산수량 */
+              ,SUM(B1.PROD_OUT_40_QTY) AS RAWMIX_40_QTY /* 생산수량 */
+              ,SUM(B1.RAWMIX_QTY) AS RAWMIX_QTY /*  생산량 */
+          FROM (SELECT A1.COMPANY_CD
+                      ,A1.SYSKEY /* system key */
+                      ,A1.PROD_DATE /* 생산일자 */
+                      ,A1.STATUS /* 진행상태( 00:progress, 02:sap sent, 03:sap g/i, 04:sap g/r, 99:sap error ) */
+                      ,DECODE(A2.MATER_SEQ, '10', A1.RAWMIX_QTY, 0) AS RAWMIX_QTY /*  생산량 : 중복계산 안되게 첫번째 행만  */
+                      ,DECODE(A2.MATER_SEQ, '10', A2.PROD_OUT_QTY, 0) AS PROD_OUT_10_QTY /* 생산수량 */
+                      ,DECODE(A2.MATER_SEQ, '20', A2.PROD_OUT_QTY, 0) AS PROD_OUT_20_QTY /* 생산수량 */
+                      ,DECODE(A2.MATER_SEQ, '30', A2.PROD_OUT_QTY, 0) AS PROD_OUT_30_QTY /* 생산수량 */
+                      ,DECODE(A2.MATER_SEQ, '40', A2.PROD_OUT_QTY, 0) AS PROD_OUT_40_QTY /* 생산수량 */
+                  FROM TB_RAWMIX_PROD_MASTER A1
+                      ,TB_RAWMIX_PROD_OUTPUT A2
+                 WHERE 1 = 1
+                   AND A1.COMPANY_CD = A2.COMPANY_CD
+                   AND A1.SYSKEY = A2.SYSKEY
+                   AND A1.COMPANY_CD = ${companyCd}
+                   AND A1.DELETE_FLAG = 'N'
+                   AND A1.STATUS = '04' /* 04: SAP G/R */
+                   AND A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                   AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')) B1
+         GROUP BY B1.PROD_DATE) C3
+       /******************************************************************************
+       * 3. CLINKER
+       ******************************************************************************/
+      ,(SELECT B1.PROD_DATE /* 생산일자 */
+              ,SUM(B1.PROD_OUT_10_QTY) AS CLINKER_10_QTY /* 생산수량 */
+              ,SUM(B1.PROD_OUT_20_QTY) AS CLINKER_20_QTY /* 생산수량 */
+              ,SUM(B1.CLINKER_QTY) AS CLINKER_QTY /*  생산량 */
+          FROM (SELECT A1.COMPANY_CD
+                      ,A1.SYSKEY /* system key */
+                      ,A1.PROD_DATE /* 생산일자 */
+                      ,A1.STATUS /* 진행상태( 00:progress, 02:sap sent, 03:sap g/i, 04:sap g/r, 99:sap error ) */
+                      ,DECODE(A2.MATER_SEQ, '10', A1.CLINKER_QTY, 0) AS CLINKER_QTY /*  생산량 : 중복계산 안되게 첫번째 행만  */
+                      ,DECODE(A2.MATER_SEQ, '10', A2.PROD_OUT_QTY, 0) AS PROD_OUT_10_QTY /* 생산수량 */
+                      ,DECODE(A2.MATER_SEQ, '20', A2.PROD_OUT_QTY, 0) AS PROD_OUT_20_QTY /* 생산수량 */
+                  FROM TB_CLINKER_PROD_MASTER A1
+                      ,TB_CLINKER_PROD_OUTPUT A2
+                 WHERE 1 = 1
+                   AND A1.COMPANY_CD = A2.COMPANY_CD
+                   AND A1.SYSKEY = A2.SYSKEY
+                   AND A1.COMPANY_CD = ${companyCd}
+                   AND A1.DELETE_FLAG = 'N'
+                   AND A1.STATUS = '04' /* 04: SAP G/R */
+                   AND A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                   AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')) B1
+         GROUP BY B1.PROD_DATE) C4
+       /******************************************************************************
+       * 4. CEMENT
+       ******************************************************************************/
+      ,(SELECT B1.PROD_DATE /* 생산일자 */
+              ,SUM(B1.PROD_OUT_10_QTY) AS CEMENT_10_QTY /* 생산수량 */
+              ,SUM(B1.PROD_OUT_20_QTY) AS CEMENT_20_QTY /* 생산수량 */
+              ,SUM(B1.PROD_OUT_30_QTY) AS CEMENT_30_QTY /* 생산수량 */
+              ,SUM(B1.PROD_OUT_40_QTY) AS CEMENT_40_QTY /* 생산수량 */
+              ,SUM(B1.CEMENT_QTY) AS CEMENT_QTY /*  생산량 */
+          FROM (SELECT A1.COMPANY_CD
+                      ,A1.SYSKEY /* system key */
+                      ,A1.PROD_DATE /* 생산일자 */
+                      ,A1.STATUS /* 진행상태( 00:progress, 02:sap sent, 03:sap g/i, 04:sap g/r, 99:sap error ) */
+                      ,DECODE(A2.MATER_SEQ, '10', A1.CEMENT_QTY, 0) AS CEMENT_QTY /*  생산량 : 중복계산 안되게 첫번째 행만  */
+                      ,DECODE(A2.MATER_SEQ, '10', A2.PROD_OUT_QTY, 0) AS PROD_OUT_10_QTY /* 생산수량 */
+                      ,DECODE(A2.MATER_SEQ, '20', A2.PROD_OUT_QTY, 0) AS PROD_OUT_20_QTY /* 생산수량 */
+                      ,DECODE(A2.MATER_SEQ, '30', A2.PROD_OUT_QTY, 0) AS PROD_OUT_30_QTY /* 생산수량 */
+                      ,DECODE(A2.MATER_SEQ, '40', A2.PROD_OUT_QTY, 0) AS PROD_OUT_40_QTY /* 생산수량 */
+                  FROM TB_CEMENT_PROD_MASTER A1
+                      ,TB_CEMENT_PROD_OUTPUT A2
+                 WHERE 1 = 1
+                   AND A1.COMPANY_CD = A2.COMPANY_CD
+                   AND A1.SYSKEY = A2.SYSKEY
+                   AND A1.COMPANY_CD = ${companyCd}
+                   AND A1.DELETE_FLAG = 'N'
+                   AND A1.STATUS = '04' /* 04: SAP G/R */
+                   AND A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                   AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')) B1
+         GROUP BY B1.PROD_DATE) C5
+       /******************************************************************************
+       * 6. CEMENT BAG
+       ******************************************************************************/
+      ,(SELECT B1.PROD_DATE /* 생산일자 */
+              ,SUM(B1.PROD_OUT_10_QTY) AS CEMENT_BAG_10_QTY /* 생산수량 */
+              ,SUM(B1.CEMENT_BAG_QTY) AS CEMENT_BAG_QTY /*  생산량 */
+          FROM (SELECT A1.COMPANY_CD
+                      ,A1.SYSKEY /* system key */
+                      ,A1.PROD_DATE /* 생산일자 */
+                      ,A1.STATUS /* 진행상태( 00:progress, 02:sap sent, 03:sap g/i, 04:sap g/r, 99:sap error ) */
+                      ,DECODE(A2.MATER_SEQ, '10', A1.CEMENT_BAG_QTY, 0) AS CEMENT_BAG_QTY /*  생산량 : 중복계산 안되게 첫번째 행만  */
+                      ,DECODE(A2.MATER_SEQ, '10', A2.PROD_OUT_QTY, 0) AS PROD_OUT_10_QTY /* 생산수량 */
+                  FROM TB_CEMENT_BAG_PROD_MASTER A1
+                      ,TB_CEMENT_BAG_PROD_OUTPUT A2
+                 WHERE 1 = 1
+                   AND A1.COMPANY_CD = A2.COMPANY_CD
+                   AND A1.SYSKEY = A2.SYSKEY
+                   AND A1.COMPANY_CD = ${companyCd}
+                   AND A1.DELETE_FLAG = 'N'
+                   AND A1.STATUS = '04' /* 04: SAP G/R */
+                   AND A1.PROD_DATE >= REPLACE(${fromDate}, '/', '')
+                   AND A1.PROD_DATE <= REPLACE(${toDate}, '/', '')) B1
+         GROUP BY B1.PROD_DATE) C6
+ WHERE C1.PROD_DATE = C2.PROD_DATE(+)
+   AND C1.PROD_DATE = C3.PROD_DATE(+)
+   AND C1.PROD_DATE = C4.PROD_DATE(+)
+   AND C1.PROD_DATE = C5.PROD_DATE(+)
+   AND C1.PROD_DATE = C6.PROD_DATE(+)
+ ORDER BY C1.PROD_DATE
+		]]>
+    </statement>  
+    
+    
+    
+     
+
+    
+</statements>

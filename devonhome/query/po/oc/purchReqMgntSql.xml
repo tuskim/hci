@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Purch Request Manage -->
+
+    <!-- Search Purch Request Manage -->
+    <statement name="retrievePurchReqMstMgnt">
+        <![CDATA[
+			SELECT mst.company_cd,
+			       mst.pr_no,
+			       mst.req_dept_cd,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2001',mst.req_dept_cd) req_dept_nm,
+			       mst.requester,
+			       to_char(to_date(mst.req_date,'yyyymmdd'),'yyyy/mm/dd') req_date,
+			       to_char(to_date(mst.deli_req_date,'yyyymmdd'),'yyyy/mm/dd') deli_req_date,
+			       mst.budget,
+			       mst.pur_comment,
+			       mst.status,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2201',mst.status) status_nm,
+			       dtl.idr_amt
+			  FROM lgiusf.tb_pr_master mst,
+				  ( SELECT company_cd,
+				           pr_no,
+				           sum(idr_amt) idr_amt 
+				      FROM lgiusf.tb_pr_detail 
+				     GROUP BY company_cd, pr_no ) dtl
+			 WHERE mst.company_cd  = dtl.company_cd
+			   AND mst.pr_no       = dtl.pr_no
+			   AND mst.company_cd  = ${companyCd}
+			   AND mst.req_dept_cd = ${reqDeptCd}
+			   AND mst.req_date BETWEEN ${orderDateFrom} AND ${orderDateTo}
+		]]>
+
+        <append where="false" condition="${prNo}.NOTEMPTY" id="#1">
+               AND pr_no       = ${prNo}
+	    </append>
+
+        <append where="false" condition="${status}.NOTEMPTY" id="#2">
+               AND status      = ${status}
+	    </append>
+
+    </statement>  
+
+
+    <!-- Search Purch Request Detail Manage -->
+    <statement name="retrievePurchReqDtlMgnt">
+        <![CDATA[
+			SELECT company_cd,
+			       pr_no,
+			       pr_detail_no,
+			       mater_type,
+			       mater_cd,
+			       lgiusf.F_GETCOMMNAME('MAT', ${companyCd}, ${lang}, mater_cd, '') mater_nm,
+			       urgent_type,
+			       vend_cd,
+			       lgiusf.F_GETCOMMNAME('VEND', ${companyCd}, ${lang}, vend_cd, '') vend_nm,
+			       pr_desc,
+			       unit,
+			       qty,
+			       vat_cd,
+			       currency_cd,
+			       price,
+			       amount,
+			       idr_amt,
+			       deli_loct,
+			       po_status
+			  FROM lgiusf.tb_pr_detail
+			 WHERE company_cd = ${companyCd}
+			   AND pr_no      = ${prNo}
+		]]>
+    </statement>
+
+    <!-- retrieve Pr No -->
+    <statement name="retrievePrNo">
+        <![CDATA[
+			SELECT LPAD(TO_NUMBER(NVL(MAX(SUBSTR(pr_no,7,4)),0))+1,4,'0') pr_no
+			  FROM lgiusf.tb_pr_detail
+			 WHERE company_cd = ${companyCd}
+			   AND pr_no LIKE SUBSTR(REPLACE(${reqDate},'/',''),1,6)||'%'
+		]]>
+    </statement>
+
+    <!-- Insert Purch Request Master Manage -->
+    <statement name="insertPurchReqMstMgnt">
+        <![CDATA[
+			INSERT INTO lgiusf.tb_pr_master ( 
+			       company_cd,
+			       pr_no,
+			       req_dept_cd,
+			       requester,
+			       req_date,
+			       deli_req_date,
+			       budget,
+			       pur_comment,
+			       status,
+			       pur_dept_cd,
+			       gmo_conid,
+			       gmo_condate,
+			       head_conid,
+			       head_condate,
+			       regid,
+			       regdate,
+			       regtime )
+		  VALUES ( ${companyCd},
+			       ${prNo},
+			       ${reqDeptCd},
+			       ${requester},
+			       replace(${reqDate},'/',''),
+			       replace(${deliReqDate},'/',''),
+			       ${budget},
+			       ${purComment},
+			       '01',
+			       '',
+			       '',
+			       '',
+			       '',
+			       '',
+			       ${userId},
+			       TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       TO_CHAR(SYSDATE, 'HH24MISS')  
+				 )
+		]]>     
+    </statement>
+
+
+    <!-- Update Purch Request Master Manage -->
+    <statement name="updatePurchReqMstMgnt">
+        <![CDATA[
+			UPDATE lgiusf.tb_pr_master
+			   SET req_dept_cd     = ${reqDeptCd},
+			       requester       = ${requester},
+			       req_date        = replace(${reqDate},'/',''),
+			       deli_req_date   = replace(${deliReqDate},'/',''),
+			       budget          = ${budget},
+			       pur_comment     = ${purComment},
+			       modid           = ${userId},
+			       moddate         = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime         = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd      = ${companyCd}
+			   AND pr_no           = ${prNo}
+		]]>     
+    </statement>
+ 
+
+    <!-- Delete Purch Request Master Manage -->
+    <statement name="deletePurchReqMstMgnt">
+        <![CDATA[
+			DELETE lgiusf.tb_pr_master
+			 WHERE company_cd = ${companyCd}
+			   AND pr_no      = ${prNo}
+		]]>     
+    </statement>
+    
+    
+    <!-- Insert Purch Request Detail Manage -->
+    <statement name="insertPurchReqDtlMgnt">
+        <![CDATA[
+			INSERT INTO lgiusf.tb_pr_detail ( 
+			       company_cd,
+			       pr_no,
+			       pr_detail_no,
+			       mater_type,
+			       mater_cd,
+			       vend_cd,
+			       urgent_type,
+			       pr_desc,
+			       qty,
+			       unit,
+			       currency_cd,
+			       vat_cd,
+			       price,
+			       amount,
+			       idr_amt,
+			       deli_loct,
+			       regid,
+			       regdate,
+			       regtime )
+		  VALUES ( ${companyCd},
+			       ${prNo},
+			       ( SELECT LPAD(NVL(TO_NUMBER(MAX(pr_detail_no)),0)+1,3,'0') pr_detail_no 
+			           FROM lgiusf.tb_pr_detail
+			          WHERE company_cd = ${companyCd}
+			            AND pr_no      = ${prNo} ),
+			       ${materType},
+			       ${materCd},
+			       ${vendCd},
+			       ${urgentType},
+			       ${prDesc},
+			       ${qty},
+			       ${unit},
+			       ${currencyCd},
+			       ${vatCd},
+			       ${price},
+			       ${amount},
+			       ${idrAmt},
+			       ${deliLoct},
+			       ${userId},
+			       TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       TO_CHAR(SYSDATE, 'HH24MISS')  
+				)
+		]]>     
+    </statement>    
+    
+    <!-- Update Purch Request Detail Manage -->
+    <statement name="updatePurchReqDtlMgnt">
+        <![CDATA[
+			UPDATE lgiusf.tb_pr_detail
+			   SET mater_type    = ${materType},
+			       mater_cd      = ${materCd},
+			       vend_cd       = ${vendCd},
+			       urgent_type   = ${urgentType},
+			       pr_desc       = ${prDesc},
+			       qty           = ${qty},
+			       currency_cd   = ${currencyCd},
+			       vat_cd        = ${vatCd},
+			       price         = ${price},
+			       amount        = ${amount},
+			       idr_amt       = ${idrAmt},
+			       deli_loct     = ${deliLoct},
+			       modid         = ${userId},
+			       moddate       = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime       = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd    = ${companyCd}
+			   AND pr_no         = ${prNo}
+			   AND pr_detail_no  = ${prDetailNo}
+		]]>     
+    </statement>    
+
+    <!-- Delete Purch Request Detail Manage -->
+    <statement name="deletePurchReqDtlMgnt">
+        <![CDATA[
+			DELETE lgiusf.tb_pr_detail
+			 WHERE company_cd   = ${companyCd}
+			   AND pr_no        = ${prNo}
+			   AND pr_detail_no = ${prDetailNo}
+		]]>     
+    </statement>
+
+
+    <!-- All Delete Purch Request Detail Manage -->
+    <statement name="deletePurchReqAllDtlMgnt">
+        <![CDATA[
+			DELETE lgiusf.tb_pr_detail
+			 WHERE company_cd   = ${companyCd}
+			   AND pr_no        = ${prNo}
+		]]>     
+    </statement>
+    
+</statements>

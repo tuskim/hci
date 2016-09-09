@@ -1,0 +1,63 @@
+@charser "utf-8";
+
+body{margin:0; padding:0;}
+div,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,form,fieldse,p{margin:0;padding:0;line-height:17px;list-style:none;}
+
+/*intro*/
+#intro_wrap{ background-color:#fff;}
+#intro{margin:0 auto; width:563px; margin-top:150px;}
+.logo{margin-left:10px;}
+.login_t{width:561px; border:1px solid #34aac7; height:210px; margin-top:7px;}
+.top_bg{width:559px; background-image:url(../images/intro_bg.gif); background-repeat:repeat-x; height:17px; margin:1px;}
+.login_box{margin-top:28px; margin-left:119px; font-weight:bold; width:327px; margin-bottom:75px;}
+.ul_li li{display:inline;}
+.id_box{float:left; width:225px; line-height:25px;}
+.id_btn{float:right; margin-top:27px;}
+.id_box ul li{display:inline;}
+.pad_01{margin-left:50px; margin-right:6px; font-family:Arial, Helvetica, sans-serif; font-size:12px;}
+.pad_02{margin-left:5px; margin-right:6px; font-family:Arial, Helvetica, sans-serif; font-size:12px;}
+.pad_03{margin-left:2px; margin-right:3px; font-family:Arial, Helvetica, sans-serif; font-size:12px;}
+.pass_box{width:225px; height:25px; text-align:center; margin-left:67px;}
+.pass_box a{color:#4355aa; font-size:10px;}
+.pass_box a:hover{color:#001cc8; font-size:10px;}
+.pass_bg{width:72px; float:left; height:16px; background-image:url(../images/pass_bg.jpg); background-repeat:no-repeat; line-height:16px; margin-top:10px;}
+.select_box{margin-top:170px; width:561px; height:27px; line-height:29px; background-color:#138ba9; color:#FFF; text-align:center; font-weight:bold;}
+.select_box input{border:0;}
+.copy{margin:0 auto; margin-top:10px; width:561px; text-align:center;}
+.com_select{text-align:center; margin-top:7px; font-weight:bold;}
+.com_select input{border:0;}
+
+/*占쎈쵎李볩옙占�
+.top_logo{ float:left; position:absolute; top:20px; left:50px;}
+
+.menu_s_wrap{ margin-left:236px; margin-top:30px; min-width:800px;}
+.menu_style{font-family:Arial, Helvetica, sans-serif; text-decoration:none; font-weight:bold; width:100%; background-color:#0e3493; color:#fff; background-image:url(../images/topmenu_img_b.jpg); background-position:left; background-repeat:no-repeat; height:27px;}
+.menu_style ul{padding:4px 5px 7px 10px;}
+.menu_style ul li{font-family:Arial, Helvetica, sans-serif; display:inline; background-repeat:no-repeat;}
+.menu_style .menu_over{font-size:13px; font-family:Arial, Helvetica, sans-serif;color:#0e3493; background-color:#c8edf1; text-decoration:none;  padding:5px 5px 7px 5px;}
+.menu_style .menu_over a{font-size:13px; font-family:Arial, Helvetica, sans-serif;color:#0e3493; padding:5px 5px 7px 5px;}
+.menu_style .menu_over a:hover{font-size:13px; font-family:Arial, Helvetica, sans-serif; color:#0e3493; background-color:#c8edf1; text-decoration:none; padding:5px 5px 7px 5px;}
+.menu_style ul li a{font-size:13px; font-family:Arial, Helvetica, sans-serif; color:#ffffff; text-decoration:none; padding:5px 10px 7px 10px}
+.menu_style ul li a:hover{font-size:13px; font-family:Arial, Helvetica, sans-serif; color:#0e3493; background-color:#c8edf1; text-decoration:none; padding:5px 10px 7px 10px}
+
+
+
+
+/*占쎈뜇遊쏙옙占쏙쭖遺얜뤀*/
+.wrap{margin-left:8px; width:213px; font-family:Arial, Helvetica, sans-serif; margin-top:10px;}
+.left_login{width:211px; height:60px; border:1px solid #99c7df; background-color:#eafaf8; text-align:center; vertical-align:middle; font-weight:bold;}
+.left_login .log_txt{color:#1f6589; margin-top:8px; margin-bottom:6px;}
+.left_login .log_txt2 .t1{padding:3px 6px; background-color:#4c9bc3; margin-right:4px;}
+.left_login .log_txt2 .t2{padding:3px 6px; background-color:#337190; margin-right:4px;}
+.left_login a{color:#fff;}
+.left_login a:hover{color:#fffbbe; text-decoration:none;}
+.left_menu{margin-top:8px; width:211px; border-top:1px solid #4c9bc3; border-left:1px solid #4c9bc3;  border-right:1px solid #4c9bc3; height:100%;  background-color:#fff;}
+.left_menu_t{margin:1px; height:18px; text-align:center; background-color:#ccd9df; padding-top:3px; font-family:Arial, Helvetica, sans-serif; font-size:13px; font-weight:bold; color:#337190;}
+.left_mli li{padding-left:12px; padding-top:7px; padding-bottom:6px; padding-right:10px;  border-bottom:1px solid #4c9bc3;line-height:11px;}
+.left_mli li a{font-weight:bold; color:#1d6e93; margin-top:10px;}
+.left_mli li a:hover{ width:211px; color:#12107b;}
+.left_mli .m_over{background-color:#217fae; color:#fff; background-image:url(../images/icon01.png); background-position:5px 9px; background-repeat:no-repeat;}
+.left_mli .m_over a{color:#fff;}
+.left_mli .m_over a:hover{color:#fff; text-decoration:none;}
+.m_out{background-image:url(../images/icon02.png); background-position:5px 9px; background-repeat:no-repeat;}
+.m_out a:hover{text-decoration:none;}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<statements>
+        
+    <!-- ************************************ -->
+    <!-- Vendor Bank Account List 조회 쿼리   -->
+    <!-- ************************************ -->
+    <statement name="retrieveVendorBankAcctListPopup">
+        <![CDATA[
+			SELECT vend_cd  
+			      ,country 
+			      ,bank_code
+			      ,bank_name
+			      ,acct_num  
+			      ,bank_mgnt_key
+			      ,partner_bank_type  
+			      ,acct_owner 
+			  FROM tb_vend_bank_acct	
+			 WHERE company_cd = ${companyCd}
+			  {#1}			   			   
+        ]]>
+
+	    <append condition="${vendCd}.NOTEMPTY" id="#1">       
+			   AND vend_cd = ${vendCd}
+	    </append>	    
+	    
+    </statement>
+    
+    <!-- ************************************ -->
+    <!-- Vendor Bank Account List 조회 쿼리   -->
+    <!-- ************************************ -->
+    <statement name="retrievePaymentBankAcctListPopup">
+        <![CDATA[
+			SELECT ROW_NUMBER() OVER (ORDER BY bank_id DESC) seq
+			      ,bank_id
+			      ,country  
+			      ,bank_account
+			      ,bank_desc 
+			  FROM tb_payment_bank_acct	
+			 WHERE company_cd = ${companyCd}			  			   			   
+        ]]>	    
+    </statement>
+          
+</statements>

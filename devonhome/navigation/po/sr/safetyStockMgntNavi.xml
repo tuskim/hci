@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Safety Stock Manage Confirm -->
+
+   	<!-- Safety Stock Manage Confirm -->  
+	<action-name name="safetyStockMgnt">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/sr/safetyStockMgnt.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- Safety Stock Manage Retrieve -->  
+	<action-name name="po.sr.retrieveSafetyStockMgnt">
+    	<command>po.sr.cmd.RetrieveSafetyStockMgntCmd</command> 
+   	</action-name>   	
+   	
+   	<!-- Safety Stock Manage Cud -->  
+	<action-name name="po.sr.cudSafetyStockMgnt">
+    	<command>po.sr.cmd.CudSafetyStockMgntCmd</command> 
+   	</action-name>      	
+   	
+   	<!-- Safety Stock Manage Cud -->  
+	<action-name name="po.sr.cudSafetyStockMgntDel">
+    	<command>po.sr.cmd.CudSafetyStockMgntDelCmd</command> 
+   	</action-name>         	
+   
+   	<!-- Stock List Manage Confirm -->  
+	<action-name name="stockList">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/sr/stockList.jsp</return-url>
+   	</action-name>   
+   	
+   	<!-- Stock List Manage Retrieve -->  
+	<action-name name="po.sr.retrieveStockList">
+    	<command>po.sr.cmd.RetrieveStockListCmd</command> 
+   	</action-name>      	
+
+   	<!-- Sales Weight List Retrieve -->  
+	<action-name name="po.sr.retrieveSalesWeightList">
+    	<command>po.sr.cmd.RetrieveSalesWeightListCmd</command> 
+   	</action-name>      	
+</navigation-mapper>

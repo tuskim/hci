@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+
+    <statement name="retrieveCementSampleIssueMasterList">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  retrieveCementSampleIssueMasterList */      
+SELECT '0' chk
+      ,ce_mas.sales_no
+      ,ce_mas.customer_cd
+      ,lgiusf.F_GETCOMMNAME('VEND', ${companyCd}, ${lang}, ce_mas.customer_cd, '') AS customer
+      ,ce_mas.delivery_cd
+      ,lgiusf.F_GETCOMMNAME('VEND', ${companyCd}, ${lang}, ce_mas.delivery_cd, '') AS deliveryNm 
+      ,to_char(to_date(ce_mas.sales_date, 'yyyymmdd'), 'yyyy/mm/dd') sales_date
+      ,ce_mas.grand_total_qty
+      ,ce_mas.currency_cd
+      ,ce_mas.grand_total_amt
+      ,ce_mas.pay_term
+      ,lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang}, '2321', ce_mas.status) status_nm
+      ,ce_mas.status
+      ,ce_mas.bl_if_doc_seq
+      ,(SELECT attr10
+          FROM lgiusf.tb_comm_cd_detail comm
+         WHERE comm.company_cd = ce_mas.company_cd
+           AND group_cd = '2001'
+           AND detail_cd = ce_mas.dept_cd) group_cd
+      ,ce_mas.GI_IF_DOC_SEQ /* gi i/f 전표번호 */
+      ,ce_mas.sap_rtn_msg
+      ,ce_mas.trans_date
+  FROM tb_cement_sales_master ce_mas
+ WHERE ce_mas.company_cd = ${companyCd}
+   AND ce_mas.sales_date >= REPLACE(${salesDateFrom}, '/', '')
+   AND ce_mas.sales_date <= REPLACE(${salesDateTo}, '/', '')
+   AND original_sales_no IS NULL
+   AND ce_mas.sales_no LIKE 'SI%'
+			       {#2}
+        ]]>   
+	     <append condition="${status}.NOTEMPTY" id="#2">       
+			   AND ce_mas.status like '%'||${status}||'%'
+	    </append>
+    </statement> 
+
+    <statement name="retrieveCementSampleIssueDetailList">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  retrieveCementSampleIssueDetailList */      
+SELECT 
+	ce_det.mater_cd
+	,(SELECT mat_inf.mater_nm_en 
+		FROM tb_mater_info mat_inf 
+		WHERE mat_inf.company_cd = ${companyCd}
+		AND mat_inf.mater_cd = ce_det.mater_cd
+		AND mat_inf.useyn = 'Y') mater_nm
+	,ce_det.current_qty
+	,ce_det.sales_qty
+	,ce_det.unit_price
+	,ce_det.sales_amt
+	,ce_det.vat_cd
+	,ce_det.vat_amt
+	,ce_det.total_amt
+	,ce_det.sales_no
+	,ce_det.unit
+	,ce_det.stor_loct
+	,to_char(to_date(ce_det.sales_date,'yyyymmdd'),'yyyy/mm/dd') sales_date
+	,ce_det.sales_item_seq
+FROM tb_cement_sales_detail ce_det
+WHERE ce_det.company_cd = ${companyCd}
+   AND ce_det.sales_date = replace(${salesDate},'/','')
+   AND ce_det.sales_no = ${salesNo}
+        ]]>   
+    </statement> 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    <statement name="createCementSampleIssueNo">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  createCementSampleIssueNo */   
+SELECT 'SI' || SUBSTR(REPLACE(${salesDate}, '/', ''), 3, 6) || LPAD(TO_NUMBER(NVL(MAX(SUBSTR(SALES_NO, 9, 3)), 0)) + 1, 3, 0) SALES_NO
+  FROM TB_CEMENT_SALES_MASTER
+ WHERE COMPANY_CD = ${companyCd}
+   AND SALES_DATE = REPLACE(${salesDate}, '/', '')
+   AND SALES_NO LIKE 'SI%'
+        ]]> 
+    </statement>  
+
+    <statement name="createMaster">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  createMaster */      
+INSERT INTO TB_CEMENT_SALES_MASTER
+	  (COMPANY_CD
+		,DEPT_CD
+		,SALES_DATE
+		,SALES_NO
+		,PERNR
+		,CUSTOMER_CD
+		,CURRENCY_CD
+		,DELIVERY_CD
+		,STOR_LOCT
+		,PLANT_CD
+		,GRAND_TOTAL_AMT
+		,GRAND_TOTAL_QTY
+		,PAY_TERM
+		,STATUS
+		,REGID
+		,REGDATE
+		,REGTIME)
+VALUES
+	  (${companyCd}
+	   ,${companyCd}
+	   ,REPLACE(${salesDate},'/','')
+	   ,${salesNo}
+	   ,${userId}
+	   ,${customerCd}
+	   ,${currencyCd}
+	   ,${deliveryCd}
+	   ,''
+	   ,'GA10'
+	   ,${grandTotalAmt}
+	   ,${grandTotalQty}
+	   ,${payTerm}
+	   ,0 /*STATUS*/
+	   ,${userId}
+	   ,TO_CHAR(SYSDATE,'YYYYMMDD')
+	   ,TO_CHAR(SYSDATE,'HH24MISS')
+	  )
+        ]]> 
+    </statement>  
+
+    <statement name="createDetail">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  createDetail */   
+INSERT INTO TB_CEMENT_SALES_DETAIL
+		(COMPANY_CD
+		,DEPT_CD
+		,SALES_DATE
+		,SALES_NO
+		,SALES_ITEM_SEQ
+		,MATER_CD
+		,TOTAL_AMT
+		,UNIT_PRICE
+		,SALES_QTY
+		,SALES_AMT
+		,VAT_CD
+		,VAT_AMT
+		,UNIT
+		,STOR_LOCT
+		,REGID
+		,REGDATE
+		,REGTIME)
+VALUES 
+		(${companyCd}
+		,${companyCd}
+		,REPLACE(${salesDate},'/','')
+		,${salesNo}
+		,( SELECT LPAD(TO_NUMBER(NVL(MAX(SALES_ITEM_SEQ),0))+10,6,0) 
+			  FROM TB_CEMENT_SALES_DETAIL 
+			 WHERE COMPANY_CD = ${companyCd}
+			   AND SALES_DATE = REPLACE(${salesDate},'/','')
+			   AND SALES_NO   = ${salesNo})
+		,${materCd}
+	  ,${totalAmt}
+	  ,0 /* unitPrice */
+	  ,${salesQty}
+	  ,0 /* salesAmt */
+	  ,${vatCd}
+	  ,${vatAmt}
+	  ,${unit}
+	  ,${storLoct}
+	  ,${userId}
+	  ,TO_CHAR(SYSDATE,'YYYYMMDD')
+	  ,TO_CHAR(SYSDATE,'HH24MISS')
+	  )
+        ]]> 
+    </statement> 
+
+
+
+
+
+
+
+    <statement name="deleteMaster">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  deleteMaster */      
+DELETE tb_cement_sales_master
+ WHERE company_cd = ${companyCd}
+   AND sales_date  = replace(${salesDate},'/','')
+   AND sales_no   = ${salesNo}
+        ]]> 
+    </statement>   
+  
+    <statement name="deleteDetailList">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  deleteDetailList */      
+DELETE tb_cement_sales_detail
+ WHERE company_cd = ${companyCd}
+   AND sales_date  = replace(${salesDate},'/','')
+   AND sales_no   = ${salesNo}
+	     ]]>  
+    </statement>
+
+    <statement name="deleteDetail">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  deleteDetail */      
+DELETE tb_cement_sales_detail
+ WHERE company_cd = ${companyCd}
+   AND sales_date  = replace(${salesDate},'/','')
+   AND sales_no   = ${salesNo}
+   AND sales_item_seq = ${salesItemSeq}
+        ]]> 
+    </statement>
+    
+    
+    
+    
+    
+    
+
+    <statement name="updateMaster">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  updateMaster */      
+UPDATE tb_cement_sales_master
+   SET pernr 	= ${userId},
+       customer_cd		= ${customerCd},
+       currency_cd    = ${currencyCd},
+       stor_loct   = '',
+       plant_cd   = 'O110',
+       grand_total_amt   = ${grandTotalAmt},
+       grand_total_qty   = ${grandTotalQty},
+       pay_term   = ${payTerm},
+       status = '0',
+       modid	    = ${userId},
+       moddate 		= to_char(sysdate,'yyyymmdd'),
+       modtime 		= to_Char(sysdate,'hh24miss')
+ WHERE company_cd = ${companyCd}
+   AND sales_date  = replace(${salesDate},'/','')
+   AND sales_no   = ${salesNo}
+        ]]> 
+    </statement>  
+
+    <statement name="updateDetail">
+        <![CDATA[
+/*  cementSampleIssueSql.xml >  updateDetail */      
+UPDATE tb_cement_sales_detail
+   SET mater_cd = ${materCd},
+        total_amt 		 = ${totalAmt},
+   		unit_price 		 = ${unitPrice},
+        current_qty 	 = ${currentQty},
+        sales_qty 	 = ${salesQty},
+        sales_amt 	 = ${salesAmt},
+        vat_cd  = ${vatCd},
+        vat_amt = ${vatAmt},
+        stor_loct = ${storLoct},
+        modid	     = ${userId},
+        moddate 	 = to_char(sysdate,'yyyymmdd'),
+        modtime 	 = to_Char(sysdate,'hh24miss')
+ WHERE company_cd 	 = ${companyCd}
+   AND sales_date   	 = replace(${salesDate},'/','')
+   AND sales_no   	 = ${salesNo}		
+   AND sales_item_seq   	 = ${salesItemSeq}		
+        ]]> 
+    </statement>  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  <!--########## SAP SEND ##########-->  
+    <statement name="checkSendingStatus"> 
+       <![CDATA[	
+/*  cementSampleIssueSql.xml >  checkSendingStatus */      
+SELECT STATUS
+  FROM TB_CEMENT_SALES_MASTER
+ WHERE COMPANY_CD = ${companyCd}
+   AND SALES_DATE = REPLACE(${salesDate}, '/', '')
+   AND SALES_NO = ${salesNo}
+   AND ORIGINAL_SALES_NO IS NULL
+     	]]>
+    </statement> 
+
+    <!--Sales managemant SAP succuess- 판매 sending update  -->
+    <statement name="cudCementSampleIssueListUpdateSendingStatus"> 
+       <![CDATA[	
+/*  cementSampleIssueSql.xml >  cudCementSampleIssueListUpdateSendingStatus */      
+UPDATE tb_cement_sales_master
+   set 
+       status		 = '8',
+       modid	    = ${userId},
+       moddate 	 	= to_char(sysdate,'yyyymmdd'),
+       modtime 	 	= to_Char(sysdate,'hh24miss'),
+       trans_date   = to_char(sysdate,'yyyymmdd')
+ WHERE company_cd = ${companyCd}
+   AND sales_date  = replace(${salesDate},'/','')
+   AND sales_no   = ${salesNo}
+   AND original_sales_no IS NULL 
+     	]]>		
+    </statement> 
+
+
+
+
+    <statement name="retrieveCementSampleIssueSapSend"> 
+       <![CDATA[	
+/*  cementSampleIssueSql.xml >  retrieveCementSampleIssueSapSend */      
+select ce_det.company_cd
+	,ce_det.dept_cd
+	,ce_det.sales_date delivery_date
+	,ce_det.sales_no
+	,ce_det.sales_item_seq item_seq
+	,ce_det.mater_cd
+	,ce_det.sales_type
+	,ce_det.unit
+	,ce_det.stor_loct
+	,'GA10'             plant_cd
+	,ce_det.total_amt
+	,ce_det.unit_price
+	,ce_det.current_qty
+	,ce_det.sales_qty      div_sales_weight
+	,ce_det.sales_amt     div_sales_amt
+	,ce_det.vat_cd
+	,ce_det.vat_amt tax_amt
+	,ce_det.attr1
+	,ce_det.attr2
+	,ce_det.attr3
+	,ce_det.attr4
+	,ce_det.attr5
+	,ce_det.attr6
+	,ce_det.attr7
+	,ce_det.attr8
+	,ce_det.attr9
+	,ce_det.attr10
+	,ce_det.regid
+	,ce_det.regdate
+	,ce_det.regtime
+	,ce_det.modid
+	,ce_det.moddate
+	,ce_det.modtime
+	,ce_det.ifstcd
+	,ce_det.iferrmsg
+	,ce_mas.currency_cd 
+  FROM tb_cement_sales_master ce_mas, tb_cement_sales_detail ce_det
+ WHERE ce_mas.company_cd = ce_det.company_cd
+   AND ce_mas.dept_cd = ce_det.dept_cd
+   AND ce_mas.sales_date  = ce_det.sales_date
+   AND ce_mas.sales_no   = ce_det.sales_no
+   AND ce_det.company_cd = ${companyCd}
+   AND ce_det.sales_date  = replace(${salesDate},'/','')
+   AND ce_det.sales_no   = ${salesNo}
+     	]]>		
+    </statement>   
+
+
+
+    <statement name="cudCementSampleIssueAfterSapSuccess"> 
+       <![CDATA[	
+/*  cementSampleIssueSql.xml >  cudCementSampleIssueAfterSapSuccess */      
+UPDATE tb_cement_sales_master
+   set 
+       sap_seq 		= ${sapSeq},
+       GI_IF_DOC_SEQ 		= ${giIfDocSeq},
+       status		 = '1',
+       sap_rtn_msg  = ${returnMsg},
+       modid	    = ${userId},
+       moddate 	 	= to_char(sysdate,'yyyymmdd'),
+       modtime 	 	= to_Char(sysdate,'hh24miss'),
+       ifstcd 		= 'Y'
+ WHERE company_cd = ${companyCd}
+   AND sales_date  = replace(${salesDate},'/','')
+   AND sales_no   = ${salesNo}
+   AND original_sales_no IS NULL 
+     	]]>		
+    </statement> 
+
+
+</statements>

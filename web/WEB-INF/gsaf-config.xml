@@ -1,0 +1,56 @@
+<gsaf-config> 
+  <action-chain name="treeview" target="/gauce40/treeview.jsp"> 
+    <action name="MenuTree" class="gauce.samples.MenuTree"/>
+  </action-chain>
+
+  <action-chain name="grid" target="/gauce40/grid/grid.jsp"> 
+    <action name="GridSelect" class="gauce.samples.grid.GridSelect"/> 
+  </action-chain>
+
+  <action-chain name="gridTRSelect" target="/gauce40/grid/gridTRSelect.jsp">
+    <action name="GridTRSelect" class="gauce.samples.grid.GridTRSelect"/>
+  </action-chain>
+ 
+  <action-chain name="gridTR" target="/gauce40/grid/gridTR.jsp">
+    <action name="GridTR" class="gauce.samples.grid.GridTR"/>
+  </action-chain>
+
+  <action-chain name="report1" target="/gauce40/report/report1.jsp"> 
+    <action name="GridSelect" class="gauce.samples.grid.GridSelect"/>
+  </action-chain>
+  
+  <action-chain name="report2" target="/gauce40/report/report2.jsp"> 
+    <action name="GridTRSelect" class="gauce.samples.grid.GridTRSelect"/>
+  </action-chain>
+ 
+  <action-chain name="simple_tr_select" target="/gauce40/tr/simple_tr_select.jsp">
+    <action name="SimpleTRSelect" class="gauce.samples.tr.SimpleTRSelect"/>
+  </action-chain>
+ 
+  <action-chain name="simple_tr" target="/gauce40/tr/simple_tr.jsp"> 
+    <action name="SimpleTR" class="gauce.samples.tr.SimpleTR"/>
+  </action-chain>
+
+  <action-chain name="tr_oo" target="/gauce40/tr/tr_oo.jsp"> 
+    <action name="Group" class="gauce.samples.tr.Group"/>
+    <action name="User" class="gauce.samples.tr.User"/>
+  </action-chain>
+  
+  <action-chain name="ds_select" target="/gauce40/tr/ds_select.jsp"> 
+    <action name="SimpleTR" class="gauce.samples.tr.User"/>
+  </action-chain>
+ 
+  <action-chain name="tr_iio" target="/gauce40/tr/tr_iio.jsp"> 
+    <action name="TRII" class="gauce.samples.tr.TRII"/>
+    <action name="User" class="gauce.samples.tr.User"/>
+  </action-chain>
+
+  <action-chain name="simple_tr" target="/gauce40/blob/blob_tr.jsp"> 
+    <action name="BlobTR" class="gauce.samples.blob.BlobTR"/>
+  </action-chain>
+
+  <action-chain name="db_tr_iio" target="/gauce40/tr/db_tr_iio.jsp">
+    <action name="TRIIOAction" class="gauce.samples.tr.TRIIOAction"/>
+  </action-chain> 
+   
+</gsaf-config>

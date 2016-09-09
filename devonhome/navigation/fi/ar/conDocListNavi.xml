@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- conDocList -->
+    <!-- Consultation Doc List 조회-->  
+   <action-name name="conDocList">	
+  	<command-no>2</command-no>     
+  	<command1>cm.lo.cmd.RetrievePageInfoCmd</command1>     
+    <command2>fi.ar.cmd.RetrieveConDocListCmd</command2>  
+    <return-url>/jsp/fi/ar/conDocList.jsp</return-url>
+   </action-name> 
+   
+   <!-- Consultation Doc List 신규 화면-->  
+    <action-name name="fi.ar.retrieveConDocUpdate">
+  	<command-no>2</command-no>  	
+  	<command1>cm.lo.cmd.RetrievePageInfoCmd</command1>     
+    <command2>fi.ar.cmd.RetrieveConDocUpdateCmd</command2>
+    <return-url>/jsp/fi/ar/conDocUpdate.jsp</return-url>
+   </action-name>
+   
+   <!-- Consultation Doc List 상세화면-->  
+    <action-name name="fi.ar.retrieveConDocDetail">
+  	<command-no>2</command-no>  	
+  	<command1>cm.lo.cmd.RetrievePageInfoCmd</command1>     
+    <command2>fi.ar.cmd.RetrieveNoticeDetailCmd</command2>
+    <return-url>/jsp/fi/ar/conDocDetail.jsp</return-url>
+   </action-name>
+   
+   
+   <!-- Consultation Doc List 등록-->  
+    <action-name name="fi.ar.cudConDoc">
+    <command>fi.ar.cmd.CudConDocCmd</command>
+    <return-url>/jsp/fi/ar/conDocProcess.jsp</return-url>
+   </action-name>
+   
+   <!-- Consultation Doc List 상세화면에서 삭제-->  
+    <action-name name="fi.ar.deleteConDoc">
+    <command>fi.ar.cmd.DeleteConDocCmd</command>
+    <return-url>/jsp/fi/ar/conDocProcess.jsp</return-url>
+   </action-name>
+    
+    <action-name name="fi.ar.DownloadConDocFile">
+     <command>fi.ar.cmd.DownloadFileConDocCmd</command>
+     <return-type>null</return-type>
+   </action-name>
+   <action-name name="fi.ar.retrieveConDocListPop">	 
+    <command>fi.ar.cmd.RetrieveConDocListPopCmd</command> 
+   </action-name> 
+   <!-- Consultation Doc List 삭제/수정 유무 확인--> 
+   <action-name name="fi.ar.retrieveConDocChk">	 
+    <command>fi.ar.cmd.RetrieveConDocChkCmd</command> 
+   </action-name>    
+</navigation-mapper>

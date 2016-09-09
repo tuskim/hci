@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+	<action-name name="materialMgnt"> 
+    <command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  	<return-url>/jsp/cm/cm/materialMgnt.jsp</return-url>
+	</action-name>
+	
+  <action-name name="cm.cm.retrieveMaterialRequest">
+  	<command>cm.cm.cmd.RetrieveMaterialRequestCmd</command>
+  </action-name>		   	
+   	
+  <action-name name="cm.cm.cudMaterialRequest">
+  	<command>cm.cm.cmd.CudMaterialRequestCmd</command>
+  </action-name>		   	
+
+</navigation-mapper>

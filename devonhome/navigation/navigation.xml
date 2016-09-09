@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+  <global-setting>
+    <error>/error/errorglobal.jsp</error>
+  </global-setting>
+
+</navigation-mapper>

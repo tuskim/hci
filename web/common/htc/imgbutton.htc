@@ -1,0 +1,280 @@
+ /**
+ * @(#) imgbutton.htc version v0.8 build b100 
+ *
+ *  Copyright(저작권) Do Not Erase This Comment!!! (이 주석문을 지우지 말것)
+ *  
+ *  The imgbutton.htc is designed for easy development of image button
+ *  in enterprise web applicatoin environment using DHTML & JScript skill set.
+ *  imgbutton.htc work properly with Microsoft Ineternet Explorer v5.0 or later
+ *
+ *  When using imgbutton.htc in real projects, you should inform all the authors 
+ *  in the below author list via email (including an official project name, 
+ *  contact point informaitons, etc..)
+ *
+ *  In the case of modifing source, you should email to all the authors 
+ *  in the below author list for information ( such as all set of modified sources,
+ *  information of modifications, etc..)
+ *  If provided modifications are proved reasonable, we may update imgbutton.htc 
+ *  reflecting your ideas on modifications
+ *  Furthermore, if your modifications are proved valuable, it is possible to add 
+ *  your information on the authors list under deliberation.
+ *
+ *  For detailed information and references, see the user's guide and the developer's 
+ *  guide at http://www.dev-on.com .
+ *  (Caution!) DO NOT redistribute without permission. 
+ *             Distribution to outside of LG CNS is NOT permitted. 
+
+ *
+ *  이 imgbutton.htc는 DHTML과 JScript를 이용하여 기업환경의 웹 응용프로그램에서의
+ *  image button을 쉽게 구현하기 위하여 작성되었다.
+ *  imgbutton.htc는 Microsoft사의 Internet Explorer v5.0 이상에서 동작한다.
+ *
+ *  imgbutton.htc를 실제 프로젝트에 사용하는 경우 아래의 저자 리스트에 등록된 모든 저작자에게 
+ *  프로젝트 정식명칭, 담당자 연락처(Email)등을 mail로 알려야 한다.
+ *
+ *  소스를 변경하여 사용하는 경우 아래의 저자 리스트에 등록된 모든 저작자에게
+ *  변경된 소스 전체와 변경된 사항을 mail로 알려야 한다.
+ *  저작자는 제공된 소스가 유용하다고 판단되는 경우 해당 사항을 반영할 수 있다.
+ *  중요한 Idea를 제공하였다고 판단되는 경우 협의하에 저자 List에 반영할 수 있다.
+ *  
+ *  자세한 사용설명은 http://www.dev-on.com 의 imgbutton menu Section을 참고하라. 
+ *  (beta 버젼의 경우 정보제공이 제한될 수 있다.)
+ *  
+ *  (주의!) 원저자의 허락없이 재배포 할 수 없으며 LG CNS 외부로의 유출을 하여서는 안된다.
+ *  
+ **
+ * AUTHORS LIST       E-MAIL                   HOMEPAGE
+ * TK Shin            lovemine@nownuri.net     http://www.lovemine.pe.kr
+ * 
+ **
+ ** MODIFICATION HISTORY
+ ** DATE       Version    DEVELOPER        DESCRIPTION
+ ** 2003/10/20 0.8        TK Shin          Initial Beta Release
+ **
+ ** MODIFICATION HISTORY (Build detailed)
+ ** DATE        Version       BUILD  DESCRIPTION
+ ** 2002/10/20 (v0.8 build b100 ) : beta Release
+ */
+
+<PUBLIC:COMPONENT lightWeight=true >
+<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="initialize()" />
+<PUBLIC:ATTACH EVENT="onmousedown" ONEVENT="ib_mouse_down()" />
+<PUBLIC:ATTACH EVENT="onmouseup" ONEVENT="ib_mouse_up()" />
+<PUBLIC:ATTACH EVENT="onmouseover" ONEVENT="ib_mouse_over()" />
+<PUBLIC:ATTACH EVENT="onmouseout" ONEVENT="ib_mouse_out()" />
+<PUBLIC:ATTACH EVENT="onclick" ONEVENT="ib_click()" />
+
+<SCRIPT LANGUAGE="JScript">
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+///
+///   htc (behavior) event handling
+///
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.initialize()
+// 이 벤 트 : htc.ondocumentready
+// 대상객체 : htc 객체(this)
+// 파라메터 : N/A
+// 리 턴 값 : N/A
+// 내    용 : htc의 초기화를 수행한다.
+// 작 성 자 : TK Shin / Since xMenuFulldowno v1.0
+//////////////////////////////////////////////////////////
+function initialize() {
+	if (element.tagName != "IMG" ) { return;	}
+	if (this.getAttribute("src"))      this.normalImg  = getCachedImage(this.getAttribute("src"));
+	if (this.getAttribute("src_over")) this.hilightImg = getCachedImage(this.getAttribute("src_over"));
+	if (this.getAttribute("src_down")) this.downImg    = getCachedImage(this.getAttribute("src_down"));
+  if (this.getAttribute("disable") != null) disable = true;
+  element.setEnable = set_enable;
+	this.toggleCss = toggleCss;
+  this.toggleCss("xiButtonNormal");
+}
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.ib_mouse_over()
+// 이벤트값 : htc.onmouseover
+// 대상객체 : htc 객체(this)
+// 파라메터 : N/A
+// 리 턴 값 : N/A
+// 내    용 : element의 onmouseover시에 element의 CSS를 변경한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function ib_mouse_over() {
+  if (element.disable) return;
+  this.toggleCss("xiButtonHilite", "xiButtonNormal", "xiButtonDown");
+  if (this.hilightImg) this.src = this.hilightImg.src;
+}
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.ib_mouse_out()
+// 이벤트값 : htc.onmouseout
+// 대상객체 : htc 객체(this)
+// 파라메터 : N/A
+// 리 턴 값 : N/A
+// 내    용 : element의 onmouseover시에 element의 CSS를 변경한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function ib_mouse_out() {
+  if (element.disable) return;
+  this.toggleCss("xiButtonNormal", "xiButtonHilite" , "xiButtonDown");
+  if (this.hilightImg) this.src = this.normalImg.src;
+}
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.ib_mouse_down()
+// 이벤트값 : htc.onmousedown
+// 대상객체 : htc 객체(this)
+// 파라메터 : N/A
+// 리 턴 값 : N/A
+// 내    용 : element의 onmouseover시에 element의 CSS를 변경한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function ib_mouse_down() {
+  if (element.disable) return;
+  this.toggleCss("xiButtonDown", "xiButtonHilite", "xiButtonDown");
+  if (this.downImg) this.src = this.downImg.src;
+}
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.ib_mouse_up()
+// 이벤트값 : htc.onmouseup
+// 대상객체 : htc 객체(this)
+// 파라메터 : N/A
+// 리 턴 값 : N/A
+// 내    용 : element의 onmouseover시에 element의 CSS를 변경한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function ib_mouse_up() {
+  if (element.disable) return;
+  this.toggleCss("xiButtonHilite", "xiButtonNormal", "xiButtonDown");
+  if (this.hilightImg) this.src = this.hilightImg.src;
+}
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.ib_click()
+// 이벤트값 : element.onclick
+// 대상객체 : htc 객체(this)
+// 파라메터 : N/A
+// 리 턴 값 : N/A
+// 내    용 : 적절한 함수(doAction/doAnchor)를 호출한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function ib_click() {
+  var flag = true;
+  if (element.disable) return;
+  if (this.getAttribute("action")) flag = doAction(this.getAttribute("action"));
+	if (flag && this.getAttribute("href") && (this.getAttribute("href") != this.getAttribute("src"))) doAnchor(this.getAttribute("href"), this.getAttribute("target"));
+}
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.doAction()
+// 이벤트값 : N/A
+// 대상객체 : htc 객체(this)
+// 파라메터 : String - execCmd (실행할 javascript 구문)
+// 리 턴 값 : N/A
+// 내    용 : Submenu의 영역밖에서 Mouse 버튼이 눌린 경우 모든 Submenu를 감춘다.
+//            Submenu의 영역안에서 mouse 버튼이 눌린 경우 적절함 함수(doAction/doAnchor)를 호출한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function doAction(execCmd) { 
+ execCmd = execCmd.replace(/document\./g, "element.document.");
+ execCmd = execCmd.replace(/this\./g, "element.");
+ var temp = new Function(execCmd);
+ var flag = temp();
+ delete temp;
+ return flag;
+}
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.doAnchor()
+// 이벤트값 : N/A
+// 대상객체 : htc 객체(this)
+// 파라메터 : String - href (anchor에서 사용할 href)
+//            String - target (anchor에서 사용할 target)
+// 리 턴 값 : N/A
+// 내    용 : 새로운 Anchor Node를 만들고 href와 target을 세팅한 다음 실행한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function doAnchor(href, target) {
+  var oAnchor = element.document.createElement("A");
+  oAnchor.href = href;
+  if (target) oAnchor.target = target;
+  element.document.body.insertBefore(oAnchor);
+  oAnchor.click();
+  delete oAnchor;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+///
+///   htc (behavior) service method
+///
+////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+// 메소드명 : element.setEnable(flag)
+// 이벤트값 : N/A
+// 대상객체 : element 객체(this) 
+// 파라메터 : boolean - flag (true이면 enable, false이면 disable)
+// 리 턴 값 : N/A
+// 내    용 : 
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function set_enable(flag) {
+  element.disable = !flag;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+///
+///   htc (behavior) utility function
+///
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.cachedImage()
+// 이벤트값 : N/A
+// 대상객체 : htc 객체(this)
+// 파라메터 : String - imgSrc (캐쉬할 Image 객체의 src value)
+// 리 턴 값 : Image 객체
+// 내    용 : 주어진 imgSrc에 해당하는 Image 객체를 만들고 리턴한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function getCachedImage(imgSrc) {
+	var ci  = new Image;
+	ci.src = imgSrc;
+	return ci;
+}
+
+//////////////////////////////////////////////////////////
+// 메소드명 : htc.toggleCss() / submenu.item.isAttribute()
+// 이벤트값 : N/A
+// 대상객체 : htc 객체(this) /  submenu.item 객체 (this)
+// 파라메터 : String - insert (삽입할 CSS Class Name)
+//            String - remove1 (삭제할 CSS Class Name)
+//            String - remove2 (삭제할 CSS Class Name)
+// 리 턴 값 : Object ()
+// 내    용 : 대상객체에 insert로 지정된 CSS class를 삽입하고 remove로 지정된 CSS를 제거한다.
+// 작 성 자 : TK Shin / Since xImageButton v1.0 build 100
+//////////////////////////////////////////////////////////
+function toggleCss(insert, remove1, remove2) {
+
+  if (!this.getAttribute("className") ) {
+    this.setAttribute("className", insert);
+    return;
+  }
+
+  var classArr = this.getAttribute("className").split(" ");
+  var newClassArr = new Array;
+
+  for ( var idx=0; idx<classArr.length; idx++ ) {
+    if ( classArr[idx] != remove1 && classArr[idx] != remove2 ) newClassArr[newClassArr.length] = classArr[idx];
+  }
+
+  newClassArr[newClassArr.length] = insert;
+
+  this.setAttribute("className", newClassArr.join(" "));
+  delete newClassArr;
+}
+
+</SCRIPT>
+</PUBLIC:COMPONENT>

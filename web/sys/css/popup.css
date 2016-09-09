@@ -1,0 +1,39 @@
+/* popup */
+div#popwrap{width:99%; margin:4px;}
+
+/*박스모양을위한 이미지영역*/
+
+#TopBoxImage {float:left;background: url(../images/popup_mail/bg_boxTop.gif) repeat-x 0 0;width:100%;}
+#TopBoxImage p{float:left;}
+#TopBoxImage p.place {float:right;}
+
+#BottomBoxImage {float:left;background: url(../images/popup_mail/bg_boxBottom.gif) repeat-x 0 0;width:100%;}
+#BottomBoxImage p{float:left;}
+#BottomBoxImage p.place {float:right;}
+
+#ContentsBox{ float:left; width:100%;margin:0 -3px 0 -1px; border-left:solid 1px #2a8cb7; border-right:solid 1px #2a8cb7; background-color:#fff;}
+
+
+/*팝업전체타이틀영역*/
+#TitleArea{ height:25px; margin:0 25px;}
+#TitleArea h1{ font-size:12px; margin:0; padding:5px 0 10px 20px;color:#000;  background: url(../images/popup_mail/pop_titleicon.gif) no-repeat 0 4px;  border-bottom: solid 1px #eaeaea;  }
+
+#ContentesArea { margin:0 25px; padding:20px 0;}
+#ContentesArea p{ margin:3px 0; padding:0;}
+#ContentesArea .exp{ margin:8px 0 0 0; padding:0; }
+#ContentesArea .exp li{background:url(../../img/img_common/bullet04.gif) no-repeat 0 5px; padding-left:10px; line-height:17px; color:#777;}
+
+
+.pop_search{ margin:0 ; padding:0;}
+.pop_search p{ line-height:20px;}
+.pop_search span{ font-size:11px; color:#999; font-family:dotum; }
+.pop_search .pop_form{ padding:10px; border: solid 2px #f2f2f2; }
+
+
+
+/* 로그인박스 관련 */ 
+.logBox{position:relative; width:460px; height:220px; border: solid 3px #eaeaea;}
+.logBox fieldset { position:absolute; top:18px; left:40px;}
+.logBox fieldset label { width:100px; float:left; padding-top:3px;}
+.logBox fieldset input { height:16px; border:1px solid #CCC; margin-bottom:12px; padding:1px 0 0 2px; }
+.logBox fieldset .btn { position:absolute;top:200px; left:50px; width:400px;}

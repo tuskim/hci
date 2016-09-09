@@ -1,0 +1,40 @@
+ /**
+ * @(#) saymessage.htc version v0.8 build b101 
+ */
+
+<PUBLIC:COMPONENT lightWeight=true >
+<PUBLIC:ATTACH EVENT="ondocumentready" ONEVENT="initialize()" />
+
+<SCRIPT LANGUAGE="JScript">
+
+function initialize() {
+	if (getCookie("devonframework.front.taglib.saymessage") != 'true') return;
+	var msg = element.innerHTML.replace(/^\s*/ ,"").replace(/\s*$/ ,"");
+	if (msg !='' && msg !='null') {
+		window.setTimeout("alert(\""+ msg + "\")" , 10);
+		setCookie("devonframework.front.taglib.saymessage","false");
+	}	
+}
+
+function setCookie(name, value, expire) {
+	element.document.cookie = name + "=" + escape(value) + ((expire == null ) ? "" : ("; expires=" + expire.toGMTString()));
+}
+
+function getCookie(sName) {
+  // cookies are separated by semicolons
+  var aCookie = element.document.cookie.split("; ");
+  for (var i=0; i < aCookie.length; i++)  {
+    // a name/value pair (a crumb) is separated by an equal sign
+    var aCrumb = aCookie[i].split("=");
+    if (sName == aCrumb[0]) {
+    	if (typeof(aCrumb[1]) == "undefined" || aCrumb[1] =="" || aCrumb[1] == null) return null;
+      return unescape(aCrumb[1]);
+    }
+  }
+
+  // a cookie with the requested name does not exist
+  return null;
+}
+ 
+</SCRIPT>
+</PUBLIC:COMPONENT>

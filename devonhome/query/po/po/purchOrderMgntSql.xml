@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Vendor Grouping by P/R Page -->
+
+    <!--Purchase Order Creation Main -->
+    <statement name="retrievePurchOrderMgntMainList">
+        <![CDATA[
+			SELECT pm.company_cd,
+			       pm.po_no,
+			       pm.mater_type,
+			       pm.pur_dept_cd,
+			       pm.vend_cd,
+			       DECODE(${lang},'en',vm.vend_nm_en
+			                     ,'kr',vm.vend_nm_kr,vm.vend_nm_lo) vend_nm,       
+			       pm.currency_cd,
+			       pm.deli_loct,
+			       lgiusf.f_getcommname('COMM',${companyCd},${lang},'2005',pm.deli_loct) deli_loct_nm,  
+			       pm.po_cre_date,
+			       pm.pay_term,
+			       pm.deli_date,
+			       pm.po_send_date,
+			       pm.parvw,
+			       pm.pernr,
+			       pm.bukrs,
+			       pm.absgr,
+			       pm.attr1,
+			       pm.attr2,
+			       pm.attr3,
+			       pm.attr4,
+			       pm.attr5,
+			       pm.attr6,
+			       pm.attr7,
+			       pm.attr8,
+			       pm.attr9,
+			       pm.attr10,
+			       pm.status,
+			       lgiusf.f_getcommname('COMM',${companyCd},${lang},'2203',pm.status) deli_loct_nm,  
+			       pm.trans_date,
+			       pm.trans_time,
+			       pm.prog_status_date,
+			       pm.prog_status_time,
+			       pm.sap_po_no,
+			       pm.sap_rtn_msg,
+			       pm.regid,
+			       pm.regdate,
+			       pm.regtime,
+			       pm.modid,
+			       pm.moddate,
+			       pm.modtime,
+			       pm.pur_group,
+			       pm.plant_cd,
+			       pm.sap_if_status
+			  FROM lgiusf.tb_po_master pm,
+			       lgiusf.tb_vend_master vm
+			 WHERE pm.company_cd = vm.company_cd
+			   AND pm.vend_cd    = vm.vend_cd
+			   {#1}
+			   {#2}
+			   {#3}
+			   {#4}
+			   {#5}
+			   {#6}
+			 ORDER BY vend_nm ASC
+		]]>
+        <append where="false" condition="${poFromDate}.NOTEMPTY" id="#1">
+        <![CDATA[
+             AND pm.po_cre_date >= REPLACE(${poFromDate},'/','')
+        ]]>
+	    </append>
+        <append where="false" condition="${poToDate}.NOTEMPTY" id="#2">
+        <![CDATA[
+             AND pm.po_cre_date <= REPLACE(${poToDate},'/','')
+        ]]> 
+	    </append>
+        <append where="false" condition="${vendNm}.NOTEMPTY" id="#3">
+        <![CDATA[
+              AND DECODE(${lang},'en',vm.vend_nm_en
+                     ,'kr',vm.vend_nm_kr,vm.vend_nm_lo) LIKE '%'||${vendNm}||'%'
+        ]]>
+	    </append>
+        <append where="false" condition="${materType}.NOTEMPTY" id="#4">
+             AND pm.mater_type = ${materType}
+	    </append>	    
+        <append where="false" condition="${deliLoct}.NOTEMPTY" id="#5">
+        <![CDATA[
+              AND pm.deli_loct = ${deliLoct}
+        ]]>
+	    </append>	
+        <append where="false" condition="${status}.NOTEMPTY" id="#6">
+        <![CDATA[
+              AND pm.status = ${status}  
+        ]]>
+	    </append>	        	    	    		
+    </statement>  
+     
+    <!-- Purchase Order Creation Detail -->
+    <statement name="retrievePurchOrderMgntDetailList">
+        <![CDATA[
+			SELECT pd.company_cd,
+						 pd.po_no,
+						 pd.po_seq,
+						 pd.pr_no,
+						 pd.pr_detail_no,
+						 pd.req_dept_cd,
+						 pd.mater_cd,
+			      (SELECT DECODE(${lang},'kr',mi.mater_nm_kr                			 
+			                            ,'en',mi.mater_nm_en,mi.mater_nm_lo) 			 
+			         FROM tb_mater_info mi                                   			 
+			        WHERE mi.company_cd = pd.company_cd                      			                                                                       
+			          AND mi.mater_cd   = pd.mater_cd ) mater_nm,     
+						 pd.urgent_type,
+						 pd.pr_desc,    
+						 pd.qty,        
+						 pd.unit,                         			                                                                        
+						 pd.vat_cd,                                                             
+						 pd.price,                                                              
+						 pd.amount,                                                             
+						 pd.receipt_qty,
+						 pd.receipt_cls_yn,
+						 pd.attr1,
+						 pd.attr2,
+						 pd.attr3,
+						 pd.attr4,
+						 pd.attr5,
+						 pd.attr6,
+						 pd.attr7,
+						 pd.attr8,
+						 pd.attr9,
+						 pd.attr10,
+						 pd.regid,
+						 pd.regdate,
+						 pd.regtime
+			  FROM tb_po_detail pd    
+			 WHERE pd.company_cd = ${companyCd}
+			   AND pd.po_no      = ${poNo}
+			 ORDER BY mater_nm ASC
+		]]>     
+    </statement>
+  
+   	<!-- Purchase Order Creation Approval -->
+    <statement name="retrievePurchOrderMgntAppList">
+        <![CDATA[
+			SELECT 'F' chk,
+			       vd.company_cd,
+			       vd.vend_cd,
+			       vd.vend_seq,
+			       vd.vend_person,
+			       us.user_nm,
+			       vd.email_addr,
+			       vd.tel_no,
+			       vd.fax_no,
+			       vd.main_yn,
+			       vd.useyn
+			  FROM lgiusf.tb_vend_master vm,
+			       lgiusf.tb_vend_detail vd,
+			       lgiusf.tb_user        us
+			 WHERE vm.company_cd  = vd.company_cd
+			   AND vm.vend_cd     = vd.vend_cd
+			   AND vd.vend_person = us.user_nm
+			   AND vm.useyn='Y'
+			   AND vd.useyn='Y'
+			   AND vm.vend_cd = ${vendCd}
+			 ORDER BY us.user_nm,vend_seq ASC
+		]]>     
+    </statement>
+ 
+    <!-- PurchOrderGroup DT insert -->
+    <statement name="mergeDTPurchOrderGroup">
+        <![CDATA[
+            MERGE INTO tb_po_detail pd
+                  USING ( SELECT ${companyCd}     AS companyCd
+                                ,${poNo}          AS poNo
+                                ,${poSeq}         AS poSeq 
+                           FROM DUAL
+                         ) temp
+                     ON (
+                         pd.company_cd    = temp.companyCd
+                         AND pd.po_no     = temp.poNo
+                         AND pd.po_seq    = temp.poSeq                        
+                         )
+            WHEN MATCHED THEN
+                 UPDATE SET pd.pr_no          = ${prNo},
+                            pd.pr_detail_no   = ${prDetailNo},
+                            pd.req_dept_cd    = ${reqDeptCd},
+                            pd.mater_cd       = ${materCd},
+                            pd.urgent_type    = ${urgentType},
+                            pd.pr_desc        = ${prDesc},
+                            pd.qty            = ${qty},
+                            pd.unit           = ${unit},
+                            pd.vat_cd         = ${vatCd},
+                            pd.price          = ${price},
+                            pd.amount         = ${amount},
+                            pd.receipt_qty    = ${receiptQty},
+                            pd.receipt_cls_yn = ${receiptClsYn},
+                            pd.attr1          = ${attr1},
+                            pd.attr2          = ${attr2},
+                            pd.attr3          = ${attr3},
+                            pd.attr4          = ${attr4},
+                            pd.attr5          = ${attr5},
+                            pd.attr6          = ${attr6},
+                            pd.attr7          = ${attr7},
+                            pd.attr8          = ${attr8},
+                            pd.attr9          = ${attr9},
+                            pd.attr10         = ${attr10},
+                            pd.modid         =  ${userId},
+                            pd.moddate       =  TO_CHAR(SYSDATE,'YYYYMMDD'),
+                            pd.modtime       =  TO_CHAR(SYSDATE,'HH24MISS')
+            WHEN NOT MATCHED THEN
+                 INSERT 
+                       (pd.company_cd,
+                        pd.po_no,
+                        pd.po_seq,
+                        pd.pr_no,
+                        pd.pr_detail_no,
+                        pd.req_dept_cd,
+                        pd.mater_cd,
+                        pd.urgent_type,
+                        pd.pr_desc,
+                        pd.qty,
+                        pd.unit,
+                        pd.vat_cd,
+                        pd.price,
+                        pd.amount,
+                        pd.receipt_qty,
+                        pd.receipt_cls_yn,
+                        pd.attr1,
+                        pd.attr2,
+                        pd.attr3,
+                        pd.attr4,
+                        pd.attr5,
+                        pd.attr6,
+                        pd.attr7,
+                        pd.attr8,
+                        pd.attr9,
+                        pd.attr10,
+                        pd.regid,
+                        pd.regdate,
+                        pd.regtime
+                    )
+                    VALUES
+                    (    
+                        ${companyCd},
+                        ${poNo},
+                        ${poSeq},
+                        ${prNo},
+                        ${prDetailNo},
+                        ${reqDeptCd},
+                        ${materCd},
+                        ${urgentType},
+                        ${prDesc},
+                        ${qty},
+                        ${unit},
+                        ${vatCd},
+                        ${price},
+                        ${amount},
+                        ${receiptQty},
+                        ${receiptClsYn},
+                        'attr1',
+                        'attr2',
+                        'attr3',
+                        'attr4',
+                        'attr5',
+                        'attr6',
+                        'attr7',
+                        'attr8',
+                        'attr9',
+                        'attr10',
+                        ${userId},
+                        TO_CHAR(SYSDATE,'YYYYMMDD'),
+                        TO_CHAR(SYSDATE,'HH24MISS')
+                    )       	
+		]]>     
+    </statement>
+ 
+     
+    <!-- PO No Search -->
+    <statement name="getPONo">
+        <![CDATA[
+            SELECT NVL(MAX(TO_NUMBER(po_no))+1,TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMM'))||'0001') po_no 
+              FROM tb_po_detail
+             WHERE company_cd = ${companyCd}
+		]]>
+    </statement>  
+    
+    <!-- PO seq Search -->
+    <statement name="getPOSeq">
+        <![CDATA[
+            SELECT NVL(LPAD(MAX(TO_NUMBER(po_seq))+1,4,0),'0001') po_seq 
+              FROM tb_po_detail
+             WHERE company_cd = ${companyCd}  
+		]]>
+    </statement>        
+    
+    <!-- Pr Status Update -->
+    <statement name="updatePRStatus">
+        <![CDATA[
+			UPDATE tb_pr_detail
+			   SET po_status = '01'
+			 WHERE company_cd= ${companyCd}
+			   AND pr_no     = ${prNo} 
+			   AND pr_detail_no=${prDetailNo}
+		]]>
+    </statement>     
+     
+</statements>

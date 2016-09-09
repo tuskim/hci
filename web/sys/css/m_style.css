@@ -1,0 +1,82 @@
+/*EDIT MODE*/
+select	{ font-family:"굴림", "seoul", "arial"; font-size: 9pt; color: #000000;}
+
+input{
+	font-family:"굴림", "seoul", "arial"; font-size: 9pt; color:#000000; border:1x solid #7F9DB9;
+}
+
+textarea{
+	font-family:"굴림", "seoul", "arial"; font-size: 9pt; color:#000000; 
+	border-top   : 1px solid #7F9DB9; 
+	border-left  : 1px solid #7F9DB9; 
+	border-bottom: 1px solid #7F9DB9; 
+	border-right : 1px solid #7F9DB9;
+}
+/*EDIT MODE*/
+
+
+td   {font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none;}
+
+
+/*회색글씨들 */
+.text_g     {font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; line-height: 22px; text-decoration: none;}
+td.text_g     {font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; line-height: 20px; text-decoration: none;}
+
+.red {
+	font-family: "Arial", "Helvetica", "sans-serif";
+	font-size: 12px;
+	color: #E8307A;
+}
+
+/*Left Title*/
+.global_left_pttl	{height:36px; font-size:14px; font-family: "굴림", "seoul";	color: #4b76a1;	letter-spacing: 0px; text-align:center; vertical-align:middle; font-weight:bold; background-color: #ecf6ff; background-repeat: repeat-x;}
+
+/*리스트 */
+a.list_01:active   { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #7384A8; text-decoration: none;}
+a.list_01:link     { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #7384A8; text-decoration: none;}
+a.list_01:visited  { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #7384A8; text-decoration: none;}
+a.list_01:hover    { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #3257D7; text-decoration: none;}
+
+a.page_01:active   { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none;}
+a.page_01:link     { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none;}
+a.page_01:visited  { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none;}
+a.page_01:hover    { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #E8307A; text-decoration: none;}
+
+
+a.m_left:active   { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #304E7F; text-decoration: none; font-weight:none; }
+a.m_left:link     { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #304E7F; text-decoration: none; font-weight:none; }
+a.m_left:visited  { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #304E7F; text-decoration: none; font-weight:none; }
+a.m_left:hover    { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #3366BA; text-decoration: none; font-weight:bold; }
+
+a.m_left2:active   { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.m_left2:link     { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.m_left2:visited  { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.m_left2:hover    { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #3366BA; text-decoration: underline; }
+
+a.list_home1:active   { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home1:link     { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home1:visited  { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home1:hover    { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #954E1E; text-decoration: none; }
+
+a.list_home2:active   { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home2:link     { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home2:visited  { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home2:hover    { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #5D9E00; text-decoration: none; }
+
+a.list_home3:active   { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home3:link     { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home3:visited  { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #777777; text-decoration: none; }
+a.list_home3:hover    { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #3E80CB; text-decoration: none; }
+
+m_left:active   { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #304E7F; text-decoration: none; font-weight:none; }
+m_left:link     { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #304E7F; text-decoration: none; font-weight:none; }
+m_left:visited  { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #304E7F; text-decoration: none; font-weight:none; }
+m_left:hover    { font-family: "굴림", "seoul", "arial"; font-size: 12px; color: #3366BA; text-decoration: none; font-weight:bold; }
+
+td.list_s       {border-bottom: 1px dotted #C6C6C6; padding-left:10px;}
+td.list_c       {border-bottom: 1px dotted #C6C6C6; text-align:center;}
+
+td.subject      {font-family: "굴림", "seoul", "arial"; font-size: 12px; color:#475C92; background-color:#EAEFFC; font-weight:bold; padding-top:#FFFFFF; padding_bottom:#EAEFFC;}
+
+/* Footer */
+.footer {color : #666 ; font-family:"Tahoma"; font-Size:10px ; line-height:20px; text-decoration: none;}

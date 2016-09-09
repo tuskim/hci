@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Safety Stock Manage -->
+
+    <!-- Safety Stock Manage Search -->
+    <statement name="retrieveSafetyStockMgntList">
+        <![CDATA[
+            SELECT '0' chk,
+                   ss.company_cd,
+                   ss.storage_cd,
+                   lgiusf.F_GETCOMMNAME('COMM',${companyCd},${lang},'2005',ss.storage_cd) storage_nm,
+                   ss.mater_cd,
+                   DECODE(${lang},'kr',tm.mater_nm_kr,
+                                  'en',tm.mater_nm_en, tm.mater_nm_en) mater_nm,
+                   tm.unit,
+                   ss.dept_cd,
+                   lgiusf.F_GETCOMMNAME('COMM',${companyCd},${lang},'2001',ss.storage_cd) dept_nm,
+                   ss.stock_qty,
+                   0 stock_qty1,
+                   ss.regid,
+                   ss.regdate,
+                   ss.regtime,
+                   ss.modid,
+                   ss.moddate,
+                   ss.modtime
+              FROM lgiusf.tb_safety_stock ss,
+                   lgiusf.tb_mater_info tm
+             WHERE ss.company_cd = ${companyCd}
+               AND ss.mater_cd = tm.mater_cd
+               AND ss.storage_cd = ${storageCd}
+               AND ss.mater_cd   = nvl(${materCd},ss.mater_cd)               
+             ORDER BY storage_nm, mater_cd
+		]]>
+    </statement>  
+    
+    <!-- Safety Stock Manage dup -->
+    <statement name="retrieveSafetyStockMgntDup">
+        <![CDATA[
+            SELECT count(*) cnt
+              FROM lgiusf.tb_safety_stock ss
+             WHERE ss.company_cd = ${companyCd}
+               AND ss.storage_cd = ${storageCd}
+               AND ss.mater_cd   = ${materCd}                       
+		]]>
+    </statement>      
+
+
+    <!-- Safety insert -->
+    <statement name="insertSafety">
+        <![CDATA[
+			INSERT INTO tb_safety_stock(
+			       company_cd,
+			       storage_cd,
+			       mater_cd,
+			       dept_cd,
+			       stock_qty,
+			       regid,
+			       regdate,
+			       regtime,
+			       modid,
+			       moddate,
+			       modtime
+			       )
+			VALUES(${companyCd},
+			       ${storageCd},
+			       ${materCd},
+			       ${deptCd},
+			       ${stockQty},
+			       ${userId},
+			       TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       TO_CHAR(SYSDATE, 'HH24MISS'),
+			       ${userId},
+			       TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       TO_CHAR(SYSDATE, 'HH24MISS')  
+			       )     
+		]]>     
+    </statement>
+
+ 
+
+    <!-- Safety Update -->
+    <statement name="updateSafety">
+        <![CDATA[
+			UPDATE tb_safety_stock
+			   SET dept_cd   = ${deptCd},
+			       stock_qty = ${stockQty},
+			       modid     = ${userId},
+			       moddate   = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime   = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND storage_cd = ${storageCd}
+			   AND mater_cd   = ${materCd}
+		]]>     
+    </statement>
+ 
+    
+    <!-- Safety delete -->
+    <statement name="deleteSafety">
+        <![CDATA[
+			DELETE FROM tb_safety_stock
+             WHERE company_cd = ${companyCd}
+			   AND storage_cd = ${storageCd}
+			   AND mater_cd   = ${materCd}
+		]]>     
+    </statement>
+     
+    <!-- Stock List Search -->
+    <statement name="retrieveStockList">
+        <![CDATA[
+			SELECT ss.company_cd,
+			       ss.storage_cd, 
+			       lgiusf.F_GETCOMMNAME('COMM',${companyCd} ,${lang},'2005',ss.storage_cd) storage_nm,
+			       ss.mater_cd,                   
+			       (SELECT DECODE(${lang},'kr',mc.mater_nm_kr
+			                             ,'en',mc.mater_nm_en,mater_nm_lo) mater_nm
+			          FROM lgiusf.tb_mater_info mc
+			         WHERE mc.company_cd =ss.company_cd
+			           AND mc.mater_cd = ss.mater_cd) mater_nm,                                         
+			       tm.unit,
+			       ss.dept_cd, 
+			       0 current_qty,
+			       ss.stock_qty  stock_qty,
+			       0 result_qty,
+				   (SELECT cd.detail_cd 
+			 		  FROM tb_comm_cd_detail cm, 
+					       tb_comm_cd_detail cd 
+					 WHERE cm.company_cd = cd.company_cd
+					   AND cm.group_cd = cd.group_cd					  
+  					   AND cm.useyn ='Y'
+					   AND cm.useyn ='Y'
+					   AND cm.company_cd = ss.company_cd
+					   AND cm.group_cd = '2008'
+					   AND rownum=1 ) plant_cd,			       
+			       ss.regid,
+			       ss.regdate,
+			       ss.regtime,
+			       ss.modid,
+			       ss.moddate,
+			       ss.modtime
+			  FROM lgiusf.tb_safety_stock ss,
+			       lgiusf.tb_mater_info tm
+			 WHERE ss.company_cd = ${companyCd}
+			   AND ss.mater_cd = tm.mater_cd(+)
+			   AND ss.storage_cd = ${storageCd}
+			   AND ss.mater_cd   = nvl(${materCd},ss.mater_cd)  
+			 ORDER BY storage_nm ,mater_cd       
+		]]>
+    </statement>       
+      
+</statements>

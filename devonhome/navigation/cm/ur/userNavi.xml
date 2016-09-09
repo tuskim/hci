@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 2016.04.04 hskim CSR:C20160330_24662 마이페이지 서블릿 네이게이션 추가 -->
+
+<navigation-mapper>
+
+<!-- user Mgnt-->
+   <!-- user Mgnt 조회 첫 페이지--> 	
+   <action-name name="userMgnt">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/cm/ur/userMgnt.jsp</return-url>
+  	</action-name>
+  	
+  	<!-- user Mgnt 조회-->
+  	<action-name name="cm.ur.retrieveUserMgnt">
+		<command>cm.ur.cmd.RetrieveUserMgntCmd</command>
+	</action-name>
+	
+	<!-- userId 중복체크 -->
+	<action-name name="cm.ur.retrieveUserIdCheck">
+		<command>cm.ur.cmd.RetrieveUserIdCheckCmd</command>
+	</action-name>
+	
+	<!-- user 신규 수정 -->
+	<action-name name="cm.ur.cudUserMgnt">
+		<command>cm.ur.cmd.CudUserMgntCmd</command>
+	</action-name>
+		
+	<!-- Account unblocking -->
+ 	<action-name name="cm.ur.accountUnblocking">
+ 		<command-no>2</command-no>
+		<command1>cm.lo.login.cmd.unblocking</command1>
+  		<command2>cm.lo.cmd.RetrievePageInfoCmd</command2>
+  		<return-url>/jsp/cm/ur/userMgnt.jsp</return-url>
+	</action-name>
+ 	
+ 	<!-- password reset -->
+ 	<action-name name="cm.ur.passwordReset">
+ 		<command-no>2</command-no>
+		<command1>cm.ur.cmd.PasswordResetCmd</command1>
+  		<command2>cm.lo.cmd.RetrievePageInfoCmd</command2>
+  		<return-url>/jsp/cm/ur/userMgnt.jsp</return-url>
+	</action-name>
+
+<!-- user Info Change-->
+	<!-- 개인정보 변경 첫 페이지 -->
+	<action-name name="userInfoChange">
+		<command-no>2</command-no>
+		<command1>cm.lo.cmd.RetrievePageInfoCmd</command1>
+		<command2>cm.ur.cmd.RetreveUserInfoChangeCmd</command2>
+		<return-url>/jsp/cm/ur/userInfoChange.jsp</return-url>
+	</action-name>
+	
+	<!-- 개인정보 변경 -->
+	<action-name name="cm.ur.cudUserInfoChange">
+		<command>cm.ur.cmd.CudUserInfoChangeCmd</command>
+	</action-name>
+	
+	<!-- 개인정보 변경 -->
+	<action-name name="cm.ur.cudUserInfoChangeDev">
+		<command-no>3</command-no>
+		<command1>cm.lo.cmd.RetrievePageInfoCmd</command1>
+		<command2>cm.ur.cmd.RetreveUserInfoChangeCmd</command2>
+		<command3>cm.ur.cmd.CudUserInfoChangeDevCmd</command3>
+		<return-url>/jsp/cm/ur/userInfoChange.jsp</return-url>
+	</action-name>
+	
+	<!-- Employee Information -->
+	<action-name name="cm.ur.RetrieveEmplyeeList">
+		<command>cm.ur.cmd.RetrieveEmplyeeListCmd</command>
+	</action-name>
+	
+	<!--  패스워드 변경-->
+	<action-name name = "cm.ur.passwordChange">
+		<command>cm.ur.cmd.PasswordChangeWhenLoginCmd</command>
+	</action-name>
+	
+	
+</navigation-mapper>
+

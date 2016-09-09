@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Cost Total Ledger Excel Upload -->
+
+   	<!-- Cost Total Ledger Excel Upload Page Call -->  
+	<action-name name="costTotLedgerUpload">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/costTotLedgerUpload.jsp</return-url>
+   	</action-name>
+   
+   	<!-- Cost Total Ledger Excel Upload Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerUpload">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerUploadCmd</command>
+	</action-name>
+   
+   <!-- Cost Total Ledger Excel Upload Save -->  
+    <action-name name="fi.ar.cudCostTotLedgerUpload">
+    	<command>fi.ar.cmd.CudCostTotLedgerUploadCmd</command>
+   	</action-name>
+   
+</navigation-mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Limestone Production 등록 -->
+
+   <!-- Limestone Production  조회 첫 페이지--> 	
+   <action-name name="limestoneProduction">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/ps/lp/limestoneProduction.jsp</return-url>
+  	</action-name>
+
+  	<!-- Limestone Production List 조회-->
+   	<action-name name="ps.lp.retrieveLimestoneProductionList"> 
+    	<command>ps.lp.cmd.RetrieveLimestoneProductionListCmd</command>
+   	</action-name>
+   	
+  	<!-- Limestone Information 조회-->
+   	<action-name name="ps.lp.retrieveLimestoneProductionInfo"> 
+    	<command>ps.lp.cmd.RetrieveLimestoneProductionInfoCmd</command>
+   	</action-name>
+ 
+  	<!-- [Add Row] New Data Search-->
+   	<action-name name="ps.lp.retrieveLimestoneProductionAddRow"> 
+    	<command>ps.lp.cmd.RetrieveLimestoneProductionAddRowCmd</command>
+   	</action-name>
+   	
+   	<!-- Save -->
+  	<action-name name="ps.lp.cudLimestoneProductionReg">
+		<command>ps.lp.cmd.CudLimestoneProductionRegCmd</command>
+	</action-name>
+
+   	<!-- Delete -->
+  	<action-name name="ps.lp.cudLimestoneProductionDel">
+		<command>ps.lp.cmd.CudLimestoneProductionDelCmd</command>
+	</action-name>
+	
+   	<!-- Approval -->
+  	<action-name name="ps.lp.cudLimestoneProductionApproval">
+		<command>ps.lp.cmd.CudLimestoneProductionApprovalCmd</command>
+	</action-name>
+
+   	<!-- Reject -->
+  	<action-name name="ps.lp.cudLimestoneProductionReject">
+		<command>ps.lp.cmd.CudLimestoneProductionRejectCmd</command>
+	</action-name>
+		
+   	<!-- SAP Send -->
+  	<action-name name="ps.lp.cudLimestoneProductionSAPsend">
+		<command>ps.lp.cmd.CudLimestoneProductionSAPSendCmd</command>
+	</action-name>
+
+   	<!-- SAP Cancel -->
+  	<action-name name="ps.lp.cudLimestoneProductionSAPcancel">
+		<command>ps.lp.cmd.CudLimestoneProductionSAPCancelCmd</command>
+	</action-name>
+
+	<!-- Excel down List -->
+   	<action-name name="ps.lp.retrieveLimestoneProductionExcelList"> 
+    	<command>ps.lp.cmd.RetrieveLimestoneProductionExcelListCmd</command>
+   	</action-name>
+</navigation-mapper>
+

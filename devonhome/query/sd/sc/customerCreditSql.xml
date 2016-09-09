@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>	 
+<!-- Customer Credit -->
+
+    <!-- WEB 주문 내역 조회-->
+    <statement name="retrieveCustomerSalesAmount">
+        <![CDATA[
+		SELECT NVL(sum(de.sales_amt), 0) sales_amount				
+  		FROM  tb_cement_sales_master ma, 
+  		      tb_cement_sales_detail de
+ 		WHERE ma.company_cd = de.company_cd
+ 		  AND ma.dept_cd =  de.dept_cd
+ 		  AND ma.sales_date = de.sales_date
+ 		  AND ma.sales_no = de.sales_no		
+ 		  AND ma.company_cd = 'GA00'
+ 		  AND ma.customer_cd = ${customerCd}
+ 		  AND ma.status = '0'
+ 		  {#1}
+        ]]>
+        
+        <!--  해당 판매 건은 화면단 금액으로 처리  -->
+        <append condition="${salesNo}.NOTEMPTY" id="#1">       
+			   AND ma.sales_no != ${salesNo}
+	    </append> 
+	       
+    </statement> 
+
+</statements>

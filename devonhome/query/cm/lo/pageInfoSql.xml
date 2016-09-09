@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+
+ 	<!-- Page Column Info -->
+	<statement name="retrievePageColumnsInfo">
+        <![CDATA[
+            SELECT li.col_cd, 
+                   DECODE(${lang}, 'kr',li.col_nm_kr,
+                                   'en',li.col_nm_en, li.col_nm_lo) col_nm
+              FROM lgiusf.tb_column_lang_info li
+             WHERE li.company_cd = ${companyCd}
+               AND li.page_cd  like ${progCd} || '%'
+               AND EXISTS (SELECT * 
+                             FROM tb_authorith_master am
+                            WHERE am.company_cd = li.company_cd
+                              AND am.prog_cd    = ${progCd}
+                              AND am.auth_cd    = ${authCd}) 
+        ]]>
+    </statement>
+    
+    <!-- Program Access History -->
+	<statement name="cudProgramAccessHist">
+        <![CDATA[
+            INSERT INTO TB_PROG_ACCESS_HIST
+            VALUES 
+            (
+            	${companyCd},
+            	${progCd},
+            	TO_CHAR(SYSDATE,'YYYYMMDD'),
+			    TO_CHAR(SYSDATE,'HH24MISS'),
+            	${userId}
+            )
+        ]]>
+    </statement>
+    
+</statements>

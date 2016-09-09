@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+    <!-- stock issue -->
+   	<action-name name="stockMoveList"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/stockMoveReqList.jsp</return-url>
+   	</action-name>
+  	
+  	<!-- Retrieve Stock Move Cancel Master List -->
+   	<action-name name="po.is.retrieveStockMoveCancelMst"> 
+    	<command>po.is.cmd.RetrieveStockMoveCancelMstCmd</command>
+   	</action-name>
+
+  	<!-- Retrieve Stock Move Cancel Detail List -->
+   	<action-name name="po.is.retrieveStockMoveCancelDtl"> 
+    	<command>po.is.cmd.RetrieveStockMoveCancelDtlCmd</command>
+   	</action-name>
+   	
+   	<!-- Stock Movement Delete -->
+  	<action-name name="po.is.cudStockMoveReqDelete">
+		<command>po.is.cmd.CudStockMoveReqDeleteCmd</command>
+	</action-name>
+
+
+  	<!-- Retrieve Stock Move Confirm Excel Download List -->
+   	<action-name name="po.is.retrieveStockExcelDownList"> 
+    	<command>po.is.cmd.RetrieveStockExcelDownListCmd</command>
+   	</action-name>
+
+</navigation-mapper>

@@ -1,0 +1,58 @@
+.enterhandler {
+    behavior:url(/common/htc/enterhandler.htc);
+}
+
+.button_default {
+		behavior:url(/common/htc/buttoncolor.htc);
+}
+
+.button_default_long{
+		behavior:url(/common/htc/buttoncolor.htc);
+}
+
+.button_nav{
+		behavior:url(/common/htc/buttoncolor.htc);
+}
+
+.button_search{
+		behavior:url(/common/htc/buttoncolor.htc);
+}
+
+.button_small{
+		behavior:url(/common/htc/buttoncolor.htc);
+}
+
+.button_small_long{
+		behavior:url(/common/htc/buttoncolor.htc);
+}
+
+.button_close{
+		behavior:url(/common/htc/buttoncolor.htc);
+}
+
+.saymessage {
+  display:none;
+  behavior:url(/common/htc/saymessage.htc);
+}
+
+.imgbutton { 
+		CURSOR: hand; 
+		behavior:url(/common/htc/imgbutton.htc); 
+	}
+
+
+.xiButtonNormal {}
+
+.xiButtonHilite   { 
+    border-bottom: threeddarkshadow solid 1px; 
+    border-left: threedhighlight solid 1px; 
+    border-right: threeddarkshadow solid 1px; 
+    border-top:  threedhighlight solid 1px;
+ 	}
+
+.xiButtonDown    {  
+    border-bottom: threedhighlight solid 1px; 
+    border-left: threedshadow solid 1px; 
+    border-right: threedhighlight solid 1px; 
+    border-top:  threedshadow solid 1px;
+	}

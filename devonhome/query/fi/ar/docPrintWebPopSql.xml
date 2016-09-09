@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Document Print List -->
+
+    <!-- Doc Type Web for List -->
+    <statement name="retrieveDocPrintWebPopListOutPut">
+        <![CDATA[
+			  SELECT dm.doc_ym||dm.doc_seq doc_ym_seq
+			        ,dm.dept_cd
+			        ,dm.doc_ym
+			        ,dm.doc_seq
+			        ,dm.create_type
+			        ,dm.doc_type
+			        ,dm.create_date
+			        ,TO_CHAR(TO_DATE(dm.doc_date,'YYYYMMDD'),'YYYYMMDD') doc_date 
+			        ,TO_CHAR(TO_DATE(dm.post_date,'YYYYMMDD'),'YYYYMMDD') post_date
+			        ,DECODE(dd.sap_acct_v,'',dd.sap_acct_c,dd.sap_acct_v)||'  '||lgiusf.F_GETCOMMNAME('VEND', ${companyCd}, ${lang},DECODE(dd.sap_acct_v,'',dd.sap_acct_c,dd.sap_acct_v),'' ) c_vendor_custumer 
+			        ,dd.sap_acct_v
+			        ,dd.sap_acct_c        
+			        ,dm.del_yn
+			        ,dm.prog_status
+			        ,dm.prog_status_date
+			        ,dm.prog_status_time
+			        ,dm.trans_date
+			        ,dm.trans_time
+			        ,dm.sap_doc_seq
+			        ,dm.success_type
+			        ,dm.currency_cd 
+			        ,dd.doc_num
+			        ,dd.acct_cd
+			        ,dd.spgl_no  
+			        ,DECODE(dd.debit_amt,0,'',DECODE(${lang},'en',pa.acct_nm_en
+			                                                ,'kr',pa.acct_nm_kr,pa.acct_nm_lo )) d_gl_account_dec
+			        ,DECODE(dd.credit_amt,0,'',DECODE(${lang},'en',pa.acct_nm_en
+			                                                 ,'kr',pa.acct_nm_kr,pa.acct_nm_lo )) c_gl_account_dec 
+			        ,DECODE(${lang},'en',pa.acct_nm_en
+			                    ,'kr',pa.acct_nm_kr,pa.acct_nm_lo ) sap_acct_nm        
+			        ,ROUND(DECODE(dd.debit_amt,0,dd.credit_amt,dd.debit_amt),2) amount
+			        ,DECODE(dd.debit_amt,0,0,TO_NUMBER(dd.debit_amt)) d_local_amt
+			        ,DECODE(dd.credit_amt,0,0,TO_NUMBER(dd.credit_amt)) c_local_amt
+			        ,dd.area_cd
+			        ,dd.div_cd
+			        ,dd.block_cd
+			        ,dd.year_cd
+			        ,dd.tm_tbm
+			        ,dd.doc_desc
+			        ,dd.del_yn del_yn_dtl
+			        ,dd.return_msg 
+                    ,DECODE(dd.debit_amt,0,'',dd.sap_acct_cd) d_gl_account
+                    ,DECODE(dd.credit_amt,0,'',dd.sap_acct_cd) c_gl_account         
+			        ,dd.attr2
+			        ,dd.attr3 vat_cd
+			        ,dd.attr3||'    '|| lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2007',dd.attr3) c_tax_cd
+			        ,dd.attr4
+			        ,dd.attr5
+			        ,dd.attr6
+			        ,dd.attr7
+			        ,dd.attr8 cost_center
+			        ,dd.attr8 ||'  '||DECODE(${lang},'en',cc.cost_center_nm_en
+			                    ,'kr',cc.cost_center_nm_kr,cc.cost_center_nm_lo ) cost_center_nm   
+			        ,dd.attr9 inter_order
+			        ,dd.attr10
+			        ,dd.regid
+			        ,dd.regdate
+			        ,dd.regtime
+			        ,dd.modid
+			        ,dd.moddate
+			        ,dd.modtime
+			        ,dd.block_cd2
+			        ,dd.work_cd
+			        ,dd.work_vendor
+			        ,dd.work_ym
+			        ,dd.attr11
+			        ,dd.attr12
+			        ,dd.attr13
+			        ,dd.attr14
+			        ,dd.attr15
+			        ,dd.attr16
+			        ,dd.attr17
+			        ,dd.attr18
+			        ,dd.attr19
+			        ,dd.attr20
+			        ,dd.work_rental_type
+			        ,'['||${userNm}||']' user_nm
+			        ,${deptCd} user_dept
+			        ,TO_CHAR(sysdate,'YYYYMMDD') run_date
+			        ,TO_CHAR(sysdate,'HH24MISS') run_time
+			        ,rlt.num_count tot_liqty
+			        ,rlt.d_tot debit_qty
+			        ,rlt.c_tot credit_qty
+			        ,rlt.d_tot tot_amt
+			    FROM lgiusf.tb_doc_master dm 
+			        ,lgiusf.tb_doc_detail dd
+			        ,lgiusf.tb_cost_center cc
+			        ,lgiusf.tb_sap_account pa
+			        ,(  SELECT dg.company_cd
+			                  ,dg.dept_cd
+			                  ,dg.doc_ym
+			                  ,dg.doc_seq 
+			                  ,COUNT(dg.doc_num) num_count
+			                  ,SUM(dg.attr1) d_local_tot
+			                  ,SUM(dg.attr2) c_local_tot
+			                  ,SUM(dg.debit_amt) d_tot
+			                  ,SUM(dg.credit_amt) c_tot  
+			             FROM lgiusf.tb_doc_detail dg
+			            WHERE dg.company_cd = ${companyCd}      
+			              AND dg.doc_ym = ${docYm}
+			              AND dg.doc_seq = ${docSeq}
+			            GROUP BY dg.company_cd,dg.dept_cd,dg.doc_ym,dg.doc_seq ) rlt
+			   WHERE dm.company_cd = dd.company_cd
+			     AND dm.dept_cd    = dd.dept_cd
+			     AND dm.doc_ym     = dd.doc_ym
+			     AND dm.doc_seq    = dd.doc_seq  
+			     AND dm.company_cd = rlt.company_cd
+			     AND dm.dept_cd    = rlt.dept_cd
+			     AND dm.doc_ym     = rlt.doc_ym
+			     AND dm.doc_seq    = rlt.doc_seq 
+			     AND dd.company_cd = cc.company_cd(+)
+			     AND dd.attr8      = cc.cost_center_cd(+)
+			     AND dd.company_cd = pa.company_cd(+)
+			     AND dd.sap_acct_cd = pa.acct_sap_cd(+)
+			     AND dm.company_cd =  ${companyCd}    
+			     AND dm.doc_ym = ${docYm}
+			     AND dm.doc_seq = ${docSeq} 
+			   ORDER BY doc_ym_seq ,dd.doc_num
+		]]>
+     </statement>  
+ 
+
+</statements>

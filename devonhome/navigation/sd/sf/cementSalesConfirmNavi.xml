@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+   <!-- Cement Sales Management 첫 페이지 호출--> 	
+   <action-name name="cementSalesConfirm">
+ 		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/sd/sf/cementSalesConfirm.jsp</return-url>
+  	</action-name>
+ 
+   	<!-- Cement Sales  Mgnt 조회-->
+  	<action-name name="sd.sm.retrieveCementSalesConfirm">
+		<command>sd.sf.cmd.RetrieveCementSalesConfirmCmd</command>
+	</action-name>
+ 
+ 	<!-- Cement sales detail Qty 조회-->
+  	<action-name name="sd.sm.retrieveCementDetailSalesConfirm">
+		<command>sd.sf.cmd.RetrieveCementDetailSalesConfirmCmd</command>
+	</action-name>
+	
+	<!--cud Cement Sales Mgnt-->
+  	<action-name name="sd.sf.cudCementSalesConfirm"> 
+		<command>sd.sf.cmd.CudCementSalesConfirmCmd</command>
+	</action-name>
+	
+	<!-- SAP send for Cement Sales Management--> 				 
+   	<action-name name="sd.sf.cudCementSalesSapSend">
+    	<command>sd.sf.cmd.CudCementSalesSapSendCmd</command>
+   	</action-name>	   	
+ 
+     <!-- SAP Cancel for Cement Sales Management--> 				 
+   	<action-name name="sd.sf.cudCementSalesSapCancel">
+    	<command>sd.sf.cmd.CudCementSalesSapCancelCmd</command>
+   	</action-name>	   
+   	
+ </navigation-mapper>

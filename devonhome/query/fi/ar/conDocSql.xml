@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>	 
+    
+	<!--  ConDoc List 조회-->
+    <statement name="retrieveConDocList">
+        <![CDATA[
+            SELECT bs.company_cd
+                  ,bs.doc_no
+                  ,bs.subject
+                  ,bs.content
+                  ,bs.del_yn
+                  ,bs.writer
+                  ,NVL(bs.writer_nm,'') writer_nm 
+                  ,TO_CHAR(TO_DATE(bs.st_date,'YYYYMMDD'),'YYYY/MM/DD') st_date
+                  ,TO_CHAR(TO_DATE(bs.end_date,'YYYYMMDD'),'YYYY/MM/DD') end_date 
+                  ,TO_CHAR(TO_DATE(bs.st_date,'YYYYMMDD'),'YYYY/MM/DD')||' ~ '||TO_CHAR(TO_DATE(bs.end_date,'YYYYMMDD'),'YYYY/MM/DD') st_end_date
+                  ,bs.currency_cd
+                  ,lgiusf.F_GETCOMMNAME('COMM',bs.company_cd ,${lang},'2004',bs.currency_cd)  currency_nm
+                  ,bs.amount                   
+                  ,bs.user_ip
+                  ,bs.regid
+                  ,TO_CHAR(TO_DATE(bs.regdate,'YYYYMMDD'),'YYYY/MM/DD') regdate
+                  ,bs.regtime
+                  ,bs.modid
+                  ,bs.moddate
+                  ,bs.modtime  
+                  ,bs.seq_attach
+              FROM (
+                    SELECT ROWNUM row_num
+                          ,cs.company_cd
+                          ,cs.doc_no
+                          ,cs.subject
+                          ,cs.content
+                          ,cs.del_yn
+                          ,cs.writer
+                          ,cs.st_date
+                          ,cs.end_date
+                          ,cs.currency_cd
+                          ,cs.amount
+                          ,cs.user_ip
+                          ,cs.regid
+                          ,cs.regdate
+                          ,cs.regtime
+                          ,cs.modid
+                          ,cs.moddate
+                          ,cs.modtime                       
+                          ,decode(${lang}, 'kr',vend_nm_kr,
+                                        'en',vend_nm_en, vend_nm_lo) writer_nm 
+                          ,NVL(att.seq_attach, '') seq_attach
+                      FROM lgiusf.tb_consult_doc cs
+                          ,(SELECT ta.company_cd
+                                  ,ta.seq
+                                  ,MIN(seq_attach) seq_attach 
+                              FROM lgiusf.tb_attach_f ta
+                             WHERE ta.company_cd = ${companyCd}
+                             GROUP BY ta.company_cd ,ta.seq
+                           )att  
+                          ,tb_vend_master tu   
+                     WHERE cs.company_cd = att.company_cd(+)
+                       AND cs.doc_no     = att.seq(+)
+                       AND cs.del_yn   = 'Y'
+                       AND cs.company_cd = tu.company_cd(+)
+                       AND cs.writer = tu.vend_cd     (+)
+                       AND cs.company_cd = ${companyCd}) bs                     
+            WHERE UPPER(bs.subject) LIKE '%'||UPPER(NVL(${subject},''))||'%'       
+                  {#1}
+                  {#2}
+            ORDER BY bs.doc_no DESC 
+		]]>     
+        <append where="false" condition="${writerNm}.NOTEMPTY" id="#1">
+			  AND UPPER(bs.writer_nm) LIKE '%'||UPPER(NVL(${writerNm},''))||'%'
+	    </append>
+        <append where="false" condition="${docNo}.NOTEMPTY" id="#2">
+			  AND UPPER(bs.doc_no) LIKE '%'||UPPER(NVL(${docNo},''))||'%'
+	    </append>	    
+    </statement> 
+    
+    <!-- 신규등록인 경우 현재시간을 넣어주기 위해 이를 사용함 -->
+    <statement name="retrieveConDocDetailNew">
+        <![CDATA[
+            SELECT '' company_cd,                  
+                   '' doc_no,
+                   '' subject,
+                   '' content,
+                   '' del_yn,
+                   '' writer,
+                   '' writer_nm, 
+                   TO_CHAR(SYSDATE, 'YYYY/MM')||'/01' st_date, 
+                   TO_CHAR(SYSDATE, 'YYYY/MM/DD') end_date,
+                   '' currency_cd,
+                   '0' amount,                   
+                   '' user_ip, 
+                   '' reg_nm,
+                   '' regid,
+                   TO_CHAR(SYSDATE, 'YYYY/MM/DD') regdate,
+                   TO_CHAR(SYSDATE, 'HH24:MI:SS') regtime, 
+                   '' modid,
+                   '' moddate,
+			       '' modtime,              
+			       ${mode} cudmode    
+			  FROM dual     
+        ]]> 
+    </statement>
+    
+    <!-- ConDoc Seq 구하기 -->
+    <statement name="retrieveConDocSeq">
+        <![CDATA[ 
+            SELECT NVL(MAX(TO_NUMBER(cs.doc_no))+1,TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMM'))||'001') next_seq
+              FROM lgiusf.tb_consult_doc cs
+             WHERE cs.company_cd = ${companyCd} 
+               AND substr(cs.doc_no,0,6) = TO_CHAR(SYSDATE,'YYYYMM') 
+      ]]> 
+    </statement>
+    
+     <!-- ConDoc Detail -->
+    <statement name="retrieveConDocDetail">
+        <![CDATA[
+            SELECT  bbs.company_cd,
+                      bbs.doc_no,
+                      bbs.subject,
+                      bbs.content,
+                      bbs.del_yn,
+                      bbs.writer, 
+                      TO_CHAR(TO_DATE(bbs.st_date,'YYYYMMDD'),'YYYY/MM/DD') st_date,
+                      TO_CHAR(TO_DATE(bbs.end_date,'YYYYMMDD'),'YYYY/MM/DD') end_date,
+                      TO_CHAR(TO_DATE(bbs.st_date,'YYYYMMDD'),'YYYY/MM/DD')||' ~ '||TO_CHAR(TO_DATE(bbs.end_date,'YYYYMMDD'),'YYYY/MM/DD') st_end_date,
+					  bbs.currency_cd,
+ 					  bbs.amount,                      
+                      bbs.user_ip,
+                      (SELECT decode(${lang}, 'kr',vend_nm_kr,
+       		                         'en',vend_nm_en, vend_nm_lo) vend_nm 
+       		             FROM tb_vend_master tu 
+       		            WHERE bbs.company_cd = tu.company_cd(+) 
+       		              AND bbs.writer     = tu.vend_cd(+)) writer_nm,
+                      bbs.regid,
+                      TO_CHAR(TO_DATE(bbs.regdate,'YYYYMMDD'),'YYYY/MM/DD') regdate,
+                      bbs.regtime,
+                      bbs.modid,
+                      bbs.moddate,
+                      bbs.modtime,
+                      ${mode} cudmode    
+              FROM lgiusf.tb_consult_doc bbs
+             WHERE company_cd = ${companyCd} 
+               AND doc_no = ${docNo}
+      ]]> 
+    </statement>
+    
+    <!-- 첨부파일 Seq 구하기 -->
+    <statement name="retrieveConDocAttachSeq">
+        <![CDATA[
+	        SELECT NVL(MAX(seq_attach),0)+1 next_seq
+	          FROM lgiusf.tb_attach_f
+	         WHERE company_cd = ${companyCd}
+	           AND seq = ${docNo}
+      ]]> 
+    </statement>
+    
+    <!-- 첨부파일 조회 -->
+    <statement name="retrieveConDocAttach">
+		    SELECT company_cd,
+		           seq_attach,
+		           file_url,
+		           file_nm
+		      FROM lgiusf.tb_attach_f
+		     WHERE company_cd = ${companyCd}    
+		       AND seq = ${docNo}
+
+    </statement>
+    
+    <!-- 첨부파일 저장 -->
+    <statement name="insertConDocAttach">
+		    INSERT INTO lgiusf.tb_attach_f
+		    (
+		      company_cd,
+		      seq, seq_attach,
+		      file_url,
+		      file_nm,
+		      regid,
+		      regdate,
+		      regtime
+		    )
+		    VALUES
+		    (
+		      ${companyCd},
+		      ${docNo},
+		      ${seqAttach},
+		      ${fileUrl},
+		      ${fileNm},
+		      ${regid},
+		      TO_CHAR(SYSDATE,'YYYYMMDD'),
+		      TO_CHAR(SYSDATE,'HH24MISS')
+		    )
+    </statement>
+    
+    <!-- 첨부파일 삭제 -->
+    <statement name="deleteConDocAttach">
+            DELETE
+              FROM lgiusf.tb_attach_f
+             WHERE company_cd = ${companyCd}    
+               AND seq = ${docNo} 
+               AND seq_attach = ${seqAttach}
+    </statement>
+    
+    <!-- ConDoc 조회수 update -->
+    <statement name="updateConDocHit">
+                UPDATE lgiusf.tb_bbs
+                   SET read_count = read_count + 1
+                 WHERE company_cd = ${companyCd}   
+                   AND seq = ${seq}      
+    </statement>
+    
+    
+    <!-- ConDoc 등록 -->
+    <statement name="insertConDoc">
+           INSERT INTO lgiusf.tb_consult_doc
+           (
+               company_cd,
+               doc_no,
+               subject,
+               content,
+               del_yn,
+               writer, 
+			   st_date,
+			   end_date,
+			   currency_cd,
+			   amount,               
+               user_ip,
+               regid,
+               regdate,
+               regtime,
+               modid,
+               moddate,
+               modtime      
+	           )
+	    VALUES
+	           (
+	             ${companyCd},
+	             ${docNo},
+	             ${subject},
+	             ${content}, 
+	             'Y',
+	             ${vendCd}, 
+	             replace(${stDate},'/',''),  
+	             replace(${endDate},'/',''),  
+	             ${h_curr},
+	             replace(${amount},',',''), 
+	             ${userIp},
+	             ${regId},
+	              to_char(sysdate,'YYYYMMDD'),
+	              to_char(sysdate,'HH24MISS'),
+	             ${regId},
+	             to_char(sysdate,'YYYYMMDD'),
+	             to_char(sysdate,'HH24MISS')               
+	           )
+    </statement>
+    
+    <!-- ConDoc 수정 -->
+    <statement name="updateConDoc">
+			UPDATE lgiusf.tb_consult_doc
+			   SET subject = ${subject},
+			       content = ${content},
+			       writer = ${vendCd},
+			       st_date = replace(${stDate},'/',''), 
+			       end_date = replace(${endDate},'/',''),
+			       currency_cd = ${h_curr},
+			       amount = replace(${amount},',',''), 
+			       modid = ${regId}, 
+			       moddate = TO_CHAR(SYSDATE,'YYYYMMDD'),
+			       modtime = TO_CHAR(SYSDATE,'HH24MISS')
+			WHERE company_cd = ${companyCd}
+			  AND doc_no = ${docNo} 
+    </statement>
+    
+    <!-- ConDoc 삭제-->
+    <statement name="deleteConDoc">
+	        UPDATE lgiusf.tb_consult_doc
+	           SET del_yn = 'N'
+	         WHERE company_cd = ${companyCd}   
+	           AND doc_no = ${docNo}      
+    </statement>
+        
+    <!--전표확인-->
+    <statement name="retrieveConDocChk">
+        SELECT COUNT(*) cnt
+          FROM tb_doc_master dm
+         WHERE dm.company_cd = ${companyCd}   
+           AND dm.attr4      = ${docNo} 
+           AND NOT EXISTS (SELECT *  -- 최과장님 지시 20101222 sap전표번호 존재하고 50 Cancel즉 sap전송후 유선상으로 처리된 cancel건에 대한 제외 처
+                             FROM tb_doc_master dd
+                            WHERE dd.company_cd = dm.company_cd
+                              AND dd.attr4      = dm.attr4
+                              AND dd.prog_status='50' --cancel
+                              AND dd.sap_doc_seq is not null)
+    </statement>        
+        
+</statements>

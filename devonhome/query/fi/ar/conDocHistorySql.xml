@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Document History List -->
+
+     <!-- 조회 : Document history 조회-->
+    <statement name="retrieveConDocHistory">
+        <![CDATA[
+			SELECT lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2001',dm.dept_cd) dept_cd,
+			       dm.doc_ym,
+			       dm.doc_seq,
+			       dm.create_date,
+			       dm.doc_date,
+			       dm.post_date,
+			       dm.currency_cd doc_currency_cd,
+			       dd.amount doc_amount,
+			       lgiusf.F_GETCOMMNAME('COMM',${companyCd}, 'en','2002',dm.prog_status) prog_status,
+			       dm.prog_status_date,
+			       dm.trans_date,
+			       dm.trans_time,
+			       dm.sap_doc_seq,
+			       dm.success_type,
+			       dm.attr4,
+			       dm.regid,
+			       dm.currency_cd,
+			       dm.voucher_seq,
+			       dm.approval_id,
+			       dm.approval_date,
+			       dm.approval_time,
+				   c.doc_no con_doc_no,
+				   c.subject,
+				   c.del_yn,
+				   c.writer,
+				   decode(${lang}, 'kr',v.vend_nm_kr, 'en',v.vend_nm_en, v.vend_nm_lo) writer_nm, 
+				   c.st_date,
+				   c.end_date,
+				   c.currency_cd,
+				   to_char(c.amount,'999,999,999,999') amount,
+				   c.user_ip,
+				   c.regid,
+				   c.regdate,
+				   c.regtime
+			  FROM tb_doc_master  dm,
+				   tb_consult_doc c,
+				   tb_vend_master v, 
+				   (
+					 SELECT company_cd,
+					        dept_cd,
+					        doc_ym,
+					        doc_seq,
+					        sum(debit_amt) amount
+					   FROM lgiusf.tb_doc_detail
+					  WHERE company_cd = ${companyCd}
+					    AND del_yn     = 'N'
+					  GROUP BY company_cd,
+					           dept_cd,
+					           doc_ym,
+					           doc_seq          
+				   ) dd
+			 WHERE dm.company_cd = c.company_cd
+			   AND dm.attr4 = c.doc_no
+	           AND dm.company_cd  = dd.company_cd
+	           AND dm.dept_cd     = dd.dept_cd
+	           AND dm.doc_ym      = dd.doc_ym
+	           AND dm.doc_seq     = dd.doc_seq
+               AND c.company_cd   = v.company_cd(+)
+               AND c.writer       = v.vend_cd(+)
+	           AND dm.company_cd = ${companyCd}	
+	           {#1}
+	           {#2}
+	           {#3}
+	           {#4}
+		  ORDER BY c.doc_no
+		]]>     
+        <append where="false" condition="${conDocNo}.NOTEMPTY" id="#1">
+			  AND UPPER(c.doc_no) LIKE '%'||UPPER(NVL(${conDocNo},''))||'%'
+	    </append>
+      <append condition="${regDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND c.regdate >= replace(${regDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${regDateFrom}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND c.regdate <= replace(${regDateFrom},'/','')  ]]>
+	    </append> 
+	       <append where="false" condition="${writer}.NOTEMPTY" id="#4">
+			  AND UPPER( decode(${lang}, 'kr',v.vend_nm_kr, 'en',v.vend_nm_en, v.vend_nm_lo)) LIKE '%'||UPPER(NVL(${writer},''))||'%'
+	    </append>	
+    </statement> 
+  
+</statements>

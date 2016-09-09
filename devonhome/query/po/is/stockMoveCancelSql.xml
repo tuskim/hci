@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+
+   <!-- Stock Move Master List --> 
+   <statement name="retrieveStockMoveMst">
+         <![CDATA[
+			SELECT 'F' as chk,
+			       company_cd,
+			       tran_no,
+			       issue_loc,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2005', issue_loc) issue_loc_nm,       
+			       rece_loc,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2005', rece_loc) rece_loc_nm,       
+			       issue_plant,
+			       rece_plant,
+			       move_date,
+			       posting_date,
+			       status,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2209', status) status_nm,       
+			       requisition_status,
+			       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'5000', requisition_status) requisition_status_nm,      --MPP는 5000으로 별도 설정(PAM : 2210 ) 
+			       sap_doc_no,
+			       sap_cancel_doc_no,
+			       sap_rtn_msg,
+			       del_flag
+			  FROM lgiusf.tb_tran_master
+			 WHERE company_cd = ${companyCd}
+			   AND issue_loc  like '%'|| ${issueLoc} ||'%'
+			   AND posting_date BETWEEN ${orderDateFrom} AND ${orderDateTo}
+			   {#1}
+			   {#2}
+			   {#3}
+	    ]]>
+
+	    <append where="false" condition="${receLoc}.NOTEMPTY" id="#1">
+			   AND rece_loc   = ${receLoc}
+        </append>
+
+	    <append where="false" condition="${status}.NOTEMPTY" id="#2">
+			   AND status     = ${status}
+        </append>
+
+	    <append where="false" condition="${delFlag}.NOTEMPTY" id="#3">
+			   AND del_flag = ${delFlag}
+        </append>
+
+    </statement>
+
+   <!-- Stock Move Detail List --> 
+<statement name="retrieveStockMoveDtl">
+        <![CDATA[
+			SELECT company_cd,
+			       tran_no,
+			       mater_cd,
+	               (SELECT MATER_NM_EN 
+		            FROM TB_MATER_INFO MA
+		            WHERE MA.MATER_CD = tb_tran_detail.mater_cd
+		            AND company_cd = ${companyCd}) AS MATER_NM,
+		            (SELECT ATTR1 
+		            FROM TB_MATER_INFO MA
+		            WHERE MA.MATER_CD = tb_tran_detail.mater_cd
+		            AND company_cd = ${companyCd}) AS MODEL_NM,
+			       unit,
+			       request_move_qty,
+			       return_qty,
+			       tran_qty
+			  FROM lgiusf.tb_tran_detail
+			 WHERE company_cd = ${companyCd}
+			   AND tran_no    = ${tranNo}
+	    ]]>
+    </statement>
+
+
+   	<!-- Cancel Complete(05) / Transmit Error(99) --> 
+	<statement name="updateStockMoveCancel">
+        <![CDATA[
+			UPDATE lgiusf.tb_tran_master
+			   SET status            = ${status},
+			       prog_status_date  = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       prog_status_time  = TO_CHAR(SYSDATE, 'HH24MISS'),
+			       
+			       {#1}
+			       sap_if_status     = ${sapIfStatus},
+			       sap_rtn_msg       = ${sapRtnMsg},
+			       
+			       modid             = ${userId},
+			       moddate           = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       modtime           = TO_CHAR(SYSDATE, 'HH24MISS')
+			 where company_cd        = ${companyCd}
+			   and tran_no           = ${tranNo}
+	    ]]>
+
+	    <append where="false" condition="${sapCancelDocNo}.NOTEMPTY" id="#1">
+			       sap_cancel_doc_no = ${sapCancelDocNo},
+        </append>
+
+    </statement>
+
+    <!-- retrieve Material exist Check -->
+    <statement name="retrieveMaterialCheck">
+        <![CDATA[
+			select decode(count(*),0,'N','Y') mater_check 
+			  from lgiusf.tb_mater_info
+			 where company_cd = ${companyCd}
+			   and mater_cd   = ${materCd}
+			   AND useyn      = 'Y'
+		]]>
+    </statement>
+    
+    
+       
+    <!-- retrieve Stock Move Excel Download List -->
+    <statement name="RetrieveStockExcelDownList">
+        <![CDATA[
+        
+        SELECT A.*,
+		       Rank() OVER(PARTITION BY tran_no ORDER BY mater_cd) seq
+		 FROM (
+				SELECT M.company_cd,
+				       M.tran_no,
+				       M.issue_loc,
+				       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2005', M.issue_loc) issue_loc_nm,       
+				       M.rece_loc,
+				       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2005', M.rece_loc) rece_loc_nm,       
+				       M.issue_plant,
+				       M.rece_plant,
+				       M.move_date,
+				       M.posting_date,
+				       M.status,
+				       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2209', M.status) status_nm,       
+				       M.requisition_status,
+				       lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2210', M.requisition_status) requisition_status_nm,       
+				       M.sap_doc_no,
+				       M.sap_cancel_doc_no,
+				       M.sap_rtn_msg,
+				       M.del_flag,
+				       D.mater_cd,
+		               (SELECT MATER_NM_EN 
+			            FROM TB_MATER_INFO MA
+			            WHERE MA.MATER_CD = D.mater_cd) AS MATER_NM,
+			           (SELECT ATTR1 
+			            FROM TB_MATER_INFO MA
+			            WHERE MA.MATER_CD = D.mater_cd) AS MODEL_NM,
+				       D.unit,
+				       D.request_move_qty,
+				       D.return_qty,
+				       D.tran_qty
+				  FROM lgiusf.tb_tran_master M, lgiusf.tb_tran_detail D
+				 WHERE M.COMPANY_CD = D.COMPANY_CD
+				   AND M.TRAN_NO    = D.TRAN_NO
+				   AND M.company_cd = ${companyCd}
+			       AND M.issue_loc  like '%'|| ${issueLoc} ||'%'
+			       AND M.posting_date BETWEEN ${orderDateFrom} AND ${orderDateTo}
+					   {#1}
+					   {#2}
+					   {#3}
+				order by tran_no,posting_date, mater_cd
+				) A
+		    ]]>
+		    <append where="false" condition="${receLoc}.NOTEMPTY" id="#1">
+				   AND M.rece_loc   = ${receLoc}
+	        </append>
+		    <append where="false" condition="${status}.NOTEMPTY" id="#2">
+				   AND M.status     = ${status}
+	        </append>
+		    <append where="false" condition="${delFlag}.NOTEMPTY" id="#3">
+				   AND M.del_flag = ${delFlag}
+	        </append>
+
+    </statement>
+    
+    
+    
+    
+</statements>

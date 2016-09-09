@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<statements>
+<!--  Statement of Accounts 결산모니터링 -->
+
+ <!-- Statement of Accounts : 전표 상태별 숫자 -->
+    <statement name="retrieveCountDocClosingList">
+        <![CDATA[
+			SELECT  G.statusAll, A.status10, B.status20, C.status30, D.status40, E.status50, F.status90
+		      FROM
+				(SELECT COUNT(*) statusAll 
+			 	   FROM lgiusf.tb_doc_master mst
+	        	  WHERE mst.company_cd  = ${companyCd}
+			        AND mst.dept_cd     = ${deptCd}
+	                AND mst.del_yn      = 'N'
+	   		   		    {#1}
+			    	    {#2}
+			   		    {#3}
+			   		    {#4}
+			   ) G, 
+				(SELECT COUNT(*) status10 
+			 	   FROM lgiusf.tb_doc_master mst
+	        	  WHERE mst.company_cd  = ${companyCd}
+			        AND mst.dept_cd     = ${deptCd}
+	                AND mst.del_yn      = 'N'
+	                AND mst.prog_status ='10'  --Insert
+	   		   		    {#1}
+			    	    {#2}
+			   		    {#3}
+			   		    {#4}
+			   ) A,
+	      		(SELECT COUNT(*) status20
+			  	   FROM lgiusf.tb_doc_master mst
+	           	  WHERE mst.company_cd  = ${companyCd}
+			        AND mst.dept_cd     = ${deptCd}
+	                AND mst.del_yn      = 'N'
+	                AND mst.prog_status ='20'  --Confirm
+	   		   		    {#1}
+			    	    {#2}
+			   		    {#3}
+			   		    {#4}
+			   ) B,
+	      		(SELECT COUNT(*) status30
+			  	   FROM lgiusf.tb_doc_master mst
+	           	  WHERE mst.company_cd  = ${companyCd}
+			        AND mst.dept_cd     = ${deptCd}
+	                AND mst.del_yn      = 'N'
+	                AND mst.prog_status ='30' --SAP sended
+	   		   		    {#1}
+			    	    {#2}
+			   		    {#3}
+			   		    {#4}
+			   ) C,
+	      		(SELECT COUNT(*) status40
+			  	   FROM lgiusf.tb_doc_master mst
+	           	  WHERE mst.company_cd  = ${companyCd}
+			        AND mst.dept_cd     = ${deptCd}
+	                AND mst.del_yn      = 'N'
+	                AND mst.prog_status ='40' --Return SAP
+	   		   		    {#1}
+			    	    {#2}
+			   		    {#3}
+			   		    {#4}
+			   ) D,	      	   
+	      		(SELECT COUNT(*) status50
+			  	   FROM lgiusf.tb_doc_master mst
+	           	  WHERE mst.company_cd  = ${companyCd}
+			        AND mst.dept_cd     = ${deptCd}
+	                AND mst.del_yn      = 'N'
+	                AND mst.prog_status ='50' --Cancel Request
+	   		   		    {#1}
+			    	    {#2}
+			   		    {#3}
+			   		    {#4}
+			   ) E,	 	      
+	      		(SELECT COUNT(*) status90
+			  	   FROM lgiusf.tb_doc_master mst
+	           	  WHERE mst.company_cd  = ${companyCd}
+			        AND mst.dept_cd     = ${deptCd}
+	                AND mst.del_yn      = 'N'
+	                AND mst.prog_status ='90' --Posting
+	   		   		    {#1}
+			    	    {#2}
+			   		    {#3}
+			   		    {#4}
+			   ) F
+			 	      
+		]]>
+	    <append where="false" condition="${docDateTo}.NOTEMPTY" id="#1">
+			   AND mst.doc_date >= ${docDateTo}
+	    </append>   
+	    <append where="false" condition="${docDateTo}.NOTEMPTY" id="#2">
+	    <![CDATA[  AND mst.doc_date <= ${docDateFrom}				]]>
+	    </append>
+  		<append where="false" condition="${postDateTo}.NOTEMPTY" id="#3">
+			   AND mst.post_date >= ${postDateTo}
+	    </append>	    
+	    <append where="false" condition="${postDateFrom}.NOTEMPTY" id="#4">
+	    <![CDATA[  AND mst.post_date <= ${postDateFrom}				]]>
+	    </append>
+    </statement>  
+    
+    
+ <!-- Statement of Accounts : 결산전표 내역조회-->    
+        <statement name="retrieveDocClosingList">
+        <![CDATA[
+			SELECT DM.DOC_YM
+			            , DM.DOC_SEQ
+			            , DD.DOC_NUM
+			            , DM.DOC_DATE
+			            , DD.SAP_ACCT_CD
+			            , (SELECT decode(${lang},'kr',acc.acct_nm_kr, 'en',acc.acct_nm_en, acc.acct_nm_lo) FROM tb_sap_account acc WHERE DD.company_cd  = acc.company_cd AND dd.sap_acct_cd = acc.acct_sap_cd) SAP_ACCT_NM
+			            , DD.DEBIT_AMT
+			            , DD.CREDIT_AMT
+			            , DD.ATTR8 COST_CENTER
+			            , DD.DOC_DESC 
+			            , DM.CURRENCY_CD
+			            , DM.POST_DATE
+			            , DD.ATTR3 VAT
+			            , DD.ATTR4 BASE
+			            , DD.ATTR5 CODE
+			            , DD.ATTR6 RATE
+			            , DD.SPGL_NO SPGL
+			            , DD.SAP_ACCT_V VENDOR
+			            , DD.SAP_ACCT_C CUSTOMER
+			            , lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2002',DM.prog_status) prog_status_nm
+			            , DM.attr2
+			            , DM.sap_doc_seq
+			            , DD.attr11 due_date
+			FROM TB_DOC_MASTER DM, TB_DOC_DETAIL DD
+			WHERE DM.COMPANY_CD = DD.COMPANY_CD
+			AND DM.DEPT_CD = DD.DEPT_CD
+			AND DM.DOC_YM = DD.DOC_YM
+			AND DM.DOC_SEQ = DD.DOC_SEQ
+			AND DM.COMPANY_CD = ${companyCd}
+			AND DM.prog_status != '30'  --SAP sended
+			AND DM.prog_status != '50'  --Cancel Request
+			AND DM.prog_status != '90'  --Posting
+			   {#1}
+			   {#2}
+			   {#3}
+			   {#4}
+			ORDER BY prog_status_nm ,DM.DOC_YM, DM.DOC_SEQ
+		]]>
+	    <append where="false" condition="${docDateTo}.NOTEMPTY" id="#1">
+			   AND DM.doc_date >= ${docDateTo}
+	    </append>   
+	    <append where="false" condition="${docDateTo}.NOTEMPTY" id="#2">
+	    <![CDATA[  AND DM.doc_date <= ${docDateFrom}				]]>
+	    </append>
+  		<append where="false" condition="${postDateTo}.NOTEMPTY" id="#3">
+			   AND DM.post_date >= ${postDateTo}
+	    </append>	    
+	    <append where="false" condition="${postDateFrom}.NOTEMPTY" id="#4">
+	    <![CDATA[  AND DM.post_date <= ${postDateFrom}				]]>
+	    </append>
+    </statement>  
+    
+    <!-- 조회 : P/O 입력현황 조회-->
+    <statement name="retrievePoClosingList">
+        <![CDATA[
+			SELECT '' seq 
+				  ,PO_MA.PO_NO
+		          ,PO_MA.REGDATE
+		          ,PO_MA.TRANS_DATE DOC_DATE
+		          ,PO_MA.DELI_DATE
+		          ,lgiusf.F_GETCOMMNAME('COMM',PO_MA.COMPANY_CD ,'en','2203',po_MA.STATUS) STATUS
+		          ,to_number(RE_DE.RECEIPT_SEQ) RECEIPT_SEQ
+		          ,(SELECT MATER_NM_EN 
+		              FROM TB_MATER_INFO MT
+		             WHERE MT.COMPANY_CD = PO_MA.COMPANY_CD 
+		               AND MT.MATER_TYPE NOT IN ('9100', '9200', '7920')
+		               AND MT.MATER_CD = PO_DE.MATER_CD) MATER_NM
+		          ,PO_DE.QTY PO_QTY
+		          ,RE_DE.receipt_qty
+		          ,RE_MA.REGDATE      RECEIPT_REGDATE
+	              ,RE_MA.RECEIPT_DATE
+		          ,RE_MA.POSTING_DATE RECEIPT_POSTING_DATE
+		     FROM TB_PO_MASTER         PO_MA,
+		          TB_PO_DETAIL 	       PO_DE, 
+		          TB_RECEIPT_MASTER    RE_MA,
+		          TB_RECEIPT_DETAIL    RE_DE
+		    WHERE PO_MA.COMPANY_CD   = PO_DE.COMPANY_CD
+		      AND PO_MA.PO_NO 	     = PO_DE.PO_NO
+		      AND PO_DE.MATER_CD 	 = RE_DE.MATER_CD
+		      AND PO_MA.COMPANY_CD   = RE_MA.COMPANY_CD(+)
+		      AND PO_MA.PO_NO        = RE_MA.PO_NO(+)
+		      AND RE_MA.COMPANY_CD   = RE_DE.COMPANY_CD(+)
+		      AND RE_MA.PO_NO    	 = RE_DE.PO_NO(+)
+		      AND RE_MA.RECEIPT_SEQ  = RE_DE.RECEIPT_SEQ(+)
+			  AND PO_MA.COMPANY_CD   = ${companyCd}
+			  AND PO_MA.STATUS = '03'
+			  AND RE_MA.STATUS = '03'
+			     {#1}
+			     {#2}
+			     {#3}
+			     {#4}
+		  ORDER BY 1,2,3,4,5,6,7
+        ]]>  
+	    <append condition="${docDateTo}.NOTEMPTY" id="#1">       
+			 <![CDATA[ AND PO_MA.TRANS_DATE >= replace(${docDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${docDateFrom}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND PO_MA.TRANS_DATE <= replace(${docDateFrom},'/','')  ]]>
+	    </append>
+	    <append where="false" condition="${postDateTo}.NOTEMPTY" id="#3">
+			   AND RE_MA.POSTING_DATE >= ${postDateTo}
+	    </append>	    
+	    <append where="false" condition="${postDateFrom}.NOTEMPTY" id="#4">
+	    <![CDATA[  AND RE_MA.POSTING_DATE <= ${postDateFrom}				]]>
+	    </append> 	
+    </statement> 
+    
+     <!-- 조회 : Qty 현황조회-->
+    <statement name="retrieveQtyClosingList">
+        <![CDATA[
+			SELECT A.receipt_qty, B.issue_qty, C.COAL_PROD_QTY
+			 FROM
+				(SELECT SUM(RE_DE.receipt_qty) RECEIPT_QTY
+		     	   FROM TB_PO_MASTER         PO_MA,
+		         	    TB_PO_DETAIL 	     PO_DE, 
+		          	    TB_RECEIPT_MASTER    RE_MA,
+		          	    TB_RECEIPT_DETAIL    RE_DE
+		   		  WHERE PO_MA.COMPANY_CD   = PO_DE.COMPANY_CD
+		      		AND PO_MA.PO_NO 	   = PO_DE.PO_NO
+		     	    AND PO_DE.MATER_CD 	   = RE_DE.MATER_CD
+		     	    AND PO_MA.COMPANY_CD   = RE_MA.COMPANY_CD(+)
+		      	    AND PO_MA.PO_NO        = RE_MA.PO_NO(+)
+		      	    AND RE_MA.COMPANY_CD   = RE_DE.COMPANY_CD(+)
+		      	    AND RE_MA.PO_NO    	   = RE_DE.PO_NO(+)
+		      	    AND RE_MA.RECEIPT_SEQ  = RE_DE.RECEIPT_SEQ(+)
+			 	    AND PO_MA.COMPANY_CD   = ${companyCd}
+			 	    AND PO_MA.STATUS = '03'
+			 	    AND RE_MA.STATUS = '03'  --Sap 입고완료
+			     	AND PO_MA.TRANS_DATE   >= replace(${docDateTo},'/','') 
+			     	AND PO_MA.TRANS_DATE   <= replace(${docDateFrom},'/','')
+			     	AND RE_MA.POSTING_DATE >= ${postDateTo}
+			     	AND RE_MA.POSTING_DATE <= ${postDateFrom}	
+			    )A,
+			    (SELECT SUM(ISSUE_QTY) ISSUE_QTY
+				   FROM TB_ISSUE_LIST 
+			      WHERE COMPANY_CD = ${companyCd}
+			        AND STATUS 		   ='03' --Sap 출고완료
+					AND POSTING_DATE  >= ${postDateTo}
+					AND POSTING_DATE  <= ${postDateFrom}	
+				)B,
+				(SELECT SUM(COAL_QTY) COAL_PROD_QTY
+				   FROM TB_COAL_PROD_MASTER
+				  WHERE COMPANY_CD  = ${companyCd}
+				  	AND STATUS	    = '2'
+ 			   	    AND POST_DATE  >= ${postDateTo}
+ 			   	    AND POST_DATE  <= ${postDateFrom}	
+		     	 )C			
+			    
+        ]]>  
+    </statement> 
+    
+      <!-- 조회 : Qty 현황조회-->
+    <statement name="RetrieveIssueClosingList">
+        <![CDATA[
+			 SELECT '' SEQ
+					,ISSUE_NO
+					,(SELECT MATER_NM_EN 
+					  FROM TB_MATER_INFO M
+					  WHERE M.MATER_CD = TB_ISSUE_LIST.MATER_CD) AS MATER_NM
+					,UNIT
+					,ISSUE_QTY
+					,ISSUE_DATE
+					,ISSUE_LOC
+					,ISSUE_DESC
+					,COST_CENTER
+					,POSTING_DATE
+					,WERKS
+					,SAP_DOC_NO
+					,lgiusf.F_GETCOMMNAME('COMM',COMPANY_CD ,'en','2208', STATUS) STATUS
+					,ATTR1  VENDOR          -- Vendor
+					,ATTR2	DESCRIPTION	    -- Description
+			FROM TB_ISSUE_LIST 
+			WHERE COMPANY_CD = ${companyCd}
+			  AND STATUS 	 ='03'
+			  AND POSTING_DATE  >= ${postDateTo}
+			  AND POSTING_DATE  <= ${postDateFrom}
+			ORDER BY ISSUE_NO DESC
+        ]]>  
+    </statement> 
+   
+   
+   <!-- Coal Production 조회-->
+    <statement name="RetrieveCoalProdClosingList">
+        <![CDATA[
+			SELECT '' seq
+				  ,SYSKEY
+				  ,PRODUCT_DATE
+				  ,POST_DATE
+				  ,COAL_QTY
+				  ,WASTE_REMOV_QTY
+				  ,lgiusf.F_GETCOMMNAME('COMM',COMPANY_CD ,'en','2301', STATUS) STATUS
+				  ,SAP_SEQ
+			FROM TB_COAL_PROD_MASTER
+			WHERE COMPANY_CD 	 = ${companyCd}
+ 			  AND POST_DATE  >= ${postDateTo}
+			  AND POST_DATE  <= ${postDateFrom}
+		     ORDER BY syskey
+        ]]>  	    
+    </statement> 
+ 	 
+    </statements>  

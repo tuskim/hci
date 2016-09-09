@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+ 
+    <!-- 조회 : stock Issue history 조회-->
+    <statement name="retrieveStockIssueHistoryList">
+        <![CDATA[
+			SELECT  MA.COMPANY_CD,
+					MA.ISSUE_NO ,
+					MA.REGDATE,
+					MA.ISSUE_DATE doc_date,
+					MA.POSTING_DATE,
+					lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2208',MA.STATUS) STATUS,
+					(SELECT MATER_NM_EN from TB_MATER_INFO MT
+					  WHERE MT.COMPANY_CD = MA.COMPANY_CD 
+					    AND MT.MATER_TYPE NOT IN ('9100', '9200', '7920')
+					    AND MT.MATER_CD = MA.MATER_CD) MATER_NM,
+					MA.ISSUE_QTY,
+					MA.ISSUE_DESC,
+					to_DATE(MA.REGDATE,'RRRRMMDD')- to_DATE(MA.ISSUE_DATE,'RRRRMMDD') credate_doc_term,
+       				CASE WHEN to_DATE(MA.REGDATE,'RRRRMMDD')-to_DATE(MA.ISSUE_DATE,'RRRRMMDD')>5 THEN 'TRUE' ELSE 'FALSE' END as term,
+       				CASE WHEN to_DATE(MA.REGDATE,'RRRRMMDD')-to_DATE(MA.ISSUE_DATE,'RRRRMMDD')>5 THEN 'Input delayed.' END as message
+			   FROM TB_ISSUE_LIST MA
+			  WHERE MA.company_Cd= ${companyCd}
+			    AND MA.STATUS != '99'
+			     {#1}
+			     {#2}
+			     {#3}
+			     {#4}
+		  ORDER BY ISSUE_NO, REGDATE, ISSUE_DATE, POSTING_DATE, status, mater_nm
+
+        ]]>  
+        <append condition="${issueLoc}.NOTEMPTY" id="#1">       
+			   AND ma.issue_loc like '%'||${issueLoc}||'%'
+	    </append>
+         <append condition="${status}.NOTEMPTY" id="#4">       
+			   AND ma.status like '%'||${status}||'%'
+	    </append>
+	    <append condition="${docDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND ma.ISSUE_DATE >= replace(${docDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${docDateFrom}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND ma.ISSUE_DATE <= replace(${docDateFrom},'/','')  ]]>
+	    </append> 	
+    </statement> 
+ 
+ 
+    <!-- 조회 : invoice history 조회-->
+    <statement name="retrieveInvoiceHistoryList">
+        <![CDATA[
+			  select company_cd,
+			         po_no,
+			         iv_seq,
+			         sap_po_no,
+			         vend_cd,
+			         iv_date,
+			         post_date,
+			         due_date,
+			         iv_amt,
+			         lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2004',currency_cd) currency_cd,
+			         vat_amt,
+			         vat_cd,
+			         lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2008',plant) plant,
+			         lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2005',stor_loct) stor_loct,
+			         sap_iv_do_no,
+			         sap_gr_do_no,
+			         sap_cancel_iv_do_no,
+			         sap_cancel_gr_do_no,
+			         lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2210',status) status,
+			         send_stat,
+			         send_date,
+			         send_msg,
+			         cancel_stat,
+			         cancel_date,
+			         cancel_msg,
+			         regdate,
+			         to_DATE(  regdate,'RRRRMMDD')- to_DATE(  iv_date,'RRRRMMDD') credate_doc_term,
+       			     to_DATE(post_date,'RRRRMMDD')- to_DATE(  regdate,'RRRRMMDD') credate_app_term,
+       			   CASE WHEN  TO_DATE(  regdate,'RRRRMMDD')-TO_DATE( iv_date,'RRRRMMDD')>5  THEN 'TRUE' ELSE 'FALSE' END as term,
+       			   CASE WHEN  TO_DATE(post_date,'RRRRMMDD')-TO_DATE( regdate,'RRRRMMDD')>3  THEN 'TRUE' ELSE 'FALSE' END as term2,
+       			   CASE WHEN (TO_DATE(  regdate,'RRRRMMDD')-TO_DATE( iv_date,'RRRRMMDD')>5 
+            		 	  AND TO_DATE(post_date,'RRRRMMDD')-TO_DATE( regdate,'RRRRMMDD')>3) THEN 'Input & approval delayed.'
+   					 	WHEN TO_DATE(   regdate,'RRRRMMDD')-TO_DATE( iv_date,'RRRRMMDD')>5  THEN 'Input Delayed.'
+            		 	WHEN TO_DATE( post_date,'RRRRMMDD')-TO_DATE( regdate,'RRRRMMDD')>3  THEN 'Approval Delayed.'
+    		  	    END as message
+   				from tb_iv_master ma
+			   WHERE MA.company_Cd= ${companyCd}
+			     {#1}
+			     {#2}
+			     {#3}
+		    ORDER BY po_no, iv_Seq
+        ]]>  
+        <append condition="${poNo}.NOTEMPTY" id="#1">       
+			 AND UPPER(PO_NO) like '%'||upper(${poNo})||'%'
+	    </append>
+	    <append condition="${docDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND iv_date >= replace(${docDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${docDateFrom}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND iv_date <= replace(${docDateFrom},'/','')  ]]>
+	    </append> 	
+    </statement> 
+    
+</statements>

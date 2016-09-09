@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Notice -->
+    <!-- Notice List 조회-->  
+   <action-name name="noticeList">
+  	<command-no>2</command-no>  	
+  	<command1>cm.lo.cmd.RetrievePageInfoCmd</command1>    
+    <command2>cm.nt.cmd.RetrieveNoticeListCmd</command2>   
+    <return-url>/jsp/cm/nt/noticeList.jsp</return-url>
+   </action-name>
+   
+   <!-- Notice List 신규 화면-->  
+    <action-name name="cm.nt.retrieveNoticeUpdate">
+  	<command-no>2</command-no>  	
+  	<command1>cm.lo.cmd.RetrievePageInfoCmd</command1>     
+    <command2>cm.nt.cmd.RetrieveNoticeUpdateCmd</command2>
+    <return-url>/jsp/cm/nt/noticeUpdate.jsp</return-url>
+   </action-name>
+   
+   <!-- Notice 상세화면-->  
+   <action-name name="cm.nt.retrieveNoticeDetail">
+  	<command-no>2</command-no>  	
+  	<command1>cm.lo.cmd.RetrievePageInfoCmd</command1>     
+    <command2>cm.nt.cmd.RetrieveNoticeDetailCmd</command2>
+    <return-url>/jsp/cm/nt/noticeDetail.jsp</return-url>
+   </action-name>
+   
+   
+   <!-- Notice 등록-->  
+   <action-name name="cm.nt.cudNotice">
+    	<command>cm.nt.cmd.RetrieveNoticeCudCmd</command>   
+		<return-url>/jsp/cm/nt/noticeProcess.jsp</return-url>
+   </action-name>
+   
+   <!-- Notice 상세화면에서 삭제-->  
+    <action-name name="cm.nt.deleteNotice">
+    <command>cm.nt.cmd.DeleteNoticeCmd</command>
+    <return-url>/jsp/cm/nt/noticeProcess.jsp</return-url>
+   </action-name>
+    
+    <action-name name="cm.nt.DownloadFile">
+     <command>cm.nt.cmd.DownloadFileCmd</command>
+     <return-type>null</return-type>
+   </action-name>
+ 
+   	<!-- Main 화면 공지사항 리스트 -->
+  	<action-name name="retrieveMainNoticeList">
+  		<command>cm.nt.cmd.RetrieveMainNoticeCmd</command>
+  		<return-url>/jsp/cm/lo/main.jsp</return-url>
+  	</action-name>
+ 
+</navigation-mapper>

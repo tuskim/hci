@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- purchase Request Mgnt -->
+
+   	<!-- purchase Request Mgnt Init -->  
+	<action-name name="purchReqMgnt">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/oc/purchReqMgnt.jsp</return-url>
+   	</action-name>
+   	
+   	<!-- purchase Request Mgnt Master Retrieve -->  
+	<action-name name="po.oc.retrievePurchReqMstMgnt">
+    	<command>po.oc.cmd.RetrievePurchReqMstMgntCmd</command> 
+   	</action-name>   	
+
+   	<!-- purchase Request Mgnt Detail Retrieve -->  
+	<action-name name="po.oc.retrievePurchReqDtlMgnt">
+    	<command>po.oc.cmd.RetrievePurchReqDtlMgntCmd</command> 
+   	</action-name>   	
+   	
+   	<!-- purchase Request Mgnt Save -->  
+	<action-name name="po.oc.cudPurchReqMgnt">
+    	<command>po.oc.cmd.CudPurchReqMgntCmd</command> 
+   	</action-name>      	
+    
+   	<!-- purchase Request Mgnt Delete -->  
+	<action-name name="po.oc.cudDelPurchReqMgnt">
+    	<command>po.oc.cmd.DelPurchReqMgntCmd</command> 
+   	</action-name>      	
+    
+</navigation-mapper>

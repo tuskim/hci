@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  menu Mgnt-->
+    <!--  menu Mgnt 조회-->
+    <statement name="retrieveProgMgntList">
+        <![CDATA[
+		    SELECT prog_cd,
+		           prog_nm_kr,
+		           prog_nm_en,
+		           prog_nm_lo,
+		           prog_url,
+		           depth,
+		           prog_up_cd,
+		           sort,
+		           regid,
+		           regdate,
+		           regtime,
+		           useyn,
+		           remark,
+		           '' auth_cd
+		      FROM lgiusf.tb_prog_master
+		     WHERE company_cd = ${companyCd}   
+		       {#1}
+		     ORDER BY sort asc
+		]]>     
+
+        <append where="false" condition="${progNm}.NOTEMPTY" id="#1">
+             AND ( prog_nm_kr like '%'||${progNm}||'%' OR
+                   prog_nm_En like '%'||${progNm}||'%' OR
+                   prog_nm_Lo like '%'||${progNm}||'%' )
+	    </append>
+
+    </statement>  
+    
+    <!--  Prog Authority 조회-->
+    <statement name="retrieveProgAuthorityList">
+        <![CDATA[
+			SELECT detail_cd,
+			       decode(${lang},'kr',detail_cd_nm_kr
+			                     ,'en',detail_cd_nm_en, detail_cd_nm_lo) detail_nm,
+			       remark,
+			       regid,
+			       regdate
+			  FROM lgiusf.tb_comm_cd_detail
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = '1010'     	
+		]]>         
+      
+    </statement>   
+    
+    <!--  메뉴에 따른 권한 조회-->
+    <statement name="retrieveProgAuthorityList2">
+        <![CDATA[
+			SELECT auth_cd,
+			       prog_cd
+			  FROM lgiusf.tb_authorith_master
+			 WHERE company_cd = ${companyCd}
+			 GROUP BY auth_cd, prog_cd
+		]]>
+      
+    </statement> 
+    
+    <!--  Prog Mgnt 수정-->
+    <statement name="updateProgMgnt">
+        <![CDATA[
+	       	UPDATE lgiusf.tb_prog_master
+			   SET prog_up_cd = ${progUpCd},
+				   prog_nm_kr = trim(${progNmKr}),
+				   prog_nm_en = trim(${progNmEn}),
+				   prog_nm_lo = trim(${progNmLo}),
+				   prog_url   = ${progUrl},
+				   depth      = ${depth},
+				   sort       = ${sort},
+				   useyn      = ${useyn},
+				   remark     = ${remark},
+				   modid      = ${userId},
+				   moddate    = TO_CHAR(SYSDATE, 'YYYYMMDD'),
+				   modtime    = TO_CHAR(SYSDATE, 'HH24MISS')
+			 WHERE company_cd = ${companyCd}
+			   AND prog_cd 	  = ${progCd}    	
+		]]>
+    </statement> 
+
+    <!-- Prog 추가-->
+    <statement name="insertProgMgnt">
+        <![CDATA[
+            INSERT INTO lgiusf.tb_prog_master (
+                        company_cd,
+                        prog_cd,
+                        prog_up_cd,
+                        prog_nm_kr,
+                        prog_nm_en,
+                        prog_nm_lo,
+                        prog_url,
+                        depth,
+                        sort,
+                        useyn,
+                        remark,
+                        regid,
+                        regdate,
+                        regtime )
+			   VALUES ( ${companyCd},
+                        ${progCd},
+                        ${progUpCd},
+                        ${progNmKr},
+                        ${progNmEn},
+                        ${progNmLo},
+                        ${progUrl},
+                        ${depth},
+                        ${sort},
+                        ${useyn},
+                        ${remark},
+                        ${userId},
+                        TO_CHAR(SYSDATE, 'YYYYMMDD'),
+                        TO_CHAR(SYSDATE, 'HH24MISS'))
+		]]>         
+	</statement> 
+    
+    <!-- Prog Authority 추가-->
+    <statement name="insertProgAuthority">
+        <![CDATA[
+	       	INSERT INTO lgiusf.tb_authorith_master(
+			            company_cd,
+			            auth_cd,
+			            prog_cd,
+			            regid,
+			            regdate,
+			            regtime )
+			   VALUES ( ${companyCd},
+			            ${authCd},
+			            ${progCd},
+			            ${userId},		           
+			            TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			            TO_CHAR(SYSDATE, 'HH24MISS') )
+		]]>         
+	</statement> 
+		
+	<!-- Prog Authority 삭제-->
+    <statement name="deleteProgAuthority">
+        <![CDATA[
+	       	DELETE tb_authorith_master
+			 WHERE company_cd = ${companyCd}
+			   AND prog_cd    = ${progCd}
+		]]>
+    </statement> 
+
+    <!--  Prog Duplicate Check -->
+    <statement name="retrieveProgDuChk">
+        <![CDATA[
+			SELECT decode(count(company_cd),0,'F','T') dupchk 
+			  FROM lgiusf.tb_prog_master
+			 WHERE company_cd = ${companyCd}
+			   AND prog_cd    = ${progCd}
+		]]>   
+    </statement>
+    
+</statements>

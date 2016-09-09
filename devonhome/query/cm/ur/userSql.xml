@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+
+  	<!--사용자 목록 조회 -->  
+  	<!--Jwhan C20140410_21774 -->
+    <statement name="retrieveUserList">
+        <![CDATA[
+      	 	SELECT ur.company_cd, 
+                   user_id,
+                   user_pw, 
+                   user_pw as user_pw2, 
+                   user_nm, 
+                   system_id,  
+                   position,
+                   business, 
+                   email,  
+			       phone,      
+			       mobile,
+                   gender,
+                   ur.useyn,
+                   auth_cd,
+                   dept_cd,
+                   addr1, 
+                   addr2,  
+                   to_char(to_date(birthday,'yyyymmdd'),'yyyy/mm/dd') birthday,  
+                   to_char(to_date(use_from_date,'yyyymmdd'),'yyyy/mm/dd') use_from_date, 
+                   to_char(to_date(use_to_date,'yyyymmdd'),'yyyy/mm/dd')   use_to_date, 
+                   lgiusf.F_GETCOMMNAME('COMM',${companyCd},${lang},'1010',auth_cd)  detail_auth_cd,             
+                   cc.cost_center_nm_en  detail_dept_cd
+                   ,last_login
+                   ,login_error_count                 
+              FROM tb_user ur, tb_cost_center cc
+             WHERE ur.company_cd = cc.company_cd(+)
+              AND  ur.dept_cd    = cc.cost_center_cd(+)
+              AND  ur.company_cd = ${companyCd}
+              {#1}
+              {#2}
+          ORDER BY user_id  
+		]]>
+		 <append where="false" condition="${userId}.NOTEMPTY" id="#1">
+             AND UPPER(user_id) like '%'||UPPER(${userId})||'%'
+	    </append>    
+	     <append where="false" condition="${usernm}.NOTEMPTY" id="#2">
+            AND UPPER(user_nm) like '%'||UPPER(${usernm})||'%'
+	    </append>    
+    </statement>
+
+ 
+    <!--ID가 존재하는지 체크 -->  
+    <statement name="userIdCheck">
+        <![CDATA[
+			SELECT decode( max( user_id ), null, 'not exist', 'exist' )  as  exist_check
+					
+       		  FROM tb_user
+			 WHERE company_cd = ${companyCd} 
+			   AND user_id = ${userId}
+		]]>
+    </statement>
+	
+	
+
+    <!--사용자 저장 -->
+    <!--Jwhan C20140410_21774 --> 
+    <statement name="CreateUser">
+    	<![CDATA[
+			INSERT INTO tb_user
+ 			 	(  company_cd,
+  				   user_id,
+  				   user_pw,
+  				   user_nm,
+   				   auth_cd,
+   				   system_id,
+   				   dept_cd,
+  				   position,
+   				   business,
+   				   email,
+  			       phone,
+       			   mobile,
+   				   gender,
+   				   birthday,
+   				   addr1,
+  				   addr2,
+   				   use_from_date,
+  				   use_to_date,
+  				   useyn,
+   				   regid,
+ 				   regdate,
+ 				   regtime,
+ 				   login_error_count,
+ 				   last_login,
+ 				   passwd_chg_date
+   
+   				)
+			VALUES
+  				(  ${companyCd},
+   				   ${userId},
+   				   ${userPw},
+   				   ${userNm},
+   				   ${authCd},
+   				   (	SELECT max(system_id)+1 as system_id
+						  FROM tb_user
+				         WHERE company_cd = ${companyCd} ),
+   				   ${deptCd},
+  				   ${position},
+  				   ${business},
+  				   ${email},
+       			   ${phone},
+  				   ${mobile},
+  				   ${gender},
+  				   ${birthday},
+  				   ${addr1},
+   				   ${addr2},
+  				   replace(${useFromDate},'/',''),
+  				   replace(${useToDate},'/',''),
+  				   ${useyn},
+  				   ${userId},
+ 				   to_char(sysdate,'yyyymmdd'),
+  				   to_Char(sysdate,'hh24miss'),
+  				   0,
+  				   sysdate,
+  				   to_char(sysdate,'yyyymmdd')
+  				)
+ 		]]>
+    </statement>
+
+ 
+    <!--사용자 수정 -->
+    <!--Jwhan C20140410_21774 -->
+    <statement name="UpdateUser">
+    	<![CDATA[
+		 	UPDATE tb_user
+               SET
+               	 	user_nm         = ${userNm},
+              	 	auth_cd         = ${authCd},
+             	 	system_id       = ${systemId},
+               		dept_cd         = ${deptCd},
+               	 	position        = ${position},
+               		business        = ${business},
+               		email           = ${email},
+               	    phone           = ${phone},
+               	    mobile          = ${mobile},
+             	    gender          = ${gender},
+             	    birthday        = to_char(to_date(${birthday},'yyyy/mm/dd'),'yyyymmdd'),
+              	    addr1           = ${addr1},
+               		addr2           = ${addr2},
+               	    use_from_date   = to_char(to_date(${useFromDate},'yyyy/mm/dd'),'yyyymmdd'),
+              	    use_to_date     = to_char(to_date(${useToDate},'yyyy/mm/dd'),'yyyymmdd'),
+              	    --passwd_chg_date = to_char(sysdate,'yyyymmdd'),
+               		useyn           = ${useyn},
+            	    modid           = ${userId},
+              	    moddate         = to_char(sysdate,'yyyymmdd'),
+              	    modtime         = to_Char(sysdate,'hh24miss') 
+      		 WHERE  company_cd = ${companyCd}
+              AND	user_id    = ${userId}
+
+    	]]>
+    </statement>
+
+    
+    <!--개인정보 변경시 사용자 정보조회-->
+    <statement name="retrieveUserInfo">
+        <![CDATA[	
+			SELECT company_cd,
+       			   user_id,
+      			   user_pw,
+       			   user_nm,
+      		       auth_cd,
+			       system_id,
+			       dept_cd,
+ 			       position,
+			       business,
+			       email,
+			       phone,
+			       mobile,
+			       gender,
+			       to_char(to_date(birthday,'yyyymmdd'),'yyyy/mm/dd') birthday,
+			       addr1,
+			       addr2,
+			       use_from_date,
+			       use_to_date,
+			       passwd_chg_date,
+			       useyn
+			  FROM tb_user
+ 			 WHERE company_cd = ${companyCd}
+ 			   AND user_id    = ${userId}
+      	]]>
+    </statement>
+    
+      
+    <!--개인정보 변경-->
+    <statement name="userInfoUpdate">
+        <![CDATA[	
+			UPDATE tb_user
+   			   SET user_pw 			= ${userPw},
+       			   user_nm 			= ${userNm},
+      			   dept_cd 			= ${deptCd},
+       			   business 		= ${business},
+     			   email 			= ${email},
+      			   phone 			= ${phone},
+ 			       mobile 			= ${mobile},
+ 			       gender 			= ${gender},
+ 			       birthday 		= to_char(to_date(${birthday},'yyyy/mm/dd'),'yyyymmdd'),
+			       addr1 			= ${addr1},
+			       addr2 			= ${addr2},
+			       passwd_chg_date  = to_char(sysdate,'yyyymmdd'),
+			       modid 			= ${userId},
+			       moddate 			= to_char(sysdate,'yyyymmdd') ,
+			       modtime 			= to_Char(sysdate,'hh24miss') 
+			 WHERE company_cd 		= ${companyCd}
+   			   AND user_id 			= ${userId}
+      	]]>
+    </statement>
+    
+    <!-- Employee List -->
+    <statement name="retrieveEmplyoeeList">
+        <![CDATA[
+      	 	SELECT bukrs,
+			       pernr,
+			       ename,
+			       cteam,
+			       mail_id
+			FROM tb_emp
+			WHERE bukrs = ${companyCd}
+		]]>
+		
+		<append where="false" condition="${pernr}.NOTEMPTY" id="#1">
+             AND pernr = ${companyCd}
+	    </append>
+	    
+	    <append where="false" condition="${name}.NOTEMPTY" id="#2">
+             AND ename like '%'||${companyCd}||'%'
+	    </append>
+	    
+    </statement>
+    
+    <!--  20140221   -->
+    <!-- 로그인 성공시  시간입력, 오류횟수 초기화  -->
+    <!--Jwhan C20140410_21774 -->
+    <statement name = "lastLogin">
+    	<![CDATA[
+    		update tb_user
+    		set	   last_login = sysdate ,
+    			   login_error_count = 0
+    			   {#1}
+			where  user_id = ${userId}
+			and	   company_cd = ${companyCd}    			   
+    		    	
+    	]]>
+    	<append where="false" condition="${resetPw}.NOTEMPTY" id="#1">
+             ,user_pw = '266eb15c32ffca3f9fdf131a16e1ff080225e306e83246738cca0a9b4227df' --qwerty@12
+             ,passwd_chg_date = to_char( sysdate -91 , 'yyyymmdd' )
+	    </append>
+    
+    </statement>
+    
+    <!-- 로그인 실패시 카운트 증가 -->
+    <!--Jwhan C20140410_21774 -->
+    <statement name= "loginFailCount" >
+		<![CDATA[	
+			update   tb_user
+			set      login_error_count =  ( select  login_error_count
+			                          		from    tb_user
+			                          		where   user_id   = ${userId}
+			                          		and     company_cd  = ${companyCd} ) + 1
+			                          		
+			where    user_id    = ${userId}
+			and      company_cd = ${companyCd}   
+		
+		]]>    
+    
+    </statement>
+ 
+    <!-- 패스워드 변경일자 업데이트 -->
+    <!--Jwhan C20140410_21774 -->
+    <statement name = "updatePasswordChangedDate">
+    	<![CDATA[
+    		UPDATE TB_USER
+    		SET	   PASSWD_CHG_DATE  = TO_CHAR( SYSDATE , 'YYYYMMDD')
+    		WHERE  USER_ID          = ${userId}
+    		AND    COMPANY_CD       = ${companyCd}
+    	]]>    
+    </statement> 
+    
+    
+    	<!-- user Unblocking -->
+    <statement name = "userUnblocking">
+    	<![CDATA[
+    		UPDATE TB_USER
+    		SET	  login_error_count = 0 , last_login = sysdate
+    		WHERE  USER_ID          = ${userId}
+    		AND    COMPANY_CD       = ${companyCd}
+    	]]>    
+    </statement>
+    
+	<!-- password Reset -->
+    <statement name = "userPasswordReset">
+    	<![CDATA[
+    		UPDATE TB_USER
+    		SET	   user_pw = '89ac9e337b4dd71a3f05d5459bba2854bd234ee2594d3e45781383ff06d321' --lgihci16!
+    			  ,passwd_chg_date = TO_CHAR ( SYSDATE - 40 , 'YYYYMMDD')
+    		WHERE  USER_ID          = ${userId}
+    		AND    COMPANY_CD       = ${companyCd}
+    	]]>    
+    </statement>      
+    
+</statements>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Safety Stock Manage Confirm -->
+
+   	<!-- Purchase Order Creation Confirm-->  
+	<action-name name="purchOrderMgnt">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/po/purchOrderMgnt.jsp</return-url>
+   	</action-name>
+   	     	
+   	<!-- Purchase Order Creation Main Retrieve-->  
+	<action-name name="po.po.retrievePurchOrderMgntMainList">
+    	<command>po.po.cmd.RetrievePurchOrderMgntMainListCmd</command> 
+   	</action-name>     
+   	
+   	<!-- Purchase Order Creation Detail Retrieve-->  
+	<action-name name="po.po.retrievePurchOrderMgntDetailList">
+    	<command>po.po.cmd.RetrievePurchOrderMgntDetailListCmd</command> 
+   	</action-name>    
+   	
+   	<!-- Purchase Order Creation Approval Retrieve-->  
+	<action-name name="po.po.retrievePurchOrderMgntAppList">
+    	<command>po.po.cmd.RetrievePurchOrderMgntAppListCmd</command> 
+   	</action-name>      	   	  	
+   	
+   	<!-- Purchase Order Creation Approval Retrieve-->  
+	<action-name name="po.po.CudPurchOrderMgntAppCancel">
+    	<command>po.po.cmd.RetrievePurchOrderMgntAppListCmd</command> 
+   	</action-name>      	
+   	
+   	<!-- Vendor Grouping by P/R Manage Cud -->  
+	<action-name name="po.po.cudPurchOrderMgnt">
+    	<command>po.po.cmd.CudPurchOrderGroupCmd</command> 
+   	</action-name>     	
+</navigation-mapper>

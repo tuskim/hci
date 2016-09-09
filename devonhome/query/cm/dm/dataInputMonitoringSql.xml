@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<statements>
+    
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - 회계 최근 3개월    -->
+    <!-- *********************************************** -->
+    <statement name="retrieveDataInputDocumentList">
+        <![CDATA[
+		select count(*) as total ,  sum( case when abs(a.doc_date - a.create_date) <=5 then 1 else 0 end) as rightInput, substr(A.doc_ym, 0,6) as month -- 당월 
+		from tb_doc_master A,
+		      TB_COMM_CD_DETAIL B
+        WHERE  A.COMPANY_CD = ${companyCd}
+        AND    A.PROG_STATUS NOT IN ( '40','50' )
+        AND    B.COMPANY_CD = ${companyCd}
+        AND    B.GROUP_CD = '2001'
+        AND    A.DEPT_CD = B.DETAIL_CD 
+    GROUP BY substr(A.doc_ym, 0,6)
+    HAVING substr(A.doc_ym, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.doc_ym, 0,6)
+    
+        ]]>
+
+
+    </statement>
+
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - PO 최근 3개월    -->
+    <!-- *********************************************** -->
+    <statement name="retrieveDataInputPoList">
+        <![CDATA[
+        
+    select count(*) as total ,  count(*) as rightInput, substr(A.Regdate, 0,6) as month -- 당월 
+    from TB_PO_MASTER A
+    WHERE  COMPANY_CD = ${companyCd}
+      AND    STATUS IN ( '01','10','02','03' )
+    GROUP BY substr(A.Regdate, 0,6)
+    HAVING substr(A.Regdate, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.Regdate, 0,6)
+    
+
+  
+        ]]>
+
+
+    </statement>
+    
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - 입고 최근 3개월    -->
+    <!-- *********************************************** -->
+    <statement name="retrieveDataInputReceiptList">
+        <![CDATA[
+        
+    select count(*) as total ,  sum( case when abs(to_date(a.POSTING_DATE) - to_date(a.regdate)) <=5 then 1 else 0 end) as rightInput , substr(A.POSTING_DATE, 0,6) as month -- 당월 
+    from TB_RECEIPT_MASTER  A
+    WHERE  COMPANY_CD = ${companyCd}
+      AND    STATUS IN ( '01','02','03','04' )
+    GROUP BY substr(A.POSTING_DATE, 0,6)
+    HAVING substr(A.POSTING_DATE, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.POSTING_DATE, 0,6)
+    		 
+
+  
+        ]]>
+
+
+    </statement>
+
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - 출고 최근 3개월    -->
+    <!-- *********************************************** -->
+    <statement name="retrieveDataInputIssueList">
+        <![CDATA[
+		        
+    select count(*) as total ,  sum( case when abs(to_date(a.POSTING_DATE) - to_date(a.regdate)) <=5 then 1 else 0 end) as rightInput , substr(A.POSTING_DATE, 0,6) as month -- 당월 
+    FROM   TB_ISSUE_LIST A,
+           TB_COMM_CD_DETAIL B
+    WHERE  A.COMPANY_CD = B.COMPANY_CD 
+    AND    A.ISSUE_LOC = B.DETAIL_CD 
+    AND    B.GROUP_CD = '2005'
+    AND    A.COMPANY_CD = ${companyCd}
+    AND    A.STATUS IN ( '01','02','03','04' )
+    GROUP BY substr(A.POSTING_DATE, 0,6)
+    HAVING substr(A.POSTING_DATE, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.POSTING_DATE, 0,6)
+
+  
+        ]]>
+
+
+    </statement>
+    
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - 출고 최근 3개월    -->
+    <!-- *********************************************** -->
+    <statement name="retrieveDataInputInvoiceList">
+        <![CDATA[
+		        
+    select count(*) as total ,  sum( case when abs(to_date(a.POST_DATE) - to_date(a.regdate)) <=5 then 1 else 0 end) as rightInput , substr(A.POST_DATE, 0,6) as month -- 당월 
+    FROM   tb_iv_master A
+    WHERE  A.COMPANY_CD = ${companyCd}
+    AND    A.STATUS IN ( '05' )
+    GROUP BY substr(A.POST_DATE, 0,6)
+    HAVING substr(A.POST_DATE, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.POST_DATE, 0,6)
+
+  
+        ]]>
+
+
+    </statement>
+
+    
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - 생산 최근 3개월    -->
+    <!-- *********************************************** -->
+    
+    <!--  생산 판매 쿼리 할 차례,,  그다음   이메일 주소 처리 하면 끝  -->
+    <statement name="retrieveDataInputProductionList">
+        <![CDATA[
+				        
+    select count(*) as total ,  sum( case when abs(to_date(a.ACT_DATE) - to_date(a.regdate)) <=5 then 1 else 0 end) as rightInput , substr(A.ACT_DATE, 0,6) as month -- 당월 
+    FROM   TB_COAL_PROD_DETAIL A
+    WHERE    A.COMPANY_CD = ${companyCd}
+    GROUP BY substr(A.ACT_DATE, 0,6)
+    HAVING substr(A.ACT_DATE, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.ACT_DATE, 0,6)
+  
+        ]]>
+
+
+    </statement>
+    
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - 생산 최근 3개월    -->
+    <!-- *********************************************** -->
+    
+    <!--  생산 판매 쿼리 할 차례,,  그다음   이메일 주소 처리 하면 끝  -->
+    <statement name="retrieveDataInputWasteList">
+        <![CDATA[
+				        
+    select count(*) as total ,  sum( case when abs(to_date(a.ACT_DATE) - to_date(a.regdate)) <=5 then 1 else 0 end) as rightInput , substr(A.ACT_DATE, 0,6) as month -- 당월 
+    FROM   tb_waste_removal A
+    WHERE    A.COMPANY_CD = ${companyCd}
+    GROUP BY substr(A.ACT_DATE, 0,6)
+    HAVING substr(A.ACT_DATE, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.ACT_DATE, 0,6)
+  
+        ]]>
+
+
+    </statement>
+    
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - 생산 최근 3개월    -->
+    <!-- *********************************************** -->
+    
+    <!--  생산 판매 쿼리 할 차례,,  그다음   이메일 주소 처리 하면 끝  -->
+    <statement name="retrieveDataInputHaulingList">
+        <![CDATA[
+				        
+    select count(*) as total ,  sum( case when abs(to_date(a.ACT_DATE) - to_date(a.regdate)) <=5 then 1 else 0 end) as rightInput , substr(A.ACT_DATE, 0,6) as month -- 당월 
+    FROM   tb_coal_hauling A
+    WHERE    A.COMPANY_CD = ${companyCd}
+    GROUP BY substr(A.ACT_DATE, 0,6)
+    HAVING substr(A.ACT_DATE, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.ACT_DATE, 0,6)
+  
+        ]]>
+
+
+    </statement>
+    
+    <!-- *********************************************** -->
+    <!-- 시스템 입력 현황 리스트 조회  - 판매 최근 3개월    -->
+    <!-- *********************************************** -->
+    <statement name="retrieveDataInputSalesList">
+        <![CDATA[
+				        
+    select count(*) as total ,  sum( case when abs(to_date(a.LOADING_DATE) - to_date(a.regdate)) <=5 then 1 else 0 end) as rightInput , substr(A.LOADING_DATE, 0,6) as month -- 당월 
+    FROM   TB_BARGE_LOADING A
+    WHERE    A.COMPANY_CD = ${companyCd}
+    GROUP BY substr(A.LOADING_DATE, 0,6)
+    HAVING substr(A.LOADING_DATE, 0,6) IN (to_char(to_date(${month}, 'yyyymm'), 'yyyymm'),to_char(add_months(to_date(${month}, 'yyyymm'), -1), 'yyyymm'), to_char(add_months(to_date(${month}, 'yyyymm'), -2), 'yyyymm') )
+    ORDER BY substr(A.LOADING_DATE, 0,6)
+  
+        ]]>
+
+
+    </statement>
+    
+    
+    <!-- *********************************************** -->
+    <!-- Email 리스트 조회     -->
+    <!-- *********************************************** -->
+    <statement name="retrieveDataInputEmailList">
+        <![CDATA[
+				        
+			SELECT 
+				'F' as chk,
+				COMPANY_CD,
+				SYSKEY,
+				NAME,
+				EMAIL,
+				USEYN
+			FROM TB_REPORT_EMAIL_LIST
+			WHERE COMPANY_CD = ${companyCd}
+  
+        ]]>
+
+    </statement>
+
+    <!-- *********************************************** -->
+    <!-- Email 리스트 생성     -->
+    <!-- *********************************************** -->
+    <statement name="insertDataInputEmailList">
+        <![CDATA[
+				        
+			INSERT INTO TB_REPORT_EMAIL_LIST( 
+				COMPANY_CD,
+				SYSKEY,
+				NAME,
+				EMAIL,
+				USEYN
+			) VALUES ( 
+				${companyCd},
+				(SELECT NVL(MAX(SYSKEY) ,0) + 1
+				 FROM TB_REPORT_EMAIL_LIST
+				),
+				${name},
+				${email},
+				${useyn}
+			)
+  
+        ]]>
+
+    </statement>
+    
+    <!-- *********************************************** -->
+    <!-- Email 리스트 변경     -->
+    <!-- *********************************************** -->
+    <statement name="updateDataInputEmailList">
+        <![CDATA[
+				        
+			UPDATE TB_REPORT_EMAIL_LIST SET 
+				COMPANY_CD = ${companyCd},
+				NAME = ${name},
+				EMAIL = ${email},
+				USEYN = ${useyn}
+			WHERE 
+				SYSKEY = ${syskey}
+
+  
+        ]]>
+
+    </statement>
+    
+    <!-- *********************************************** -->
+    <!-- Email 리스트 삭제     -->
+    <!-- *********************************************** -->
+    <statement name="deleteDataInputEmailList">
+        <![CDATA[
+				        
+			DELETE TB_REPORT_EMAIL_LIST
+			WHERE SYSKEY = ${syskey}
+
+        ]]>
+
+    </statement>                             
+
+</statements>

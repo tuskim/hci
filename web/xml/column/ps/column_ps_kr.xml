@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LGI>
+    <PTPAM>
+	    <column>
+		   	<po_create>구매요청</po_create>
+		   	<po_list>요청 목록</po_list>
+		   	<po_detail>구매요청 상세</po_detail>
+		   	<po_regidt>구매요청일</po_regidt>
+		   	<po_reginm>요청자</po_reginm>
+		   	<po_destination>납품장소</po_destination>
+		   	<po_remark>기타사항</po_remark>
+	    </column>
+    </PTPAM>
+</LGI>

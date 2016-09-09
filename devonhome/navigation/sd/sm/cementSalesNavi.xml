@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+   <!-- Cement Sales Management 첫 페이지 호출--> 	
+   <action-name name="cementSalesMgt">
+ 		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/sd/sm/cementSalesMgt.jsp</return-url>
+  	</action-name>
+ 
+   	<!-- Cement Sales  Mgnt 조회-->
+  	<action-name name="sd.sm.retrieveCementSalesMgnt">
+		<command>sd.sm.cmd.RetrieveCementSalesMgntCmd</command>
+	</action-name>
+ 
+ 	<!-- Cement sales detail Qty 조회-->
+  	<action-name name="sd.sm.retrieveCementDetailSalesMgnt">
+		<command>sd.sm.cmd.RetrieveCementDetailSalesMgntCmd</command>
+	</action-name>
+
+	<!--cud Prod CPO Sales Mgnt-->
+  	<action-name name="sd.sm.cudCementSalesMgnt"> 
+		<command>sd.sm.cmd.CudCementSalesMgntCmd</command>
+	</action-name>
+
+   	<!--Cement Sales Management vat -->  
+	<action-name name="sd.sm.retrieveSalesMgmtVatACombo">
+    	<command>sd.sm.cmd.RetrieveSalesMgmtVatAComboCmd</command> 
+   	</action-name>
+
+    <!-- Mater type for CPO Sales Management--> 				 
+   	<action-name name="cm.cd.retrieveCementMaterialCombo">
+    	<command>cm.cd.cmd.RetrieveCementMaterialComboCmd</command>
+   	</action-name>	   	
+
+  	<!-- Cement 재고현황조회 -->
+   	<action-name name="rfc.cmd.retrieveCementStockList"> 
+    	<command>rfc.cmd.RetrieveCementStockListCmd</command>
+   	</action-name>
+ 
+   <!-- Credit Memo Request 조회 첫 페이지--> 	
+   <action-name name="creditMemoRequest">
+ 		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/sd/sm/creditMemoRequest.jsp</return-url>
+  	</action-name>
+
+	<!--PopUp Original Sales Company Code 조회-->
+  	<action-name name="sd.sm.retrieveComboSalesCompanyList"> 
+		<command>cm.cd.cmd.RetrieveComboSalesCompanyListCmd</command>
+	</action-name>
+
+	<!--PopUp Original Sales List 조회-->
+  	<action-name name="cm.cd.retrievePopUpOriginalSalesList"> 
+		<command>cm.cd.cmd.RetrievePopUpOriginalSalesListCmd</command>
+	</action-name>
+
+	<!--cud Prod CPO Credit Memo Mgnt-->
+  	<action-name name="sd.sm.cudCementCreditMemoMgnt"> 
+		<command>sd.sm.cmd.CudCementCreditMemoMgntCmd</command>
+	</action-name>
+
+   	<!-- Credit Memo  Mgnt 조회-->
+  	<action-name name="sd.sm.retrieveCementCreditMemoMgnt">
+		<command>sd.sm.cmd.RetrieveCementCreditMemoMgntCmd</command>
+	</action-name>
+ 
+   	<!-- Credit Memo  Condition 조회-->
+  	<action-name name="sd.sm.retrieveCementCreditMemoCondition">
+		<command>sd.sm.cmd.RetrieveCementCreditMemoConditionCmd</command>
+	</action-name>
+
+    <!-- SAP send for CPO Sales Management--> 				 
+   	<action-name name="sd.sm.cudCementSalesSapSend">
+    	<command>sd.sm.cmd.CudCementSalesSapSendCmd</command>
+   	</action-name>	   	
+ 
+     <!-- SAP Cancel for CPO Sales Management--> 				 
+   	<action-name name="sd.sm.cudCementSalesSapCancel">
+    	<command>sd.sm.cmd.CudCementSalesSapCancelCmd</command>
+   	</action-name>	   	
+
+    <!-- SAP send for Credit Memot--> 				 
+   	<action-name name="sd.sm.cudCementCreditMemoSapSend">
+    	<command>sd.sm.cmd.CudCementCreditMemoSapSendCmd</command>
+   	</action-name>	   	
+ 
+     <!-- SAP Cancel for Credit Memo--> 				 
+   	<action-name name="sd.sm.cudCementCreditMemoSapCancel">
+    	<command>sd.sm.cmd.CudCementCreditMemoSapCancelCmd</command>
+   	</action-name>	   	
+   	
+   	<!-- CPO Sales History 조회 첫 페이지--> 	
+    <action-name name="cpoSalesHistory">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+  		<return-url>/jsp/sd/sm/cpoSalesHistory.jsp</return-url>
+  	</action-name>	   			
+   	
+   	<!--CPO Sales History 조회-->
+  	<action-name name="sd.sm.retrieveCpoSalesHistory">
+		<command>sd.sm.cmd.RetrieveCpoSalesHistoryCmd</command>
+	</action-name>	
+   	
+ </navigation-mapper>

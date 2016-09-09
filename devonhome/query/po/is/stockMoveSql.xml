@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+    <statement name="insertStockMoveMaster">
+        <![CDATA[
+			INSERT INTO lgiusf.tb_tran_master (
+				   company_cd,
+				   tran_no,
+				   issue_loc,
+				   rece_loc,
+				   issue_plant,
+				   rece_plant,
+				   move_date,
+				   posting_date,
+				   requisition_status,     -- 요청 Status 추가됨 초기값 : 01(Request)
+				   status,
+				   trans_date,
+				   trans_time,
+				   prog_status_date,
+				   prog_status_time,
+				   sap_doc_no,
+				   sap_if_status,
+				   sap_rtn_msg,
+				   attr1,
+				   attr2,
+				   attr3,
+				   attr4,
+				   attr5,
+				   attr6,
+				   attr7,
+				   attr8,
+				   attr9,
+				   attr10,
+				   regid,
+				   regdate,
+				   regtime,
+				   del_flag )
+		  VALUES ( ${companyCd},
+				   ${tranNo},
+				   ${issueLoc},
+				   ${receLoc},
+				   ${issuePlant},
+				   ${recePlant},
+				   ${moveDate},
+				   ${postingDate},
+				   ${requisitionStatus},
+				   ${status},
+				   '',
+				   '',
+			       TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       TO_CHAR(SYSDATE, 'HH24MISS'),
+				   ${sapDocNo},
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+			       ${userId},
+			       TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       TO_CHAR(SYSDATE, 'HH24MISS'),
+			       'N'
+				 )
+	    ]]>
+    </statement>
+    
+  
+   <!-- insert Stock Move Detail --> 
+   <statement name="insertStockMoveDetail">
+        <![CDATA[
+			INSERT INTO lgiusf.tb_tran_detail (
+				   company_cd,
+				   tran_no,
+				   mater_cd,
+				   unit,
+				   request_move_qty,
+				   attr1,
+				   attr2,
+				   attr3,
+				   attr4,
+				   attr5,
+				   attr6,
+				   attr7,
+				   attr8,
+				   attr9,
+				   attr10,
+				   regid,
+				   regdate,
+				   regtime )
+		   VALUES( ${companyCd},
+				   ${tranNo},
+				   ${materCd},
+				   ${unit},
+				   ${tranQty},
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+				   '',
+			       ${userId},
+			       TO_CHAR(SYSDATE, 'YYYYMMDD'),
+			       TO_CHAR(SYSDATE, 'HH24MISS')
+				)
+	    ]]>
+    </statement>
+
+    <!-- retrieve Tran No Search -->
+    <statement name="retrieveTranNo">
+        <![CDATA[
+			SELECT LPAD(TO_NUMBER(NVL(MAX(SUBSTR(tran_no,7,4)),0))+1,4,'0') tran_no
+			  FROM lgiusf.tb_tran_master
+			 WHERE company_cd = ${companyCd}
+			   AND tran_no LIKE SUBSTR(${moveDate},1,6)||'%'
+		]]>
+    </statement>
+
+    <!-- retrieve Plant Code Search -->
+    <statement name="retrievePlantCode">
+        <![CDATA[
+			SELECT detail_cd plant_code
+			  FROM lgiusf.tb_comm_cd_detail
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = '2008'
+		]]>
+    </statement>
+
+    <!-- retrieve Material exist Check -->
+    <statement name="retrieveMaterialCheck">
+        <![CDATA[
+			select decode(count(*),0,'N','Y') mater_check 
+			  from lgiusf.tb_mater_info
+			 where company_cd = ${companyCd}
+			   and mater_cd   = ${materCd}
+			   AND useyn      = 'Y'
+		]]>
+    </statement>
+
+
+
+    <!-- retrieve Material exist Check 20140703 -->
+    <statement name="retrieveMovingMaterialQty">
+        <![CDATA[
+		select m.company_cd,
+		             m.issue_loc,
+		             lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2005', m.issue_loc) issue_loc_nm,       
+		             m.rece_loc,
+		             lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2005', m.rece_loc) rece_loc_nm,       
+		             m.move_date,
+		             m.tran_no,
+		             mater_cd, 
+		             (SELECT MATER_NM_EN 
+		              FROM TB_MATER_INFO MA
+		              WHERE MA.MATER_CD = d.mater_cd
+		              AND COMPANY_CD = ${companyCd}
+		              ) AS MATER_NM,
+		             unit,
+		             request_move_qty,
+		             m.status,
+		             lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2209', m.status) status_nm
+		from tb_tran_master m,
+		      tb_tran_detail d
+		WHERE    
+		        m.tran_no = d.tran_no
+		  AND status in ('01', '02')
+		  AND m.company_cd = ${companyCd}
+		  AND m.issue_loc  = ${issueLoc}
+		  AND m.del_flag = 'N'
+		  {#1}
+		  
+		]]>
+		
+		<append where="false" condition="${materCd}.NOTEMPTY" id="#1">
+			   AND d.mater_cd   = ${materCd}
+        </append>
+        
+    </statement>
+
+
+
+    <!-- Confirm Stock Move  -->
+    <statement name="confirmStockMove">
+        <![CDATA[
+			UPDATE tb_tran_master
+			SET requisition_status = '20'
+			    , modid = ${userId}
+			    , moddate = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    , modtime = TO_CHAR(SYSDATE, 'HH24MISS')
+			WHERE tran_no = ${tranNo}
+			    and company_cd = ${companyCd}
+
+		]]>
+    </statement>
+
+    <!-- Reject Stock Move  -->
+    <statement name="rejectStockMove">
+        <![CDATA[
+			UPDATE tb_tran_master
+			SET requisition_status = '10'
+			    , modid = ${userId}
+			    , moddate = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    , modtime = TO_CHAR(SYSDATE, 'HH24MISS')
+			WHERE tran_no = ${tranNo}
+			    and company_cd = ${companyCd}
+
+		]]>
+    </statement>
+
+
+
+    <!-- Delete  Stock Move  ( DEL_FLAG만 Y로 수정함 ) -->
+    <statement name="deleteStockMove">
+        <![CDATA[
+			UPDATE tb_tran_master
+			SET del_flag = 'Y'
+			    , modid = ${userId}
+			    , moddate = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    , modtime = TO_CHAR(SYSDATE, 'HH24MISS')
+			WHERE tran_no = ${tranNo} 
+			    and company_cd = ${companyCd}
+			
+
+		]]>
+    </statement>
+
+
+
+    <!-- Save Stock Move Quantity (받을 수량과 리턴 수량 저장함 ) -->
+    <statement name="saveStockMoveQuantity">
+        <![CDATA[
+			UPDATE tb_tran_detail
+			SET TRAN_QTY = ${tranQty}
+			    , RETURN_QTY = ${returnQty}
+			    , modid = ${userId}
+			    , moddate = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    , modtime = TO_CHAR(SYSDATE, 'HH24MISS')
+			WHERE tran_no = ${tranNo}
+			    and company_cd = ${companyCd}
+				and mater_cd = ${materCd}
+
+		]]>
+    </statement>
+
+    <!-- SAP Send 후에 Update -->
+    <statement name="updateStatusStockMove">
+        <![CDATA[
+			UPDATE tb_tran_master
+			SET status = ${status}
+			    , modid = ${userId}
+			    , moddate = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    , modtime = TO_CHAR(SYSDATE, 'HH24MISS')
+				, sap_doc_no = ${sapDocNo}
+				, sap_if_status = ${sapIfStatus}
+				, sap_rtn_msg  = ${sapRtnMsg}
+			WHERE tran_no = ${tranNo}
+			    and company_cd = ${companyCd}
+
+		]]>
+    </statement>
+
+    <!-- Confirm Stock Move  -->
+    <statement name="confirmStockMove">
+        <![CDATA[
+			UPDATE tb_tran_master
+			SET requisition_status = '20'
+			    , modid = ${userId}
+			    , moddate = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    , modtime = TO_CHAR(SYSDATE, 'HH24MISS')
+			WHERE tran_no = ${tranNo}
+			    and company_cd = ${companyCd}
+
+		]]>
+    </statement>
+
+    <!-- Reject Stock Move  -->
+    <statement name="rejectStockMove">
+        <![CDATA[
+			UPDATE tb_tran_master
+			SET requisition_status = '10'
+			    , modid = ${userId}
+			    , moddate = TO_CHAR(SYSDATE, 'YYYYMMDD')
+			    , modtime = TO_CHAR(SYSDATE, 'HH24MISS')
+			WHERE tran_no = ${tranNo}
+			    and company_cd = ${companyCd}
+
+		]]>
+    </statement>
+
+    <!-- retrieve Tran No Search -->
+    <statement name="retrieveTranNo">
+        <![CDATA[
+			SELECT LPAD(TO_NUMBER(NVL(MAX(SUBSTR(tran_no,7,4)),0))+1,4,'0') tran_no
+			  FROM lgiusf.tb_tran_master
+			 WHERE company_cd = ${companyCd}
+			   AND tran_no LIKE SUBSTR(${moveDate},1,6)||'%'
+		]]>
+    </statement>
+
+    <!-- retrieve Plant Code Search -->
+    <statement name="retrievePlantCode">
+        <![CDATA[
+			SELECT detail_cd plant_code
+			  FROM lgiusf.tb_comm_cd_detail
+			 WHERE company_cd = ${companyCd}
+			   AND group_cd   = '2008'
+		]]>
+    </statement>
+
+    <!-- retrieve Material exist Check -->
+    <statement name="retrieveMaterialCheck">
+        <![CDATA[
+			select decode(count(*),0,'N','Y') mater_check 
+			  from lgiusf.tb_mater_info
+			 where company_cd = ${companyCd}
+			   and mater_cd   = ${materCd}
+			   AND useyn      = 'Y'
+		]]>
+    </statement>
+
+    <!-- retrieve Material exist Check -->
+    <statement name="retrieveMovingMaterialQty">
+        <![CDATA[
+		select m.company_cd,
+		             m.issue_loc,
+		             lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2005', m.issue_loc) issue_loc_nm,       
+		             m.rece_loc,
+		             lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2005', m.rece_loc) rece_loc_nm,       
+		             m.move_date,
+		             m.tran_no,
+		             mater_cd, 
+		             (SELECT MATER_NM_EN 
+		              FROM TB_MATER_INFO MA
+		              WHERE MA.MATER_CD = d.mater_cd
+		              and MA.company_cd = ${companyCd}) AS MATER_NM,
+		             unit,
+		             request_move_qty,
+		             m.status,
+		             lgiusf.F_GETCOMMNAME('COMM', ${companyCd}, ${lang},'2209', m.status) status_nm
+		from tb_tran_master m,
+		      tb_tran_detail d
+		WHERE    
+		        m.tran_no = d.tran_no
+		  AND status in ('01', '02')
+		  AND m.company_cd = ${companyCd}
+		  AND m.issue_loc  = ${issueLoc}
+		  AND m.del_flag = 'N'
+		  {#1}
+		  
+		]]>
+		
+		<append where="false" condition="${materCd}.NOTEMPTY" id="#1">
+			   AND d.mater_cd   = ${materCd}
+        </append>
+        
+    </statement>
+
+	
+    <!-- 조회 : stock move history 조회  PAM version 수정 필요-->
+    <statement name="retrieveStockMoveHistoryList">
+        <![CDATA[
+			SELECT  MA.COMPANY_CD,
+					MA.TRAN_NO, 
+					MA.REGDATE,
+					MA.MOVE_DATE doc_date,
+					MA.POSTING_DATE,
+					lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2209',MA.STATUS) STATUS,
+					(SELECT MATER_NM_EN from TB_MATER_INFO MT
+					  WHERE MT.COMPANY_CD = MA.COMPANY_CD 
+					    AND MT.MATER_TYPE NOT IN ('9100', '9200', '7900') --수정필요
+					    AND MT.MATER_CD = DE.MATER_CD) MATER_NM,
+					(SELECT ATTR1 from TB_MATER_INFO MT
+					  WHERE MT.COMPANY_CD = MA.COMPANY_CD 
+					    AND MT.MATER_TYPE NOT IN ('9100', '9200', '7900')--수정필요
+					    AND MT.MATER_CD = DE.MATER_CD) MODEL_NM,
+					DE.tran_qty,
+					DE.request_move_qty,
+					lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2005',MA.ISSUE_LOC) ISSUE_LOC,
+					lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2005',MA.RECE_LOC) RECE_LOC,
+					to_DATE(MA.REGDATE,'RRRRMMDD')- to_DATE(MA.MOVE_DATE,'RRRRMMDD') credate_doc_term,
+       				CASE WHEN to_DATE(MA.REGDATE,'RRRRMMDD')-to_DATE(MA.MOVE_DATE,'RRRRMMDD')>5 THEN 'TRUE' ELSE 'FALSE' END as term,
+       				CASE WHEN to_DATE(MA.REGDATE,'RRRRMMDD')-to_DATE(MA.MOVE_DATE,'RRRRMMDD')>5 THEN 'Input delayed.' END as message
+			   FROM TB_TRAN_MASTER MA,
+					TB_TRAN_DETAIL DE
+			  WHERE MA.COMPANY_CD = DE.COMPANY_CD
+			    AND MA.TRAN_NO = DE.TRAN_NO
+			    AND MA.STATUS != '99'
+ 			    AND MA.company_Cd= ${companyCd}
+			     {#1}
+			     {#2}
+				 {#3}
+				 {#4}
+				 {#5}
+		  ORDER BY tran_no, regdate,move_date, posting_date, status, mater_nm
+        ]]>  
+        <append condition="${issueLoc}.NOTEMPTY" id="#1">       
+			   AND ma.ISSUE_LOC like '%'||${issueLoc}||'%'
+	    </append>
+	    <append condition="${receLoc}.NOTEMPTY" id="#2">       
+			   AND ma.RECE_LOC like '%'||${receLoc}||'%'
+	    </append>
+        <append condition="${status}.NOTEMPTY" id="#3">       
+			   AND ma.status like '%'||${status}||'%'
+	    </append>
+	    <append condition="${docDateTo}.NOTEMPTY" id="#4">       
+			 <![CDATA[ AND ma.move_date >= replace(${docDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${docDateFrom}.NOTEMPTY" id="#5">       
+			 <![CDATA[ AND ma.move_date <= replace(${docDateFrom},'/','')  ]]>
+	    </append> 	
+    </statement> 
+
+
+    <!-- 조회 : stock Issue history 조회-->
+    <statement name="retrieveStockIssueHistoryList">
+        <![CDATA[
+			SELECT  MA.COMPANY_CD,
+					MA.ISSUE_NO ,
+					MA.REGDATE,
+					MA.ISSUE_DATE doc_date,
+					MA.POSTING_DATE,
+					lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2208',MA.STATUS) STATUS,
+					(SELECT MATER_NM_EN from TB_MATER_INFO MT
+					  WHERE MT.COMPANY_CD = MA.COMPANY_CD 
+					    AND MT.MATER_TYPE NOT IN ('9100', '9200', '7900')
+					    AND MT.MATER_CD = MA.MATER_CD) MATER_NM,
+					(SELECT ATTR1 from TB_MATER_INFO MT
+					  WHERE MT.COMPANY_CD = MA.COMPANY_CD 
+					    AND MT.MATER_TYPE NOT IN ('9100', '9200', '7900')
+					    AND MT.MATER_CD = MA.MATER_CD) MODEL_NM,
+					MA.ISSUE_QTY,
+					lgiusf.F_GETCOMMNAME('COMM',MA.COMPANY_CD ,'en','2005',MA.issue_loc) issue_loc,
+					MA.ISSUE_DESC,
+					to_DATE(MA.REGDATE,'RRRRMMDD')- to_DATE(MA.ISSUE_DATE,'RRRRMMDD') credate_doc_term,
+       				CASE WHEN to_DATE(MA.REGDATE,'RRRRMMDD')-to_DATE(MA.ISSUE_DATE,'RRRRMMDD')>5 THEN 'TRUE' ELSE 'FALSE' END as term,
+       				CASE WHEN to_DATE(MA.REGDATE,'RRRRMMDD')-to_DATE(MA.ISSUE_DATE,'RRRRMMDD')>5 THEN 'Input delayed.' END as message
+			   FROM TB_ISSUE_LIST MA
+			  WHERE MA.company_Cd= ${companyCd}
+			    AND MA.STATUS != '99'
+			     {#1}
+			     {#2}
+			     {#3}
+			     {#4}
+		  ORDER BY ISSUE_NO, REGDATE, ISSUE_DATE, POSTING_DATE, status, mater_nm
+
+        ]]>  
+        <append condition="${issueLoc}.NOTEMPTY" id="#1">       
+			   AND ma.issue_loc like '%'||${issueLoc}||'%'
+	    </append>
+         <append condition="${status}.NOTEMPTY" id="#4">       
+			   AND ma.status like '%'||${status}||'%'
+	    </append>
+	    <append condition="${docDateTo}.NOTEMPTY" id="#2">       
+			 <![CDATA[ AND ma.ISSUE_DATE >= replace(${docDateTo},'/','')  ]]>
+	    </append>  
+	     <append condition="${docDateFrom}.NOTEMPTY" id="#3">       
+			 <![CDATA[ AND ma.ISSUE_DATE <= replace(${docDateFrom},'/','')  ]]>
+	    </append> 	
+    </statement> 
+
+
+
+
+
+</statements>

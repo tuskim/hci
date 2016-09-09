@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+    <!-- stock movement -->
+   	<action-name name="stockMoveReq"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/stockMoveReq.jsp</return-url>
+   	</action-name>
+  	
+   	<!-- 이고등록 -->
+  	<action-name name="po.is.cudStockMoveReq">
+		<command>po.is.cmd.CudStockMoveReqCmd</command>
+	</action-name>
+
+   	<!-- Retrieve Moving Qty -->
+  	<action-name name="po.is.retrieveMovingQty"> 
+    	<command>po.is.cmd.RetrieveMovingQtyCmd</command>
+   	</action-name>
+   	
+
+</navigation-mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+    <!-- stock issue -->
+   	<action-name name="stockIssue"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/is/stockIssue.jsp</return-url>
+   	</action-name>
+  	
+  	<!-- 재고현황조회 -->
+   	<action-name name="rfc.cmd.retrieveStockIssueList"> 
+    	<command>rfc.cmd.RetrieveStockIssueListCmd</command>
+   	</action-name>
+   	
+   	<!-- 출고등록 -->
+  	<action-name name="po.is.cudStockIssueList">
+		<command>po.is.cmd.CudStockIssueListCmd</command>
+	</action-name>
+
+</navigation-mapper>

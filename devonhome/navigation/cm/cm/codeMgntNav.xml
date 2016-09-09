@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- code Mster-->
+
+   	<action-name name="codeMgnt"> 
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/cm/cm/codeMgnt.jsp</return-url>
+   	</action-name> 
+   
+   	<action-name name="cm.cm.retrieveCodeMgntDtList">
+    	<command>cm.cm.cmd.RetrieveCodeMgntDtListCmd</command>
+   	</action-name>          
+
+   	<action-name name="cm.cm.retrieveCodeMgntList">
+    	<command>cm.cm.cmd.RetrieveCodeMgntListCmd</command>
+   	</action-name>
+   
+   	<action-name name="cm.cm.retrieveCodeMgntDupCnt">
+    	<command>cm.cm.cmd.RetrieveCodeMgntDupCntCmd</command>
+   	</action-name>   
+   
+   	<action-name name="cm.cm.cudCodeMgnt">
+		<command>cm.cm.cmd.CudCodeMgntCmd</command>
+   	</action-name>
+
+    <!-- Common Code Combo Search -->  
+    <action-name name="cm.cm.retrieveCommCodeCombo">
+    	<command>cm.cm.cmd.RetrieveCommCodeComboCmd</command>
+   </action-name>
+
+<!-- comm -->
+    <!-- Common Code Combo Search -->  
+   	<action-name name="cm.cm.retrieveCommComboMaterList">
+    	<command>cm.cm.cmd.RetrieveCommComboMaterListCmd</command>
+   	</action-name>
+   	
+    <!-- Common Code Combo Search -->  
+   	<action-name name="cm.cm.retrieveCommComboVendorList">
+    	<command>cm.cm.cmd.RetrieveCommComboVendorListCmd</command>
+   	</action-name>	
+   		
+
+
+<!-- Account Manage-->
+	<action-name name="accountMgnt"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/cm/cm/accountMgnt.jsp</return-url>
+   	</action-name>
+  		
+  	<action-name name="cm.cm.retrieveAccountMgnt">
+    	<command>cm.cm.cmd.RetrieveAccountMgntCmd</command>
+   	</action-name>	
+   		
+  	<action-name name="cm.cm.cudAccountMgnt">
+    	<command>cm.cm.cmd.CudAccountMgntCmd</command>
+   	</action-name>	
+
+   	
+   	
+<!-- Account List-->  	
+   	<action-name name="accountList"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/cm/cm/accountList.jsp</return-url>
+   	</action-name>
+   	
+   	
+   
+<!--Block Hr Info Manage-->  	
+  	<action-name name="blockHrInfoMgnt"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/cm/cm/blockHrInfoMgnt.jsp</return-url>
+   	</action-name> 	
+   	
+   	<action-name name="cm.cm.retrieveBlockHrInfoMgnt">
+    	<command>cm.cm.cmd.RetrieveBlockHrInfoMgntCmd</command>
+   	</action-name>		
+   	
+   	<action-name name="cm.cm.cudBlockHrInfoMgnt">
+    	<command>cm.cm.cmd.CudBlockHrInfoMgntCmd</command>
+   	</action-name>	
+   	
+<!--Material Master List--> 
+	<action-name name="materialMasterList"> 
+    	<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/cm/cm/materialMasterList.jsp</return-url>
+   	</action-name> 	
+	
+   	<action-name name="cm.cm.retrieveMaterialMasterList">
+    	<command>cm.cm.cmd.RetrieveMaterialMasterListCmd</command>
+   	</action-name>		   	
+   	
+   	  	<action-name name="cm.cm.cudMaterialMasterList">
+    	<command>cm.cm.cmd.CudMaterialMasterListCmd</command>
+   	</action-name>		   	
+
+<!--  Cost Center List -->
+   	<action-name name="cm.cm.retrieveCommComboCostCenterList">
+    	<command>cm.cm.cmd.RetrieveCommComboCostCenterListCmd</command>
+   	</action-name>		   	
+
+<!--  Cost Test Center List -->
+   	<action-name name="cm.cm.retrieveTestCommComboCostCenterList">
+    	<command>cm.cm.cmd.RetrieveTestCommComboCostCenterListCmd</command>
+   	</action-name>		   	
+   	
+<!--  Check Account Code List -->
+   	<action-name name="cm.cm.retrieveCheckAccountList">
+    	<command>cm.cm.cmd.RetrieveCheckAccountListCmd</command>
+   	</action-name>	
+   	
+   	<!--  Check Account Code List -->
+   	<action-name name="cm.cm.retrieveCheckCostPriceAccountCodeList">
+    	<command>cm.cm.cmd.RetrieveCheckCostPriceAccountCodeCmd</command>
+   	</action-name>	
+   	
+   	<!-- RetrieveSapVatAcctCdCmd -->
+   	<action-name name="cm.cm.retrieveSapVatAcctCdList">
+    	<command>cm.cm.cmd.RetrieveSapVatAcctCdCmd</command>
+   	</action-name>	
+   	
+   	    <!-- Common Code Combo Search -->  
+    <action-name name="cm.cm.retrieveCostPriceCodeCombo">
+    	<command>cm.cm.cmd.RetrieveCostPriceCodeComboCmd</command>
+   </action-name>
+   	
+   	
+   	    <!-- Common Default Dept Cd 20140702 -->  
+    <action-name name="cm.cm.retrieveCommDefaultDeptCd">
+    	<command>cm.cm.cmd.RetrieveCommDefaultDeptCdCmd</command>
+   </action-name>
+</navigation-mapper>

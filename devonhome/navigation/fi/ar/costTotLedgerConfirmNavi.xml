@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!-- Cost Total Ledger Confirm -->
+
+   	<!-- Cost Total Ledger Confirm -->  
+	<action-name name="costTotLedgerConfirm">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/fi/ar/costTotLedgerConfirm.jsp</return-url>
+   	</action-name>
+   
+   	<!-- Cost Total Ledger Confirm Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerMstConfirm">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerMstConfirmCmd</command>
+	</action-name>
+
+   	<!-- Cost Total Ledger Confirm Delete -->
+    <action-name name="fi.ar.cudDelCostTotLedgerConfirm">
+    	<command>fi.ar.cmd.DelCostTotLedgerConfirmCmd</command>
+	</action-name>
+
+   	<!-- Cost Total Ledger Confirm Cancel -->
+    <action-name name="fi.ar.cudApprCostTotLedgerCancelConfirm">
+    	<command>fi.ar.cmd.CudApprCostTotLedgerCancelConfirmCmd</command>
+	</action-name>   
+   
+   	<!-- Cost Total Ledger Confirm Approval -->
+    <action-name name="fi.ar.cudApprCostTotLedgerConfirm">
+    	<command>fi.ar.cmd.CudApprCostTotLedgerConfirmCmd</command>
+	</action-name>
+	
+   	<!-- Cost Total Ledger Confirm SAP Approval -->
+    <action-name name="fi.ar.cudApprCostTotLedgerSapConfirm">
+    	<command>fi.ar.cmd.CudApprCostTotLedgerSapConfirmCmd</command>
+	</action-name>
+
+   	<!-- Cost Total Ledger Confirm SAP Cancel Approval -->
+    <action-name name="fi.ar.cudApprCostTotLedgerSapCancelConfirm">
+    	<command>fi.ar.cmd.CudApprCostTotLedgerSapCancelConfirmCmd</command>
+	</action-name>
+
+   	<!-- Cost Total Ledger Detail Confirm Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerDtlConfirm">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerDtlConfirmCmd</command>
+	</action-name>	
+
+   	<!-- Cost Total Ledger All Detail Confirm Search -->
+    <action-name name="fi.ar.retrieveCostTotLedgerAllDtlConfirm">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerAllDtlConfirmCmd</command>
+	</action-name>	
+	
+    <!-- Cost Total Ledger Detail Confirm Save -->  
+    <action-name name="fi.ar.cudCostTotLedgerDtlConfirm">
+    	<command>fi.ar.cmd.CudCostTotLedgerDtlConfirmCmd</command>
+   	</action-name>
+   
+</navigation-mapper>
