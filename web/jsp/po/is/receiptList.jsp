@@ -223,7 +223,7 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 			}
 			//ds_main.NameValue(ds_main.RowPosition, "chk") = "T";
 		}else{
-			//ds_main.UndoAll();
+			ds_main.UndoAll();
 			ds_main.NameValue(ds_main.RowPosition, "chk") = "T";
 		
 		}
