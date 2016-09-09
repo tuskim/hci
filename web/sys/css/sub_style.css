@@ -3,9 +3,9 @@
 /* 메인화면 */
 #all_bg{ background-color:#405989;}
 #left_bg{ background:url(../images/button/left_bg.gif) repeat;}
-#cent_bg{ border-right:solid 7px #314369; width:759px;background:url(../images/button/cent_bg.gif) repeat;}
+#cent_bg{ width:1051px; background:url(../images/button/cent_bg_1350.gif) repeat;}
 
-div#topbox{ width:980px;height:60px; margin:7px 0 0 7px; border-top:solid 7px #314369; border-left:solid 7px #314369;border-right:solid 7px #314369;  background-color:#fff;}
+div#topbox{ width:1030px;height:60px; margin:7px 0 0 7px; border-top:solid 7px #314369; border-left:solid 7px #314369;border-right:solid 7px #314369;  background-color:#fff;}
 	div#topbox #logo{ position:absolute; top:22px; left:30px; width:90px;}
 	
 	div#topbox #glo{ position:absolute; top:12px; left:790px; width:200px;}
@@ -38,7 +38,7 @@ div#topmenu{ position:absolute;	top:27px;left:210px;width:770px;height:35px;
 		
 
 /* 대메뉴5 */
-div#topmenu_5{ position:absolute;	top:27px;left:210px;width:770px;height:35px; 
+div#topmenu_5{ position:absolute;	top:27px;left:210px;width:815px;height:35px; 
 	box-shadow:2px 2px 2px silver;
 	-moz-box-shadow:2px 2px 2px silver;
 	border-radius:12px 0;
@@ -55,8 +55,8 @@ div#topmenu_5{ position:absolute;	top:27px;left:210px;width:770px;height:35px;
 	div#topmenu_5 ul {padding-left:20px;}
 	div#topmenu_5 ul li {float:left; font-size:12px; font-weight:bold; text-align:center; letter-spacing:-0.5px; background:url(../images/button/menu_divide.gif) no-repeat right 0;}
 	div#topmenu_5 ul li.b_none { background:none; }
-	div#topmenu_5 ul li a{color:#fff; display:block; padding-top:8px; width:147px; height:25px; margin:2px 0 ; }
-	div#topmenu_5 ul li a:hover{color:#fff; display:block; width:147px;height:20px;padding:8px 0 3px 0;text-decoration:none;background:#00c0ff; 
+	div#topmenu_5 ul li a{color:#fff; display:block; padding-top:8px; width:155px; height:25px; margin:2px 0 ; }
+	div#topmenu_5 ul li a:hover{color:#fff; display:block; width:155px;height:20px;padding:8px 0 3px 0;text-decoration:none;background:#00c0ff; 
 		border-radius:6px;-moz-border-radius:6px;-webkit-border-radius:6px;}
 
 	
@@ -130,7 +130,7 @@ div#topmenu_8{ position:absolute;	top:27px;left:210px;width:770px;height:35px;
 
 
 /* 메인내용 */	
-div#mainbox{position:relative; width:980px; height:480px; margin:0 7px 0 7px; border-bottom:solid 7px #314369; border-left:solid 7px #314369;border-right:solid 7px #314369;}
+div#mainbox{position:relative; width:1030px; height:480px; margin:0 7px 0 7px; border-bottom:solid 7px #314369; border-left:solid 7px #314369;border-right:solid 7px #314369;}
 
 
 div#log_box{border:solid 2px #bfccdd; background-color:#eceff5; margin-top:60px; margin-left:60px; padding:10px; width:230px; height:70px; float:left;}
@@ -152,7 +152,7 @@ div#notice {width:440px; position:relative; overflow:hidden; top:50px;left:100px
 div#subleft_box{position:relative; width:206px; height:100%; overflow:hidden; margin:0 0 0 7px; border-left:solid 7px #314369;background-color:#fff; margin-top:15px;}
 
 #subleft_box .s_loginbox{width:180px; height:52px; color:#fff; padding:0 ; margin:0 0 8px 10px;text-align:center; background-color:#e1e1e1; border:solid 1px #cecece;}
-	#subleft_box .s_loginbox p{color:#555; padding:0px 0;}
+	#subleft_box .s_loginbox p{color:#555; padding:2px 0;}
 	#subleft_box .s_loginbox p.logbtn{ padding:0px 0;}
 
 #leffzone {position:relative; top:0; left:10px; width:175px;border:1px solid #7b7b7b;}
@@ -170,7 +170,7 @@ div#subleft_box{position:relative; width:206px; height:100%; overflow:hidden; ma
 
 
 /* 본문 메뉴 */
-div#conts_box{position:relative; width:759px;margin:0 0 0 0;padding:10px 15px 10px 0; background-color:#fff; border-right:solid 7px #314369;}
+div#conts_box{position:relative; width:809px;margin:0 0 0 0;padding:10px 15px 10px 0; background-color:#fff; border-right:solid 7px #314369; }
 	div#conts_box h2{ font-size:13px; height:30px; margin-bottom:10px; border-bottom:1px solid #c1cad8; color:#c5003d; background:url(../images/button/bu_h1_subtitle.gif) no-repeat 0 9px;}
 	div#conts_box h2 span{ display:block; padding:9px 0px 5px 24px; border-bottom:3px solid #f0f3f6;} 
 /*popop*/
