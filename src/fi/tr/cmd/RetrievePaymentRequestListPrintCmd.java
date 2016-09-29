@@ -102,7 +102,9 @@ public class RetrievePaymentRequestListPrintCmd implements LGauceCommandIF  {
 		ds_report.addDataColumn( new GauceDataColumn( "exchCurrCd"      , GauceDataColumn.TB_STRING   , 50   ) );                
 		ds_report.addDataColumn( new GauceDataColumn( "totalAmount"     , GauceDataColumn.TB_DECIMAL  , 13, 2) );
 		ds_report.addDataColumn( new GauceDataColumn( "exchTotalAmount" , GauceDataColumn.TB_DECIMAL  , 13, 2) );
+		ds_report.addDataColumn( new GauceDataColumn( "exchRate"        , GauceDataColumn.TB_DECIMAL  , 13, 4) );
 		ds_report.addDataColumn( new GauceDataColumn( "paymentType"     , GauceDataColumn.TB_STRING   , 50   ) );
+		ds_report.addDataColumn( new GauceDataColumn( "swiftCd"         , GauceDataColumn.TB_STRING   , 50   ) );
 		ds_report.addDataColumn( new GauceDataColumn( "bankCode"        , GauceDataColumn.TB_STRING   , 50   ) );
 		ds_report.addDataColumn( new GauceDataColumn( "bankAcct"        , GauceDataColumn.TB_STRING   , 50   ) );
 		ds_report.addDataColumn( new GauceDataColumn( "houseBank"       , GauceDataColumn.TB_STRING   , 200  ) );

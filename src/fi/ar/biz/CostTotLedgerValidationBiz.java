@@ -761,4 +761,17 @@ public class CostTotLedgerValidationBiz {
 		return result;
     }    
     
+    
+	public LMultiData retrieveCostTotLedgerValidationVatVCombo(LData inputData) throws LSysException {
+    	LLog.debug.write("retrieveCostTotLedgerValidationVatVCombo -----------> Start ");
+    	
+    	LCommonDao dao = new LCommonDao();
+		try{			
+			return dao.executeQuery("fi/ar/costTotLedgerValidationSql/retrieveCostTotLedgerValidationVatVCombo", inputData);
+		} catch (Exception se) {
+			LLog.err.println(  this.getClass().getName() + "." + "retrieveCostTotLedgerValidationVatVCombo------()" + "=>" + se.getMessage());
+			throw new LSysException("fi.ar.retrieveCostTotLedgerValidationVatVCombo", se);
+		}
+	}    
+    
 }

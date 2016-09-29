@@ -119,7 +119,18 @@ public class MaterialApprovalBiz {
 						header.setString("returnType", resultMsg.getString("returnType"));
 						header.setString("status", "02"); // 01:request, 02:approval, 03:canceled
 						header.setString("sapMsg", resultMsg.getString("returnText"));
-						header.setString("materCd", resultMsg.getString("returnMaterCd"));
+						if("10".equals(header.getString("requestType"))) {
+							// 10: Create
+							header.setString("materCd", resultMsg.getString("returnMaterCd"));
+						}
+						if("30".equals(header.getString("requestType"))) {
+							// 30: Delete --> Approval
+							header.setString("useyn", "N"); 
+						} else {
+							// 10: Create, 20: Change --> Approval
+							header.setString("useyn", "Y"); 
+						}
+
 						
 						dao.add("/cm/cm/materialApprovalSql/updateMaterialApprovalMasterSapResult", header);
 						dao.add("/cm/cm/materialApprovalSql/mergeMaterialInfo", header);
@@ -229,7 +240,13 @@ public class MaterialApprovalBiz {
 						// 00: 성공시
 						header.setString("returnType", resultMsg.getString("returnType"));
 						header.setString("status", "03"); // 01:request, 02:approval, 03:canceled
-						header.setString("useyn", "N"); 
+						if("30".equals(header.getString("requestType"))) {
+							// 30: Delete --> Cancel
+							header.setString("useyn", "Y"); 
+						} else {
+							// 10: Create --> Cancel
+							header.setString("useyn", "N"); 
+						}
 						header.setString("sapMsg", resultMsg.getString("returnText"));
 						
 						dao.add("/cm/cm/materialApprovalSql/updateMaterialApprovalMasterSapResult", header);

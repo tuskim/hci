@@ -51,7 +51,7 @@ function f_retrieve(){
 	param += "&postingDateFrom=" + removeDash(document.all.srtDate.value, "/");
 	param += "&postingDateTo=" + removeDash(document.all.endDate.value, "/");
 	param += "&issue_loc=" + document.all.issue_loc.BindColVal;
-	param += "&vendor=" + document.all.lc_vendor.BindColVal;
+	param += "&vendor=" + document.all.sVendCd.value;//document.all.lc_vendor.BindColVal;
 	param += "&status=" + document.all.st_mater.BindColVal;
 	param += "&schPoNo=" + document.all.schPoNo.value;
 	
@@ -65,7 +65,7 @@ function f_setData(){
 	ds_statusCode.Reset();
 	
 	//저장소
-	ds_location.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005";
+	ds_location.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&attr2Loc=MS";
 	ds_location.Reset();
 	
 	//vendor
@@ -81,14 +81,32 @@ function f_setData(){
 // 전송 구분:01=>Sap전송,03=>Sap Cancel
 function f_sapCancel(){
 	
-	if(ds_main.NameValue(ds_main.RowPosition,"status")=="03" ){    // test 위함
+	if(ds_main.NameValue(ds_main.RowPosition,"status") =="03" ){    // test 위함
+		for(var i=1; i<=ds_main.CountRow; i++){
+			
+			if(ds_main.NameValue(ds_main.RowPosition,"cancelPostingDate") == ""){
+				alert("Input the Cancel Posting Date!");
+				return;
+			}
+			
+			
+			if(ds_main.NameValue(ds_main.RowPosition,"postingDate") > ds_main.NameValue(ds_main.RowPosition,"cancelPostingDate")  ){
+				alert("Cancel Posting Date is required to be greater than Posting Date.")
+				return;
+			}
+			
+		}
+	
 		if(!confirm('<%=source.getMessage("dev.msg.po.sapcancelcontinue" ) %>')){
 			return;
-		}	
+		}
+	
+		
+		
 		for(var i=1; i<=ds_detail.CountRow; i++){
 			ds_detail.NameValue(i, "chk") = "T";          // 취소시 detail의 데이타 내용을 PO_Detail 에서 감소 시켜야줘야 하기 때문에 데이타 내용을 넣기 위해 chk를 T로 변경
 		}
-		
+
 		tr_cudMaster.KeyValue = "Servlet(I:IN_DS1=ds_main, I:IN_DS2=ds_detail)";
 		tr_cudMaster.Action   = "/po.is.cmd.cudReceiptSAPCancelCmd.gau";
 		tr_cudMaster.post();
@@ -110,7 +128,7 @@ function f_excelDown(){
 	 		condition += "issueLoc="  + document.all.issue_loc.BindColVal;
 			condition += "&postingDateFrom=" + removeDash(document.all.srtDate.value, "/");
 			condition += "&postingDateTo=" + removeDash(document.all.endDate.value, "/");
-			condition += "&vendor=" + document.all.lc_vendor.BindColVal;
+			condition += "&vendor=" + document.all.sVendCd.value;//document.all.lc_vendor.BindColVal;
 			condition += "&status="  + document.all.st_mater.BindColVal;
 			condition += "&schPoNo=" + document.all.schPoNo.value;
 
@@ -125,6 +143,13 @@ function f_excel() {
 	gf_excel(ds_excelDown,gr_excelDown,"<%=columnData.getString("page_title") %>","c:\\");
 }
 
+//-------------------------------------------------------------------------
+//Vendor 조회 팝업
+//-------------------------------------------------------------------------		
+function f_openVendorPop() {	
+	
+	openVendorSapListWin('P');		
+}
 </script>
 <!-----------------------------------------------------------------------------
 T R A N S A C T I O N   C O M P O N E N T S   D E C L A R A T I O N
@@ -199,6 +224,13 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 
 <script language=JavaScript for="ds_main" event=OnRowPosChanged(row)>
 		
+		for(var i=1; i<=ds_main.CountRow; i++){
+			if(i != row)
+				ds_main.NameValue(i, "chk") = "F";
+		}
+		
+		ds_main.UndoAll();
+		
 		ds_detail.ClearAll();
 		if(row>0){
 			var param = "";
@@ -215,7 +247,6 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 </script>
 
 <script language="javascript" for="gr_main" event="onClick( Row, Colid )">
-
 		if(Colid == "chk"){
 			for(var i=1; i<=ds_main.CountRow; i++){
 				if(i != Row)
@@ -223,23 +254,22 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 			}
 			//ds_main.NameValue(ds_main.RowPosition, "chk") = "T";
 		}else{
-			ds_main.UndoAll();
+			//ds_main.UndoAll();
 			ds_main.NameValue(ds_main.RowPosition, "chk") = "T";
 		
 		}
-		
 </script>
 
 <script language="javascript"  for=gr_main event=OnPopup(Row,Colid,data)>
     
 	// 기간비용시작일자 날짜 팝업 셋팅
-	if ( Colid == "postingDate") {
+	if (Colid == "cancelPostingDate" && ds_main.NameValue(Row,"status") == "03") {
 		
 	 	h_date.value ="";
 		gf_calendarExClean(h_date);
 		
-		ds_main.NameValue(ds_main.RowPosition,"postingDate") = funcReplaceStrAll(h_date.value,"/","");		 
-	}
+		ds_main.NameValue(ds_main.RowPosition,"cancelPostingDate") = funcReplaceStrAll(h_date.value,"/","");		 
+	}	
 	
 </script>
 
@@ -306,6 +336,7 @@ f_excel();
 								</tr>
 								<tr>
 									<th><%=columnData.getString("vendor") %> </th>		
+									<%--
 									<td><comment id="__NSID__"><object id="lc_vendor"  classid="<%=LGauceId.LUXECOMBO%>" width="180">
 										<param name="ComboDataID"       value="ds_vendor"/>
 										<param name="ListCount"     	value="10"/>
@@ -315,6 +346,12 @@ f_excel();
 										<param name=index           	value=0/>
 										</object></comment><script>__WS__(__NSID__); </script>
 									</td>		
+									 --%>
+							    <td>
+							      <input type="hidden" id="sVendCd" name="sVendCd" />
+								    <input type="text" id="sVendNm" name="sVendNm" style="width:140px;" readOnly/>&nbsp;
+					  			  <img src="<%= images %>button/search_icon_2.gif"  onClick="javascript:f_openVendorPop();" style="cursor:hand"/>
+					  		  </td>
 									<th><%= columnData.getString("status") %></th>
 									<td><comment id="__NSID__"><object id="st_mater"  classid="<%=LGauceId.LUXECOMBO%>" width="100">
 									    <param name="ComboDataID"       value="ds_statusCode"/>
@@ -367,7 +404,8 @@ f_excel();
 								<FC>id="receiptSeq"   name="<%=columnData.getString("seq") %>"            width="40"  align="center" edit="none"     </FC>                  
 								<C>id="purDeptCd"     name="Office"       show="false"   width="80"  align="left" edit="none"        Data="ds_purDept:code:name:code" editstyle="lookup" ListWidth=200 </C>
 								<C>id="deliLoct"        name="<%=columnData.getString("locat") %>"           width="90"  align="left" edit="none"   EditStyle="LookUp" 	Data="ds_location:code:name"	</C>
-								<C>id="postingDate"   name="<%=columnData.getString("post_date") %>"    width="90"  align="center" edit="RealNumeric"       mask="XXXX/XX/XX" editstyle="Popup"  </C>
+								<C>id="postingDate"   name="<%=columnData.getString("post_date") %>"    width="90"  align="center" edit="RealNumeric"       mask="XXXX/XX/XX"  </C>
+								<C>id="cancelPostingDate"   name="Cancel Posting;Date"    width="90"  align="center" edit="RealNumeric"       mask="XXXX/XX/XX"  editstyle="PopupFix"</C>
 								<C>id="vendCd"  		 name="<%=columnData.getString("vendor") %>"    	width="170"  align="left" edit="none"       EditStyle="LookUp" 	Data="ds_vendor:code:name"                            </C>							
 								<C>id="sapReceiptNo"  name="SAP Receipt No."        width="130"  align="center" edit=none        </C>							
 								<C>id="sapCancelReceiptNo"  name="SAP Cancel No."        width="130"  align="center" edit=none        </C>							
@@ -436,8 +474,8 @@ f_excel();
 	        <param name=SubsumExpr			value="1:tranNo">
 			<param Name="Format"
 				value='
-			            <FC>id="poNo"          name="<%=columnData.getString("po_no") %>"              width="100"  align="center" edit="none"                                  </FC>
-								<C>id="sapPoNo"      name="<%=columnData.getString("sap_po_no") %>"        width="100"  align="center" edit=none        </C>							
+			          <FC>id="poNo"          name="<%=columnData.getString("po_no") %>"              width="100"  align="center" edit="none"                                  </FC>
+								<C>id="sapPoNo"      name="SAP P/O No."        width="100"  align="center" edit=none        </C>							
 								<FC>id="receiptSeq"   name="<%=columnData.getString("seq") %>"            width="80"  align="center" edit="none"     </FC>                  
 								<C>id="purDeptCd"     name="<%=columnData.getString("pur_dept_cd") %>"          width="130"  align="left" edit="none"        Data="ds_purDept:code:name:code" editstyle="lookup" ListWidth=200 </C>
 								<C>id="deliLoct"        name="<%=columnData.getString("locat") %>"           width="180"  align="left" edit="none"   EditStyle="LookUp" 	Data="ds_location:code:name"	</C>
@@ -449,9 +487,11 @@ f_excel();
 								<C>id="sapRtnMsg"    name="<%=columnData.getString("return_msg") %>"       width="380"  align="left"  edit="none"        </C>												
 
 	           			<C>id="poSeq"          name="<%=columnData.getString("po_seq") %>"              width="100"  align="center" edit="none"                                  </C>
-								<C>id="materCd"        name="<%=columnData.getString("mater_no") %>"            width="110"  align="center" edit={IF(pstatus="01","true","false")}       Data="ds_gridVendor:code:name:code" editstyle="lookup" ListWidth=200   </C>                  
+								<C>id="materCd"        name="<%=columnData.getString("mater_no") %>"            width="110"  align="center" edit={IF(pstatus="01","true","false")}       Data="ds_gridVendor:code:name:code" editstyle="lookup" ListWidth=200   </C>
 								<C>id="materNm"      name="<%=columnData.getString("mater_nm") %>"          width="240"  align="left" edit={IF(pstatus="01","true","false")}       Data="ds_deliLoct:code:name:code" editstyle="lookup" ListWidth=200 </C>
+								<%--
 								<C>id="modelNm"      name="<%=columnData.getString("model_nm") %>"          width="80"  align="left" edit={IF(pstatus="01","true","false")}       Data="ds_deliLoct:code:name:code" editstyle="lookup" ListWidth=200 </C>
+								 --%>                  
 								<C>id="unit"        name="<%=columnData.getString("unit") %>"           width="100"  align="center" edit="none"                                </C>
 								<C>id="receiptQty"       name="<%=columnData.getString("rec_qty") %>"          width="100"  align="center" edit={IF(pstatus="01","true","false")}       </C>
 		      '>

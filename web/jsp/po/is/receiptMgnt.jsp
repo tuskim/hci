@@ -49,10 +49,10 @@ function init(){
 	ds_deptCode.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2001&firstVal=Total";
 	ds_deptCode.Reset();
 	
-	ds_location.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&firstVal=Total";
+	ds_location.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&firstVal=Total&attr2Loc=MS";
 	ds_location.Reset();
 
-	ds_location_grid.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005";
+	ds_location_grid.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&attr2Loc=MS";
 	ds_location_grid.Reset();
 	
 	ds_cur.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2004";
@@ -87,9 +87,9 @@ function f_search() {
 	}
 			
 	var param = "";
-
+	
 	param += "srtDate=" + removeDash(frm.srtDate.value, "/") + "&endDate=" + removeDash(frm.endDate.value, "/");
-	param += "&sVendor=" + frm.sVendor.value + "&deptCd=" + ds_location.nameValue(ds_location.rowPosition,"code");
+	param += "&sVendor=" + frm.sVendCd.value + "&deptCd=" + ds_location.nameValue(ds_location.rowPosition,"code");
 
 	ds_grid.DataID = "/po.is.receiptMgnt.retrievePoListGau.gau?"+param;
 	ds_grid.Reset();
@@ -274,6 +274,13 @@ function setPostDate(){
 }
 
 
+//-------------------------------------------------------------------------
+//Vendor 조회 팝업
+//-------------------------------------------------------------------------		
+function f_openVendorPop() {	
+	
+	openVendorSapListWin('P');		
+}
 </script>
 
 
@@ -427,7 +434,14 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 											 <input id="endDate" name="endDate" type="text" style="width:70px;" value="<%= currentDate %>" onblur="valiDate(this);"/> <img src="<%= images %>button/cal_icon.gif" alt="Calendar Icon" onClick="javascript:OpenCalendar(endDate);" style="cursor:hand"/>
 											</td>					
 											<th><%=columnData.getString("vendor")  %></th>
+											<!-- 
 											<td><input id="sVendor" name="sVendor" type="text" style="width:100px;" value="" /></td>
+											 -->
+							        <td>
+							          <input type="hidden" id="sVendCd" name="sVendCd" />
+								        <input type="text" id="sVendNm" name="sVendNm" style="width:140px;" readOnly/>&nbsp;
+					  			      <img src="<%= images %>button/search_icon_2.gif"  onClick="javascript:f_openVendorPop();" style="cursor:hand"/>
+					  		      </td>
 										</tr>
 										<tr>
 											<th><%=columnData.getString("locat")  %>  </th>
@@ -488,20 +502,20 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 				<param name="Format"
 					value='
 							            <fc>id="chk"    		Show="ture"  Edit="true"  			align="center"  	width="30"     EditStyle="check" 	   	</fc> 
-							            <fc>id="poNo"    		Show="ture"  Edit="none"  			align="left"  	width="80"     name="<%=columnData.getString("po_no") %>" 	   	</fc> 
+							            <fc>id="poNo"    		Show="ture"  Edit="none"  			align="center"  	width="85"     name="<%=columnData.getString("po_no") %>" 	   	</fc> 
 							            <fc>id="poSeq"    		Show="false"  Edit="none"  			align="left"  	width="90"     name="" 	   	</fc> 
-							            <fc>id="vendCd"    		Show="false" Edit="none"   			align="left"  	width="90"     name=""    	</fc>
-							            <fc>id="vendNm"    				     Edit="none"   			align="left"  	width="120"     name="<%=columnData.getString("vendor") %>"    	</fc>
+							            <fc>id="vendCd"    		Show="false" Edit="none"   			align="left"  	width="100"     name=""    	</fc>
+							            <fc>id="vendNm"    				     Edit="none"   			align="left"  	width="140"     name="<%=columnData.getString("vendor") %>"    	</fc>
 							            <fc>id="materCd"    	Show="false" Edit="none"   			align="center"  width="90"     name="" 		</fc>
-							            <fc>id="materNm"    		 	     Edit="none"   			align="left"  	width="140"     name="<%=columnData.getString("mater") %>" 		</fc>
+							            <fc>id="materNm"    		 	     Edit="none"   			align="left"  	width="150"     name="<%=columnData.getString("mater") %>" 		</fc>
 							            <c>id="purDeptCd"    	Show="false" Edit="none"   			align="left"    width="90"     name="" 	   	</c>
 							            <c>id="purDeptName"    	Show="false" Edit="none"   			align="left"    width="60"     name="<%=columnData.getString("req_office") %>" 	   	</c> 		
 							            <c>id="deliLoct"    	     	  Edit={decode(chk,"T","false","true")}   		Data="ds_location_grid:code:name"    EditStyle="Lookup"	 align="left"  	width="90"     name="<%=columnData.getString("deliy_pla") %>" 	   	</c>		
-							            <c>id="unit"    			 		 Edit="none"   			align="center"  width="30"     name="<%=columnData.getString("unit") %>"     	</c>
-							            <c>id="qty"    			 		 	 Edit="none"   			align="right"  	width="90"     name="P/O Qty"     	</c>   		
-							            <c>id="preQty"    		 			 Edit="none"   			align="right" 	width="90"     name="<%=columnData.getString("pre_qty") %>"  		</c>
-							            <c>id="recQty"    	  		 Edit={decode(qty,preQty,"false",decode(clsYn,"N","true","false"))}      	align="right"  	width="90"     name="<%=columnData.getString("rec_qty") %>"     	</c>
-							            <c>id="clsYn"    			 	     Edit="true"  			align="center"   Data="ds_msUseyn:code:name"    EditStyle="Lookup"	width="40"     name="<%=columnData.getString("close_yn") %>"     	</c> 		
+							            <c>id="unit"    			 		 Edit="none"   			align="center"  width="39"     name="<%=columnData.getString("unit") %>"     	</c>
+							            <c>id="qty"    			 		 	 Edit="none"   			align="right"  	width="86"     name="P/O Qty"     	</c>   		
+							            <c>id="preQty"    		 			 Edit="none"   			align="right" 	width="86"     name="<%=columnData.getString("pre_qty") %>"  		</c>
+							            <c>id="recQty"    	  		 Edit={decode(qty,preQty,"false",decode(clsYn,"N","true","false"))}      	align="right"  	width="86"     name="<%=columnData.getString("rec_qty") %>"     	</c>
+							            <c>id="clsYn"    		show="false"	 	     Edit="true"  			align="center"   Data="ds_msUseyn:code:name"    EditStyle="Lookup"	width="40"     name="<%=columnData.getString("close_yn") %>"     	</c> 		
 										'/>
 			     </object>
 		        </td>

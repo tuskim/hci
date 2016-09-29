@@ -286,6 +286,22 @@
         ]]> 
     </statement>  
 
+    <!--Update : Cement Master Print 버튼 클릭 시 여신 체크 후 결과 저장  -->
+    <statement name="updateCementSalesCreditCheckResult">
+        <![CDATA[
+				UPDATE TB_CEMENT_SALES_MASTER
+	   			   SET 
+				       ORDER_STATUS     = ${orderStatus},
+				       CREDIT_MSG       = ${creditMsg},
+				       MODID	          = ${userId},
+				       MODDATE 		      = TO_CHAR(SYSDATE,'YYYYMMDD'),
+				       MODTIME 		      = TO_CHAR(SYSDATE,'HH24MISS')
+				 WHERE COMPANY_CD  = ${companyCd}
+				   AND SALES_DATE  = REPLACE(${salesDate},'/','')
+				   AND SALES_NO    = ${salesNo}
+        ]]> 
+    </statement> 
+    
   	<!--Update : Cement Master Status(프린트 후 변경) -->
     <statement name="updateCementSalesMasterStatus">
         <![CDATA[
@@ -798,4 +814,12 @@
 	    </append>
     </statement> 
 
+    <!--Update : Cement Master Print 버튼 클릭 시 여신 체크 후 결과 조회  -->
+	<statement name="retrieveCementSalesCreditCheckResult">
+		select order_status, credit_msg
+		  from tb_cement_sales_master
+		 where company_cd = ${companyCd}
+		   and sales_date = replace(${salesDate},'/','')
+		   and sales_no   = ${salesNo}
+	</statement>
 </statements>

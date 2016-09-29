@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!--Open P/O List  -->
+
+
+
+   	<!--Open P/O List  -->  
+	<action-name name="openPurchOrder">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/po/po/openPurchOrder.jsp</return-url>
+   	</action-name>
+
+
+
+
+
+   	
+   	<!--Open P/O List Retrieve -->  
+	<action-name name="po.po.retrieveOpenPurchOrderMasterList">
+    	<command>po.po.cmd.RetrieveOpenPurchOrderMasterListCmd</command> 
+   	</action-name>   
+
+
+
+   	   	    
+</navigation-mapper>

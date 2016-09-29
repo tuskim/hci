@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Open P/O List Page -->
+
+    <statement name="retrieveOpenPurchOrderMasterList">
+        <![CDATA[
+/*  openPurchOrderSql.xml >  retrieveOpenPurchOrderMasterList */   
+SELECT '0' CHK
+      ,A1.COMPANY_CD /*  */
+      ,A1.PO_NO /*  */
+      ,A1.SAP_PO_NO /*  */
+      ,A1.VEND_CD /*  */
+      ,F_GETCOMMNAME('VEND', 'GA00', 'en', A1.VEND_CD, NULL) AS VEND_NM
+      ,A1.REGDATE AS PO_DATE /*  */
+      ,A1.DELI_DATE /*  */
+      ,A2.PO_SEQ /*  */
+      ,A2.MATER_CD /*  */
+      ,F_GETCOMMNAME('MATER', 'GA00', 'en', A2.MATER_CD, NULL) AS MATER_NM
+      ,A2.UNIT /*  */
+      ,A2.QTY /*  */
+      ,A2.RECEIPT_QTY /*  */
+      ,A2.QTY - A2.RECEIPT_QTY AS BALANCE_QTY /*  */
+  FROM TB_PO_MASTER A1
+      ,TB_PO_DETAIL A2
+ WHERE 1 = 1
+   AND A1.COMPANY_CD = A2.COMPANY_CD
+   AND A1.PO_NO = A2.PO_NO
+   AND A1.COMPANY_CD = 'GA00'
+   AND A2.QTY - A2.RECEIPT_QTY > 0
+   AND A1.REGDATE >= REPLACE(${fromDate}, '/', '')
+   AND A1.REGDATE <= REPLACE(${toDate}, '/', '')
+   {#1}
+ ORDER BY A1.PO_NO
+         ,A2.PO_SEQ
+		]]>
+		
+	<append where="false" condition="${vendCd}.NOTEMPTY" id="#1">
+		<![CDATA[
+		AND A1.VEND_CD =  ${vendCd}
+	]]>
+	</append>
+	    
+	</statement>  
+    
+    
+    
+     
+
+    
+</statements>

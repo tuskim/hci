@@ -134,6 +134,17 @@ function f_calculation() {
 	ds_result.NameValue(ds_result.RowPosition, "prodInQty") =  prodOutQtySum;
 }
 
+function f_calculationRate() {
+    var prodOutQtySum = 0; 
+	for(var i=1;i<=ds_detail.CountRow; i++){
+		prodOutQtySum += Number(ds_detail.NameValue(i,"prodOutQty"));	 
+	} 
+
+	for( var i=1; i <= ds_detail.CountRow; i++ ) {
+		ds_detail.NameValue(i, "rate") = ds_detail.NameValue(i, "prodOutQty") / prodOutQtySum * 100;
+	}
+}
+
 
 /***************************************************************************************************/
 /* 엑셀
@@ -175,6 +186,16 @@ function f_save() {
 		} 
 	}
 	
+	if(ds_detail.NameValue(4, "materCd") == ""){
+		alert("You should input a material.");
+		return;
+	}	
+
+	if(ds_detail.NameValue(4, "storLoct") == ""){
+		alert("You should select a warehouse.");
+		return;
+	}	
+
 	if(ds_result.NameValue(ds_result.RowPosition, "prodInQty") == 0){
 		alert("<%=source.getMessage("dev.warn.com.inputQty","Rawmix")%>");
 		return;
@@ -455,6 +476,54 @@ function f_setCondition() {
 } 
 
 
+
+
+
+//-------------------------------------------------------------------------
+//Use of Material for Cement Add Row
+//-------------------------------------------------------------------------
+function f_addRowApp(){ 
+	if(ds_detail.CountRow >= 4) {
+		alert("Can't add additive more.")
+		return;//4개 이상은 row를 추가 할 수 없음.
+	}
+	
+	if(ds_master.NameValue(ds_master.RowPosition, "status") != "00"){
+		alert("<%=source.getMessage("dev.msg.ps.statusSave")%>");
+		return;
+	}
+
+	ds_detail.AddRow();
+	ds_detail.NameValue(ds_detail.RowPosition, "syskey") = ds_detail.NameValue(1, "syskey"); //Production No Copy.
+	ds_detail.NameValue(ds_detail.RowPosition, "materSeq") = "40";
+	
+
+}
+
+//-------------------------------------------------------------------------
+//Use of Material for Cement Delete Row
+//-------------------------------------------------------------------------
+function f_delRowApp(){
+	if(ds_master.NameValue(ds_master.RowPosition, "status") != "00"){
+		alert("<%=source.getMessage("dev.msg.ps.statusSave")%>");
+		return;
+	}
+
+	if(ds_detail.NameValue(ds_detail.RowPosition,"materCd") =="63202402" 
+		|| ds_detail.NameValue(ds_detail.RowPosition,"materCd") =="61000452"
+		|| ds_detail.NameValue(ds_detail.RowPosition,"materCd") =="61000453"
+		) { 
+		//Clinker 및 Gypsum은 고정이라 삭제 불가
+		alert("Can't delete Limestone, Alumina Clay or Silica Clay."); 
+		return;
+	}
+	
+	ds_detail.DeleteRow(ds_detail.RowPosition);
+	f_calculation();
+	f_calculationRate();
+}
+
+
 </script>
 
 
@@ -591,6 +660,19 @@ Dataset   E V E N T S
 
 
 <!-- Dataset detail-------------------------------------------------------------------------------------->
+<script language=Javascript for=gr_detail event=OnClick(row,colid)>
+	if(ds_master.NameValue(ds_master.RowPosition, "status") == "00" && row == 4){
+		gr_detail.ColumnProp("materCd", "Edit") = "";
+		gr_detail.ColumnProp("materNm", "Edit") = "";
+		gr_detail.ColumnProp("storLoct", "Edit") = "";
+	}else{
+		gr_detail.ColumnProp("materCd", "Edit") = "none";
+		gr_detail.ColumnProp("materNm", "Edit") = "none";
+		gr_detail.ColumnProp("storLoct", "Edit") = "none";
+	}
+</script>
+
+
 <script language=JavaScript for=ds_detail event=OnColumnChanged(row,colid)>
 	if(colid=="prodOutQty") {
 		if(Number(ds_detail.NameValue(row,colid)) < 0){
@@ -599,16 +681,19 @@ Dataset   E V E N T S
 		}
 
 		f_calculation(); // Total Qty 계산
+		f_calculationRate();
 	} 
 </script>
 
 
 <script language=JavaScript for=ds_detail event=OnLoadCompleted(rowCnt)>
-  ////////////////////////////////////////////////////////////////
-  // 그리드 total 표시
-  gr_detail.ColumnProp("unit", "SumText") = "Total";
-  gr_detail.ColumnProp("prodOutQty", "SumText") = "@sum";
-  ////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+	// 그리드 total 표시
+	gr_detail.ColumnProp("unit", "SumText") = "Total";
+	gr_detail.ColumnProp("prodOutQty", "SumText") = "@sum";
+	gr_detail.ColumnProp("rate", "SumText") = "@sum";
+	////////////////////////////////////////////////////////////////
+	f_calculationRate();
 </script> 
 
 
@@ -623,6 +708,12 @@ Grid   E V E N T S
 </script> 
 
 
+<!-- Grid Detail-------------------------------------------------------------------------------------->
+<script language="JavaScript" for="gr_detail" event="OnPopup(row,colid,data)">
+ 	if (colid == "materCd" || colid == "materNm") {
+		openMaterialCodeListGridConWin(row, ds_detail,"PS");
+	}
+</script>
  
  
  
@@ -804,17 +895,24 @@ Tr   E V E N T S
 	    <div class="sub_stitle"> <p>Use of Material for Raw Mix</p>
 		</div>	
 		<div>
-			<table width="100%" border="0" cellpadding="0" cellspacing="0" class="output_board" >
+			<table width="758px" border="0" cellpadding="0" cellspacing="0" class="output_board" >
 				<colgroup>
-				       <col width="12%"/>
-				       <col width="40%"/>
+		          <col width="50px"/>
+		          <col width="150px"/>
+		          <col width="150px"/>
 				</colgroup>    
 				<tr>
 				  	<th>Production Date</th>
 					<td>
-						<input type="text" id="prodDate" 	style="width:70px;" maxlength="10" onblur="valiDate(this);">
+						<input type="text" id="prodDate" 	style="width:60px;" maxlength="10" onblur="valiDate(this);">
 						<img id="prodCalDate" src="<%= images %>button/cal_icon.gif" alt="Calendar Icon" onClick="javascript:OpenCalendar(prodDate);" style="cursor:hand"/>
 					</td>
+			          <td align="right">
+			            <span class="sbtn_r sbtn_l">
+						  <input type="button" onfocus="blur();" onmouseover="this.style.color='#1b2e53'" onmouseout="this.style.color='#7b87a0'" value="<%=btnAddRow%>" onclick="f_addRowApp();"/></span> 
+						<span class="sbtn_r sbtn_l"> 
+						<input type="button" onfocus="blur();" onmouseover="this.style.color='#1b2e53'" onmouseout="this.style.color='#7b87a0'" value="<%=btnDelRow%>" onclick="f_delRowApp();"/></span> 
+			          </td>
 				</tr>
 				<object id="bd_master" classid="<%=LGauceId.BIND%>">
 					<param name="DataID" value="ds_master">
@@ -838,12 +936,13 @@ Tr   E V E N T S
 							<param name="Format"              
 							value="
 				           		<C> id='materSeq'       name='Seq'           align='center'  	width='60'   Edit='none'   	   	show='true'  	</C>
-                       			<C> id='materCd'        name='Material Code' align='center'  	width='100'  Edit='none'        show='true'     </C>
-				           		<C> id='materNm'       	name='Material Name' align='left'  		width='170'  Edit='none'        show='true'	   	</C>
+                       			<C> id='materCd'        name='Material Code' align='center'  	width='100'  Edit='none'        show='true'	EditStyle='PopupFix'</C>
+				           		<C> id='materNm'       	name='Material Name' align='left'  		width='170'  Edit='none'        show='true'	EditStyle='PopupFix'</C>
 				           		<C> id='unit'           name='Unit'          align='center'  	width='60'   Edit='none'        show='true'	   	</C>
 				           		<C> id='prodOutQty'     name='Qty.'          align='right'  	width='90'   Edit='RealNumeric' show='true'	   DisplayFormat ='#,###.000'</C>
-				           		<C> id='storLoct'     	name='Warehouse'     align='left'  		width='140'  Edit='none'        show='true'	   EditStyle='LookUp' 	Data='ds_warehouseCode:code:name'	</C>
-				           		<C> id='attr1'          name='Description'   align='left'  		width='139'  Edit='Any'        	show='true'	   	</C>
+				           		<C> id='rate'     		name='Rate(%)'       align='right'  	width='60'   Edit='RealNumeric' show='true'	   DisplayFormat ='#,##0%'</C>
+				           		<C> id='storLoct'     	name='Warehouse'     align='left'  		width='110'  Edit='none'        show='true'	   EditStyle='LookUp' 	Data='ds_warehouseCode:code:name'	</C>
+				           		<C> id='attr1'          name='Description'   align='left'  		width='109'  Edit='Any'        	show='true'	   	</C>
 	                        "/>
 						</object>
 						</comment><script>__WS__(__NSID__);</script>
@@ -897,9 +996,16 @@ Tr   E V E N T S
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnNew%>" onclick="f_new();"/></span> 
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnDel%>" onclick="f_del();"/></span>
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSave%>" onclick="f_save()"/></span>  								
+<%
+// 버튼 권한 처리
+if(g_authCd.equals("AD") || g_authCd.equals("PDM")) {
+%>
         		<span>|</span>
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnApproval%>" onclick="f_approval()"/></span>  								
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnReject%>" onclick="f_reject()"/></span>  								
+<% 
+}
+%>
         		<span>|</span>
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapSend%>" onclick="f_sapSend();"/></span>  
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapCancel%>" onclick="f_sapCancel();"/></span> 

@@ -124,14 +124,8 @@ function f_retrieveResult(){
 
 // Total Qty 계산
 function f_calculation() {
-
-    var prodOutQtySum = 0; 
-	for(var i=1;i<=ds_detail.CountRow; i++){
-		prodOutQtySum += Number(ds_detail.NameValue(i,"prodOutQty"));	 
-	} 
- 
-	ds_master.NameValue(ds_master.RowPosition, "cementBagQty") =  prodOutQtySum * 1000 / 50; // 1 BAG = 50 KG
-	ds_result.NameValue(ds_result.RowPosition, "prodInQty") =  prodOutQtySum * 1000 / 50; // 1 BAG = 50 KG
+	ds_master.NameValue(ds_master.RowPosition, "cementBagQty") =  ds_result.NameValue(ds_result.RowPosition, "prodInQty"); // 1 BAG = 50 KG
+	ds_detail.NameValue(ds_detail.RowPosition, "prodOutQty") =  ds_result.NameValue(ds_result.RowPosition, "prodInQty") * 50 / 1000; // 1 BAG = 50 KG
 }
 
 /***************************************************************************************************/
@@ -317,12 +311,12 @@ function f_new(){
 function f_Enable(){
 	gr_detail.ColumnProp("materCd", "Edit") = "";
 	gr_detail.ColumnProp("materNm", "Edit") = "";
-	gr_detail.ColumnProp("prodOutQty", "Edit") = "";
 	gr_detail.ColumnProp("attr1", "Edit") = "";
 	
 	gr_result.ColumnProp("materCd", "Edit") = "";
 	gr_result.ColumnProp("materNm", "Edit") = "";
 	gr_result.ColumnProp("attr1", "Edit") = "";
+	gr_result.ColumnProp("prodInQty", "Edit") = "";
 	
 	document.getElementById("prodDate").readOnly = false;
 	document.all.prodCalDate.disabled          = false;
@@ -335,12 +329,12 @@ function f_Enable(){
 function f_Disable() {
 	gr_detail.ColumnProp("materCd", "Edit") = "none";
 	gr_detail.ColumnProp("materNm", "Edit") = "none";
-	gr_detail.ColumnProp("prodOutQty", "Edit") = "none";
 	gr_detail.ColumnProp("attr1", "Edit") = "none";
 
 	gr_result.ColumnProp("materCd", "Edit") = "none";
 	gr_result.ColumnProp("materNm", "Edit") = "none";
 	gr_result.ColumnProp("attr1", "Edit") = "none";
+	gr_result.ColumnProp("prodInQty", "Edit") = "none";
 	
 	document.getElementById("prodDate").readOnly = true;
 	document.all.prodCalDate.disabled          = true;
@@ -629,8 +623,17 @@ Dataset   E V E N T S
 
 <!-- Dataset detail-------------------------------------------------------------------------------------->
 <script language=JavaScript for=ds_detail event=OnColumnChanged(row,colid)>
-	if(colid=="prodOutQty") {
-		if(Number(ds_detail.NameValue(row,colid)) < 0){
+</script>
+
+
+<script language=JavaScript for=ds_detail event=OnLoadCompleted(rowCnt)>
+</script> 
+
+
+<!-- Dataset result-------------------------------------------------------------------------------------->
+<script language=JavaScript for=ds_result event=OnColumnChanged(row,colid)>
+	if(colid=="prodInQty") {
+		if(Number(ds_result.NameValue(row,colid)) < 0){
 			alert("<%=source.getMessage("dev.warn.com.minus",columnData.getString("qty"))%>"); // does not allow the value '-'.
 			return false;
 		}
@@ -640,12 +643,7 @@ Dataset   E V E N T S
 </script>
 
 
-<script language=JavaScript for=ds_detail event=OnLoadCompleted(rowCnt)>
-  ////////////////////////////////////////////////////////////////
-  // 그리드 total 표시
-  gr_detail.ColumnProp("unit", "SumText") = "Total";
-  gr_detail.ColumnProp("prodOutQty", "SumText") = "@sum";
-  ////////////////////////////////////////////////////////////////
+<script language=JavaScript for=ds_result event=OnLoadCompleted(rowCnt)>
 </script> 
 
 
@@ -893,7 +891,7 @@ Tr   E V E N T S
                        			<C> id='materCd'        name='Material Code' align='center'  	width='100'  Edit='none'        show='true'    EditStyle='popupfix' </C>
 				           		<C> id='materNm'       	name='Material Name' align='left'  		width='170'  Edit='Any'        	show='true'	   EditStyle='popupfix'</C>
 				           		<C> id='unit'           name='Unit'          align='center'  	width='60'   Edit='none'        show='true'	   	</C>
-				           		<C> id='prodOutQty'     name='Qty.'          align='right'  	width='90'   Edit='RealNumeric' show='true'	   DisplayFormat ='#,###.000'</C>
+				           		<C> id='prodOutQty'     name='Qty.'          align='right'  	width='90'   Edit='none' 		show='true'	   DisplayFormat ='#,###.000'</C>
 				           		<C> id='storLoct'     	name='Warehouse'     align='left'  		width='140'  Edit='none'        show='true'	   EditStyle='LookUp' 	Data='ds_warehouseCode:code:name'	</C>
 				           		<C> id='attr1'          name='Description'   align='left'  		width='139'  Edit='Any'        	show='true'	   	</C>
 	                        "/>
@@ -930,7 +928,7 @@ Tr   E V E N T S
                        			<C> id='materCd'        name='Material Code' align='center'  	width='100'  Edit='none'        show='true'    EditStyle='popupfix' </C>
 				           		<C> id='materNm'       	name='Material Name' align='left'  		width='170'  Edit='none'        show='true'	   EditStyle='popupfix'</C>
 				           		<C> id='unit'           name='Unit'          align='center'  	width='60'   Edit='none'        show='true'	   	</C>
-				           		<C> id='prodInQty'     	name='Qty.'          align='right'  	width='90'   Edit='none' 		show='true'	   DisplayFormat ='#,###.000'</C>
+				           		<C> id='prodInQty'     	name='Qty.'          align='right'  	width='90'   Edit='RealNumeric'	show='true'	   DisplayFormat ='#,###.000'</C>
 				           		<C> id='storLoct'     	name='Warehouse'     align='left'  		width='140'  Edit='none'        show='true'	   EditStyle='LookUp' 	Data='ds_warehouseCode:code:name'	</C>
 				           		<C> id='attr1'          name='Description'   align='left'  		width='139'  Edit='Any'        	show='true'	   	</C>
 	                        "/>
@@ -952,9 +950,16 @@ Tr   E V E N T S
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnNew%>" onclick="f_new();"/></span> 
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnDel%>" onclick="f_del();"/></span>
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSave%>" onclick="f_save()"/></span>  								
+<%
+// 버튼 권한 처리
+if(g_authCd.equals("AD") || g_authCd.equals("PDM")) {
+%>
         		<span>|</span>
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnApproval%>" onclick="f_approval()"/></span>  								
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnReject%>" onclick="f_reject()"/></span>  								
+<% 
+}
+%>
         		<span>|</span>
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapSend%>" onclick="f_sapSend();"/></span>  
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapCancel%>" onclick="f_sapCancel();"/></span> 

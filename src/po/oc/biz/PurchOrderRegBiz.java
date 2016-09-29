@@ -24,6 +24,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility; 
 
 import xi.GMM01;
+import xi.GMM16;
 import devon.core.exception.LException;
 import devon.core.exception.LSysException;
 import devon.core.log.LLog;
@@ -193,6 +194,9 @@ public class PurchOrderRegBiz {
 					
 				} else if( tr_Moded.equals("DEVON_UPDATE_FILTER_VALUE") ) {
 
+					//update 시 print date를 null 처리.
+					dao.add("po/oc/purchOrderRegSql/cudPurchOrderUpdatePrintDate", cudDtlData);
+					
 					//Purch Order Manage Detail Update
 					dao.add("po/oc/purchOrderRegSql/cudPurchOrderRegDTUpdate", cudDtlData);
 
@@ -224,6 +228,9 @@ public class PurchOrderRegBiz {
 					
 				} else if( tr_Mode.equals("DEVON_UPDATE_FILTER_VALUE") ) {
 
+					//update 시 print date를 null 처리.
+					dao.add("po/oc/purchOrderRegSql/cudPurchOrderUpdatePrintDate", cudTaxData);
+					
 					//Purch Order  App Update
 					dao.add("po/oc/purchOrderRegSql/cudPurchOrderRegTaxMerge", cudTaxData);
 
@@ -383,6 +390,80 @@ public class PurchOrderRegBiz {
 		dataBox.put("getErrorCode"	,getErrorCode + "" );
 		dataBox.put("getMessage"	,getMessage); 
 		if(!getStatus.equals("")) dataBox.put("getStatus" ,getStatus ); //현 프로그램에서 에러
+		return dataBox;
+	}
+    
+    
+
+    /**
+     * P/O Closing
+     * @param mainMData
+     * @param detailMData
+     * @param appMData
+     * @param loginUser
+     * @return
+     * @throws LException
+     */
+    public LData cudPurchOrderClosingSapSend(LMultiData mainMData,LMultiData detailMData,LMultiData appMData, LData loginUser) throws LException {
+		
+    	LLog.info.write("\n cudPurchOrderClosingSapSend ------------- Start \n");
+    	
+        LCompoundDao dao	= new LCompoundDao();       
+        LCommonDao xdao		= new LCommonDao(); 
+        
+		long	getErrorCode	= -1403 ;
+		String	getMessage		= "";
+		String	getStatus		= "";
+	
+		LData dataBox		    = new LData();
+		LData resultMsg		    = new LData();
+		LMultiData resultDtlMsg  = new LMultiData();
+		try{
+			
+			LData xmlNo = xdao.executeQueryForSingle("cm/cm/commCodeMgntSql/retireveXmlDocNo", loginUser);
+			
+			dao.startTransaction();
+			LData oResultMsg = null;
+			GMM16 gmm16 = new GMM16();
+			for(int i=0; i<mainMData.getDataCount(); i++) {
+				
+				LData mainLData = mainMData.getLData(i);
+				
+				mainLData.setString("zxmldocno", xmlNo.getString("zxmldocno"));
+				mainLData.setString("companyCd", loginUser.getString("companyCd"));
+			    
+				oResultMsg = gmm16.GMM16_out(mainLData, detailMData);
+				
+				if (oResultMsg.getString("returnType").equals("00")) {
+					//detail update
+					for(int l=0; l<detailMData.getDataCount(); l++) {
+						LData detailLData = detailMData.getLData(l);
+						detailLData.setString("userId", loginUser.getString("userId"));
+						dao.add ("po/oc/purchOrderRegSql/cudPurchOrderClosingUpdate", detailLData); 
+					}
+				}
+				
+				mainLData.setString("sapRtnMsg", oResultMsg.getString("returnText"));
+				
+				//master update
+				dao.add ("po/oc/purchOrderRegSql/cudPurchOrderClosingSapSend", mainLData);
+				dao.executeUpdate();
+			}
+			
+			dao.commit();
+			getMessage = oResultMsg.getString("returnText");
+			getErrorCode = 0;
+		} catch (Exception se) {
+			dao.rollback(); 
+			LLog.debug.write("exception :"+se.getMessage());
+			getErrorCode = -99901;
+			getMessage   = se.toString();
+			getStatus    = "fail."+this.getClass().getName()+"."+"cudPurchOrderRegSapSend"; 
+		}
+ 
+		
+		dataBox.put("getErrorCode"	,getErrorCode + "" );
+		dataBox.put("getMessage"	,getMessage); 
 		return dataBox;
 	}
     
@@ -573,5 +654,47 @@ public class PurchOrderRegBiz {
 		}
     } 
  
+    
+	/**
+	 * 프린트 출력 후 프린트 일자 업데이트
+	 * @throws LException
+	 */
+	public LData updatePurchOrderPrintdate(LData inputm, LData loginUser) throws LException {
+		LCompoundDao dao = new LCompoundDao();
+		LData result = new LData(); 
+
+		String	getErrorCode = "0" ;
+		String	getMessage	 = "";
+		
+		LData Lrow = new LData();
+		LLog.info.write("\n updatePurchOrderPrintdate Biz --> start \n");
+		try{  
+			dao.startTransaction();
+			
+			Lrow.set("userId", 	 loginUser.getString("userId"));
+			Lrow.set("companyCd",loginUser.getString("companyCd"));
+			Lrow.set("deptCd", loginUser.getString("companyCd"));
+			
+			Lrow.set("poNo",inputm.get("poNo"));
+			
+		    dao.add ("/po/oc/purchOrderRegSql/updatePurchOrderPrintdate", Lrow ); 
+    		dao.executeUpdate();	
+    		
+			dao.commit(); 
+		} catch (Exception se) {
+			dao.rollback();
+			LLog.err.println(  this.getClass().getName() + "." + "updatePurchOrderPrintdate()" + "=>" + se.getMessage());
+			
+			getErrorCode = "-1403";
+			getMessage = se.getMessage();
+			throw new LSysException(getMessage,se);
+		}
+		
+		result.put("getErrorCode"	,getErrorCode);
+		result.put("getMessage"	,getMessage);
+		
+		return result;
+		
+	}
 }
  

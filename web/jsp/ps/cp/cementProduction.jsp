@@ -63,6 +63,12 @@
   String msgNoDataSave      = source.getMessage("dev.inf.com.nosave");            // no data for saving.
   String msgNoDataDelete    = source.getMessage("dev.inf.com.nodelete");          // no data for deleting.
   String msgNoDataChange    = source.getMessage("dev.inf.com.nochange");          // no data for change.
+		  
+	boolean authChk = false;
+	if(g_authCd.equals("AD") || g_authCd.equals("PDM")){
+	  authChk = true;
+	}
+
 %>
 
 <script type="text/javascript">
@@ -175,7 +181,8 @@ function f_New(){
                    +",unit    "     +   ":STRING(5)"
                    +",prodOutQty"   +   ":DECIMAL(13.3)"
                    +",storLoct"     +   ":STRING(4)"
-                   +",attr1"        +   ":STRING(300)";
+                   +",attr1"        +   ":STRING(300)"
+                   +",rate"         +   ":DECIMAL(13.3)";
 
     ds_output.SetDataHeader(strHeader);
   }
@@ -191,8 +198,9 @@ function f_New(){
     ds_output.NameValue(ds_output.RowPosition, "prodOutQty") = ds_outputTmp.NameValue(i, "prodOutQty");
     ds_output.NameValue(ds_output.RowPosition, "storLoct")   = ds_outputTmp.NameValue(i, "storLoct");
     ds_output.NameValue(ds_output.RowPosition, "attr1")      = ds_outputTmp.NameValue(i, "attr1");
+    ds_output.NameValue(ds_output.RowPosition, "rate")       = 0.00;
   }
-
+	
   //ds_input Add Row
   	condition = "?";
     condition += "companyCd=<%=g_companyCd %>";
@@ -525,7 +533,6 @@ function f_addRowApp(){
 	ds_output.NameValue(ds_output.RowPosition, "syskey") = ds_output.NameValue(1, "syskey"); //Production No Copy.
 	var materSeq =  ds_output.RowPosition * 10;
 	ds_output.NameValue(ds_output.RowPosition, "materSeq") = materSeq;
-	
 
 }
 
@@ -541,7 +548,7 @@ function f_delRowApp(){
 		return;
 	}
 
-	if(ds_output.NameValue(ds_output.RowPosition,"materCd") =="63200990" || ds_output.NameValue(ds_output.RowPosition,"materCd") =="61000829"    ){ //Clinker 및 Gypsum은 고정이라 삭제 불가
+	if(ds_output.NameValue(ds_output.RowPosition,"materCd") =="63202400" || ds_output.NameValue(ds_output.RowPosition,"materCd") =="61000455"    ){ //Clinker 및 Gypsum은 고정이라 삭제 불가
 		//ds_output.RowPosition=i;
 		alert("Can't delete Clinker & Gypsum material."); 
 		return;
@@ -549,18 +556,14 @@ function f_delRowApp(){
 	
 	if(ds_output.CountRow<1){
 		alert("Please select material to delete.");
+		return;
 	}
 
 	if(ds_output.RowPosition>0){
 		ds_output.DeleteRow(ds_output.RowPosition);
 		
-		//Delete row 시 Qty 다시 계산
-		var cnt = 0;
-		for( var i=1; i <= ds_output.CountRow; i++ ) {
-		  cnt += ds_output.NameValue(i, "prodOutQty");
-		}
-		  
-		ds_input.NameValue(1, "prodInQty") = cnt; 
+		//Use of Material of Cement Rate(%) Calculation.
+		f_calculationRate();
 	}
 
 }
@@ -692,7 +695,22 @@ if (result == -1 || result == null || result == "") {
   obj.NameValue(row,"materNm")    = firstList[1];
   obj.NameValue(row,"unit")       = firstList[2];
 }
-} 
+}
+
+
+//Use of Material of Cement Rate(%) Calculation.
+function f_calculationRate() {
+	  var prodOutQty = 0;
+	  for( var i=1; i <= ds_output.CountRow; i++ ) {
+		  prodOutQty += Number(ds_output.NameValue(i, "prodOutQty"));
+	  }
+	  
+	  for( var i=1; i <= ds_output.CountRow; i++ ) {
+		    ds_output.NameValue(i, "rate") = ds_output.NameValue(i, "prodOutQty")/prodOutQty*100;
+	  }
+	  
+		ds_input.NameValue(1, "prodInQty") = prodOutQty;
+}
 </script>
 
 
@@ -863,14 +881,12 @@ if (result == -1 || result == null || result == "") {
 </script>
 
 <script language=javascript for=ds_output event=OnColumnChanged(row,colid)>
-
-  var cnt = 0;
-  for( var i=1; i <= ds_output.CountRow; i++ ) {
-    cnt += ds_output.NameValue(i, "prodOutQty");
+  if(colid == "prodOutQty"){
+	  f_calculationRate();
   }
-  
-  ds_input.NameValue(1, "prodInQty") = (cnt); // Quantity : (prodOutQty)/50
-
+</script>
+<script language=JavaScript for=ds_output event=OnLoadCompleted(rowCnt)>
+	gr_output.ColumnProp("rate", "SumText") = "@sum";
 </script>
 
 <script language=Javascript for=gr_output event=OnClick(row,colid)>
@@ -889,13 +905,14 @@ if (result == -1 || result == null || result == "") {
 
 <script language=javascript for=gr_output event=OnPopup(Row,Colid,data)>
 	if ( Colid == "materCd" || Colid == "materNm") {
-		openMaterialCodeListGridConWin(Row, ds_output)
+		openMaterialCodeListGridConWin(Row, ds_output,"PS");
 	}
 </script>
 <script language=JavaScript for=gr_output event=OnExit(row,colid,olddata)>
 </script>
 <script language=JavaScript for=ds_output event=OnLoadError()>
 </script>
+
 <!-- Use of Material for Cement DataSet Event[E] -->
 
 
@@ -1197,11 +1214,12 @@ f_excel();
                        <C> id='materSeq'       name='Seq'            align='center'  width='60'   Edit='none'          Value={CurRow*10}  </C>
                        <C> id='syskey'         name='Production No.' align='center'  width='120'  Edit='none'          show='false'</C>
                        <C> id='materCd'        name='Material Code'  align='center'  width='100'  Edit='none'          show='true'     EditStyle='PopupFix'</C>
-                       <C> id='materNm'        name='Material Name'  align='left'    width='170'  Edit='none'          show='true'     EditStyle='PopupFix'<%--EditStyle='Lookup' Data='ds_materialCode:code:name'--%></C>
+                       <C> id='materNm'        name='Material Name'  align='left'    width='160'  Edit='none'          show='true'     EditStyle='PopupFix'<%--EditStyle='Lookup' Data='ds_materialCode:code:name'--%></C>
                        <C> id='unit'           name='Unit'           align='center'  width='60'   Edit='none'          show='true'     sumtext='Total'</C>
-                       <C> id='prodOutQty'     name='Qty.'           align='right'   width='90'   Edit='RealNumeric'   show='true'     DisplayFormat ='#,###.000' sumtext='@sum', sumbgcolor='#ECE6DE' sumcolor='#666666'</C>
-                       <C> id='storLoct'       name='Warehouse'      align='left'    width='140'  Edit='none'          show='true'     EditStyle='LookUp'   Data='ds_warehouseCode:code:name' </C>
-                       <C> id='attr1'          name='Description'    align='left'    width='138'                       show='true'     </C>
+                       <C> id='prodOutQty'     name='Qty.'           align='right'   width='90'   Edit='RealNumeric'   show='true'     DisplayFormat ='#,###.000' sumtext='@sum' sumbgcolor='#ECE6DE' sumcolor='#666666'</C>
+                       <C> id='rate'           name='Rate(%)'        align='right'   width='70'   Edit='none'          show='true'     DisplayFormat ='#.###.00%' sumtext='@sum' sumbgcolor='#ECE6DE' sumcolor='#666666'</C>
+                       <C> id='storLoct'       name='Warehouse'      align='left'    width='110'  Edit='none'          show='true'     EditStyle='LookUp'   Data='ds_warehouseCode:code:name' </C>
+                       <C> id='attr1'          name='Description'    align='left'    width='118'                       show='true'     </C>
                  ">
       </object>
     </div>
@@ -1245,9 +1263,15 @@ f_excel();
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnDel%>"      onClick="f_Delete();"/></span>
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSave%>"     onClick="f_Save();"/></span>
         <span>|</span>
+<%
+		if(authChk){
+%>
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnApproval%>"  onClick="f_Approval();"/></span>
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnReject%>"    onClick="f_Reject();"/></span>
         <span>|</span>
+<%
+	}
+%>  
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapSend%>"   onclick="f_sapSend();"/></span>
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapCancel%>" onclick="f_sapCancel();"/></span>
       </p>

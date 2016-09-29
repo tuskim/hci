@@ -62,6 +62,26 @@ public class CementSalesMgntBiz {
 	}
 
 	/**
+	 * Print 버튼 클릭 시 여신 체크 결과 조회
+	 * @param inputData
+	 * @return
+	 * @throws LException
+	 */
+	public LMultiData retrieveCementSalesCreditCheckResult(LData inputData) throws LException {
+
+		LMultiData resultData = null;
+        try {
+        	LCommonDao dao = new LCommonDao( "/sd/sm/cementSalesMgntSql/retrieveCementSalesCreditCheckResult",inputData );
+        	resultData = dao.executeQuery();
+        	
+        } catch (Exception le ) {
+        	LLog.err.write(this.getClass().getName()+"." +"retrieveCementSalesCreditCheckResult()"+"=>"+le.getMessage());
+            throw new LBizException("sd.sm.cmd.retrieve");
+        }
+        return resultData;
+	}
+	
+	/**
 	 * Cement Detail Sales 조회
 	 * @param inputData 검색조건 입력 값
 	 * @return Cement Detail Sales 목록 조회
@@ -196,6 +216,44 @@ public class CementSalesMgntBiz {
         return resultData;
     }  
 
+    /**
+     * Cement S/O Print 시 여신 체크 후 결과 업데이트 적용
+     * @param inputm
+     * @param inputd
+     * @param loginUser
+     * @return
+     * @throws LException
+     */
+    public LData CudCementSalesPrintCreditLimit(LData inputm, LMultiData inputd, LData loginUser) throws LException {
+    	
+  		LCompoundDao dao = new LCompoundDao();
+  		dao.startTransaction();  
+    	LData resultData = new LData();
+    	LData creditChkData = new LData();
+    	
+    	try{
+    		inputm.set("userId", 	 loginUser.getString("userId"));
+    		inputm.set("companyCd",  loginUser.getString("companyCd"));
+    		inputm.set("deptCd",     loginUser.getString("companyCd"));
+			
+    		creditChkData = RetrieveCustomerCreditLimit(inputm, inputd); //여신체크
+			
+    		inputm.set("orderStatus",  creditChkData.get("creditYn").equals("Y")?"1":"0");  //여신체크 결과 N이면 status는 0, Y이면 1처리
+    		inputm.set("creditMsg"  ,  creditChkData.get("creditMsg"));  //여신체크 결과
+			
+	    	dao.add ("/sd/sm/cementSalesMgntSql/updateCementSalesCreditCheckResult",  inputm );
+	    	dao.executeUpdate();
+	    	dao.commit();
+	    	
+    	}catch(LException e){
+        	dao.rollback();
+        	LLog.err.println(  this.getClass().getName() + "." + "CudCementSalesPrintCreditLimit()" + "=>" + e.getMessage());
+    	}
+    	
+    	return resultData;
+    }
+    
+    
 	/**
 	* Cement detail List 수정시
 	* @param inputData 검색조건 입력 값

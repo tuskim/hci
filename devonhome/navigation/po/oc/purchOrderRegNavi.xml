@@ -60,5 +60,14 @@
 	<action-name name="po.oc.retrievePurchOrderRegCurrList">
     	<command>po.oc.cmd.RetrievePurchOrderRegCurrListCmd</command> 
    	</action-name>      		    	 	   	   	   	    
-   	   	    
+  
+  <!-- print date update -->
+  <action-name name="po.oc.cmd.cudPurchOrderUpdatePrintDateCmd">
+  	<command>po.oc.cmd.CudPurchOrderUpdatePrintDateCmd</command> 
+  </action-name>
+  
+   	<!--P/O Closing Cud -->  
+	<action-name name="po.oc.cudPurchOrderClosingSapSend">
+    	<command>po.oc.cmd.CudPurchOrderClosingSapSendCmd</command> 
+   	</action-name> 
 </navigation-mapper>

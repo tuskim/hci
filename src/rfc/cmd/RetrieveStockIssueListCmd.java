@@ -53,6 +53,8 @@ public class RetrieveStockIssueListCmd implements LGauceCommandIF{
         gds.addDataColumn( new GauceDataColumn( "costCenter"   , GauceDataColumn.TB_STRING  , 30   ) ); // 선택
         gds.addDataColumn( new GauceDataColumn( "attr1"   , GauceDataColumn.TB_STRING  , 30   ) ); // 선택
         gds.addDataColumn( new GauceDataColumn( "attr2"   , GauceDataColumn.TB_STRING  , 30   ) ); // 선택
+        gds.addDataColumn( new GauceDataColumn( "intOrder"   , GauceDataColumn.TB_STRING  , 30   ) ); // 선택
+        gds.addDataColumn( new GauceDataColumn( "intOrderNm"  , GauceDataColumn.TB_STRING  , 30   ) ); // 선택
         gds.addDataColumn( new GauceDataColumn( "chk" , GauceDataColumn.TB_STRING  , 2  ) ); // Check Field
 
 		LData lData = LXssCollectionUtility.getData(req);

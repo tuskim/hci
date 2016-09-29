@@ -61,6 +61,7 @@
 		             ,a.deli_loct
 		             ,f_getcommname('COMM',${companyCd},${lang},'2005',a.DELI_LOCT) delivy_pla_name
 		             ,a.attr2 po_type
+		             ,f_getcommname('COMM',${companyCd},${lang},'2018',a.ABSGR) absgr
 		        FROM  tb_po_master a
 		             ,tb_po_detail b
 		             ,tb_vend_master c
@@ -111,7 +112,7 @@
 			       pm.currency_cd,
 			       case when pd.receipt_cls_yn = 'Y' 
 			       	then  pd.receipt_qty 
-			       	else pd.qty
+			       	else 0
 			       end
 			       as previous_qty,             -- 기존 입고 수량
 			       pd.qty - pd.receipt_qty as  receipt_qty,    -- 입고할 수량
@@ -144,6 +145,7 @@
                 ,im.vend_cd
                 ,im.iv_date
                 ,im.post_date
+                ,im.attr1 cancel_post_date
                 ,im.due_date
                 ,im.iv_amt
                 ,im.currency_cd
@@ -214,7 +216,7 @@
 				,D.IV_SEQ
 				,ITEM_SEQ
 				,D.MATER_CD
-				,AMT
+				,TO_NUMBER(AMT) AMT
 				,PD.QTY
 				,IV_QTY
 				,D.VAT_CD
@@ -322,7 +324,8 @@
         <![CDATA[
 			SELECT NVL(MAX(TO_NUMBER(IV_SEQ)),0)+1 as IV_SEQ
 			  FROM TB_IV_MASTER
-	  	    WHERE PO_NO = ${poNo}
+	  	    WHERE COMPANY_CD  = ${companyCd}
+	  	    AND PO_NO = ${poNo}
 				
 		]]>
     </statement>          
@@ -433,6 +436,7 @@
     <!-- Invoice SAP Success -->
     <statement name="cudInvoiceAfterSapSuccess">
         <![CDATA[
+/*  InvoiceRegSql.xml >  cudInvoiceAfterSapSuccess */      
         	UPDATE TB_IV_MASTER
         	SET SAP_GR_DO_NO = ${sapGrDoNo}
 				,SAP_IV_DO_NO = ${sapIvDoNo}
@@ -453,6 +457,7 @@
     <!-- Coal Production Mst Update SAP Success -->
     <statement name="cudInvoiceAfterSapCancelSuccess">
         <![CDATA[
+/*  InvoiceRegSql.xml >  cudInvoiceAfterSapCancelSuccess */      
         	UPDATE TB_IV_MASTER
         	SET SAP_CANCEL_GR_DO_NO = ${sapGrDoNo}
 				,SAP_CANCEL_IV_DO_NO = ${sapIvDoNo}
@@ -460,6 +465,7 @@
 				,CANCEL_MSG = ${sendMsg}
 				,CANCEL_DATE = TO_CHAR(SYSDATE, 'YYYYMMDD')
 				,STATUS = ${sendStat}
+		        ,ATTR1    = DECODE(${sendStat}, '06', ${cancelPostDate}, ATTR1)
 				,MODID = ${userId}
 				,MODDATE = TO_CHAR(SYSDATE,'YYYYMMDD')
 				,MODTIME  = TO_CHAR(SYSDATE,'HH24MISS')				

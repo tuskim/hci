@@ -26,9 +26,9 @@
 		]]>     
 
         <append where="false" condition="${progNm}.NOTEMPTY" id="#1">
-             AND ( prog_nm_kr like '%'||${progNm}||'%' OR
-                   prog_nm_En like '%'||${progNm}||'%' OR
-                   prog_nm_Lo like '%'||${progNm}||'%' )
+             AND ( UPPER(prog_nm_kr) like '%'||UPPER(${progNm})||'%' OR
+                   UPPER(prog_nm_En) like '%'||UPPER(${progNm})||'%' OR
+                   UPPER(prog_nm_Lo) like '%'||UPPER(${progNm})||'%' )
 	    </append>
 
     </statement>  

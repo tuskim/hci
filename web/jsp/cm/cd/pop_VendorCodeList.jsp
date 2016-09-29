@@ -119,7 +119,7 @@ function f_select(row,colid) {
 </script>
 </head>
 
-<body style="background-color:#34a8db;padding-left:5px;">
+<body style="background-color:#34a8db;">
  
     <div id="pop_ContentsBox">    
 		<div id="TitleArea2"><h1> Vendor Code List </h1> </div>    
@@ -171,9 +171,9 @@ function f_select(row,colid) {
 			      <param name="Format"
 			        value='
 			              <C> id="seq"            name="Seq"             align="center" Edit="none" width="35" Value={CurRow} </C>
-			              <C> id="vendCd"         name="Code"     	     align="center" Edit="none" width="80"  </C>
-			              <C> id="vendNm"         name="Name"     		 align="left"   Edit="none" width="195" </C>
-			              <C> id="countryCd"      name="Country"    	 align="center" Edit="none" width="50"  </C>
+			              <C> id="vendCd"         name="Code"     	     align="center" Edit="none" width="75"  </C>
+			              <C> id="vendNm"         name="Name"     		 align="left"   Edit="none" width="190" </C>
+			              <C> id="countryCd"      name="Country"    	 align="center" Edit="none" width="60"  </C>
 			              <C> id="useyn"          name="Use Y/N"         align="center" Edit="none" width="60"  </C>
 			        '>
 			</object>

@@ -251,14 +251,13 @@ Grid   E V E N T S
 							    <C>  id='limestoneQty'     	name='LimeStone'     		align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
 								<G>  name='RawMix'
 							    <C>  id='rawmix10Qty'     	name='LimeStone'     		align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
-							    <C>  id='rawmix20Qty'     	name='Laterite'     		align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
-							    <C>  id='rawmix30Qty'     	name='Alumina Clay'     	align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
-							    <C>  id='rawmix40Qty'     	name='Silica Clay'     		align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
+							    <C>  id='rawmix20Qty'     	name='Alumina Clay'     		align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
+							    <C>  id='rawmix30Qty'     	name='Silica Clay'     	align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
+							    <C>  id='rawmix40Qty'     	name='Laterite'     		align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
 							    <C>  id='rawmixQty'     	name='RawMix'     			align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
 							    </G>
 								<G>  name='Clinker'
 							    <C>  id='clinker10Qty'     	name='RawMix'     			align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
-							    <C>  id='clinker20Qty'     	name='Coal'     			align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
 							    <C>  id='clinkerQty'     	name='Clinker'     			align='right'  	width='95' Edit='none' show='true'     DisplayFormat ='#,###.000'	SumText='@sum'</C>
 							    </G>
 								<G>  name='Cement'

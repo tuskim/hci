@@ -63,6 +63,11 @@
   String msgNoDataSave      = source.getMessage("dev.inf.com.nosave");            // no data for saving.
   String msgNoDataDelete    = source.getMessage("dev.inf.com.nodelete");          // no data for deleting.
   String msgNoDataChange    = source.getMessage("dev.inf.com.nochange");          // no data for change.
+		  
+	boolean authChk = false;
+	if(g_authCd.equals("AD") || g_authCd.equals("PDM")){
+	  authChk = true;
+	}
 %>
 
 <script type="text/javascript">
@@ -992,7 +997,7 @@ f_excel();
 
   <!-- 그리드 S -->
     <div>
-      <object id="gr_output" classid="<%=LGauceId.GRID %>" style="width:100%;height:95px;" class="comn">
+      <object id="gr_output" classid="<%=LGauceId.GRID %>" style="width:100%;height:72px;" class="comn">
         <param Name="DataID"      value="ds_output">
         <Param Name="AutoResizing"    value="true">
         <param name="ColSizing"     value="true">
@@ -1003,7 +1008,7 @@ f_excel();
         <param NAME="TitleHeight"       value="30">
         <param name="UsingOneClick"   value="1">
         <param Name="Editable"      value="true">
-        <param name="ViewSummary"       value="1">
+        <param name="ViewSummary"       value="0">
         <param Name="Format"
                value="
                        <C> id='materSeq'       name='Seq'            align='center'  width='60'   Edit='none'          Value={CurRow*10}  </C>
@@ -1057,9 +1062,15 @@ f_excel();
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnDel%>"      onClick="f_Delete();"/></span>
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSave%>"     onClick="f_Save();"/></span>
         <span>|</span>
+<%
+		if(authChk){
+%>
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnApproval%>"  onClick="f_Approval();"/></span>
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnReject%>"    onClick="f_Reject();"/></span>
         <span>|</span>
+<%
+	}
+%>  
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapSend%>"   onclick="f_sapSend();"/></span>
         <span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapCancel%>" onclick="f_sapCancel();"/></span>
       </p>

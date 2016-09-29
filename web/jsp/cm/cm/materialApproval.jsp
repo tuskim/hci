@@ -100,11 +100,18 @@ function f_approval(){
 
 function f_cancel(){
 	
-    if(ds_main.NameValue(ds_main.RowPosition, "status") != '02'){
+    if(ds_main.NameValue(ds_main.RowPosition, "status") != '02') {
+    	// 02: Approval
     	alert("<%=source.getMessage("dev.msg.ps.statusCancelMaterial")%>");
         return;	
     }
-    
+
+    if(ds_main.NameValue(ds_main.RowPosition, "requestType") == '20') {
+    	// 20: Change
+    	alert("Request type : Change is not possible to cancel.");
+        return;	
+    }
+
     if(f_isNull(ds_main.NameValue(ds_main.RowPosition, "cancelMsg")) == true){
     	alert("Please input cancel reason first.");
         return;	
@@ -147,6 +154,10 @@ function f_Enable(){
 //STATUS이 'Approval'가 아니면 입력 Disable
 //-------------------------------------------------------------------------
 function f_Disable() {
+}
+
+
+function f_requestType(val){
 }
 
 </script>
@@ -196,7 +207,6 @@ function f_Disable() {
 <!-- INSERT/UPDATE Tr 의 트렌젝션 실행 시 -->
 <script language=JavaScript for=tr_cudMaster event=OnSuccess()>	
   f_retrieve();
-  ds_main.RowPosition = g_msPos;
   alert(g_msg);		
 </script>
 
@@ -242,11 +252,24 @@ function f_Disable() {
 	cfHideDSWaitMsg(gr_main);//progress bar 숨기기
 	cfFillGridNoDataMsg(gr_main,"gridColLineCnt=3");//no data found   
 	mode = "";
+  ds_main.RowPosition = g_msPos;
 </script>
 <script language=JavaScript for=ds_main event=OnLoadStarted()>
 	cfShowDSWaitMsg(gr_main);//progress bar 보이기
 	cfHideNoDataMsg(gr_main);//no data 메시지 숨기기
 	mode = "";
+</script>
+
+<script language=JavaScript for="ds_main" event=OnRowPosChanged(row)>
+
+  if(ds_main.NameValue(ds_main.rowPosition,"requestType") == "10"){
+	  document.all.reqType[0].checked = true;
+  }else if(ds_main.NameValue(ds_main.rowPosition,"requestType") == "20"){
+	  document.all.reqType[1].checked = true;
+  }else{
+	  document.all.reqType[2].checked = true;
+  }
+	
 </script>
 
 <script language=JavaScript for="ds_main" event=OnRowPosApprovald(row)>
@@ -261,6 +284,8 @@ function f_Disable() {
 	
 	g_flug = false;
 </script>
+
+
 
 <script language=JavaScript for=ds_main event=CanRowPosApproval(row)> 
 
@@ -375,11 +400,19 @@ function f_Disable() {
 			    <col width="" />
 			  </cogroup>
 			  <tr>
+			  	<th>Request Type</th>
+			  	<td colspan="3">
+			  		<input type="radio" name="reqType" value="10" checked class="radio" onclick="f_requestType(this.value);" disabled>Create&nbsp;&nbsp;
+			  		<input type="radio" name="reqType" value="20" class="radio" onclick="f_requestType(this.value);" disabled>Change&nbsp;&nbsp;
+			  		<input type="radio" name="reqType" value="30" class="radio" onclick="f_requestType(this.value);" disabled>Delete
+			  	</td>
+			  </tr>
+			  <tr>
 			  	<th>Request No</th>
 			  	<td><input type="text" id="requestNo" style="width:145px;" maxlength="9" class="txtField_read"/></td>
-			  	<th>Request Type</th>
+			  	<th>Material Code</th>
 			  	<td>
-			  		<input type="text"   id="requestTypeNm" style="width:145px;" maxlength="10" class="txtField_read" />
+			  		<input type="text"   id="materCd" style="width:145px;" maxlength="10" class="txtField_read" />
 			  	</td>
 			  </tr>
 			  <tr>
@@ -389,12 +422,10 @@ function f_Disable() {
 			  	<td><input type="text" id="unit" style="width:145px;" maxlength="100" class="txtField_read"/></td>
 			  </tr>
 			  <tr>
-			  	<th>Material Code</th>
-			  	<td>
-			  		<input type="text"   id="materCd" style="width:145px;" maxlength="10" class="txtField_read" />
-			  	</td>
 			  	<th>Cancel Reason</th>
-			  	<td><input type="text" id="cancelMsg" style="width:220px;" maxlength="100" /></td>
+			  	<td colspan="3">
+			  		<input type="text" id="cancelMsg" style="width:220px;" maxlength="100" />
+			  	</td>
 			  </tr>
 			</table>
 		</div>
@@ -408,6 +439,7 @@ function f_Disable() {
 					<C> Col=materCd          	Ctrl=materCd        	Param=value  </C>
 					<C> Col=materNmEn          	Ctrl=materNmEn        	Param=value  </C>
 					<C> Col=unit             	Ctrl=unit     			Param=value  </C>
+					<C> Col=requestType       	Ctrl=requestType     	Param=value  </C>
 					<C> Col=requestTypeNm       Ctrl=requestTypeNm     	Param=value  </C>
 					<C> Col=cancelMsg       	Ctrl=cancelMsg     		Param=value  </C>
 	        '>

@@ -175,7 +175,7 @@ function saveCheckData() {
 <!-- 입고/출고 저장소 combo DataSet -->
 <object id="ds_receLoc"	classid="<%=LGauceId.DATASET%>">
 	<param name="SyncLoad"        value="true">
-	<param name="DataID"          value="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005">
+	<param name="DataID"          value="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&attr2=M">
 </object>
 
 <!-- 입고/출고 저장소 초기 default값 얻어오는 DataSet -->

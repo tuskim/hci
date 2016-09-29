@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<statements>
+<!--  Production Approval Page -->
+
+    <statement name="retrieveProductionApproval01List">
+        <![CDATA[
+/*  productionApprovalSql.xml >  retrieveProductionApproval01List : Limestone Production */      
+SELECT A1.COMPANY_CD
+      ,A1.SYSKEY
+      ,A1.PROD_DATE
+      ,A2.MATER_SEQ
+      ,A2.MATER_CD
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A2.MATER_CD, NULL) MATER_NM
+      ,A1.LIMESTONE_QTY AS PROD_QTY
+      ,A1.STATUS
+      ,LGIUSF.F_GETCOMMNAME('COMM', A1.COMPANY_CD, 'en', '2315', A1.STATUS) AS STATUS_NM
+  FROM TB_LIMESTONE_PROD_MASTER A1
+      ,TB_LIMESTONE_PROD_INPUT  A2
+ WHERE A1.COMPANY_CD = A2.COMPANY_CD
+   AND A1.SYSKEY = A2.SYSKEY
+   AND A1.COMPANY_CD = 'GA00'
+   AND A1.DELETE_FLAG = 'N'
+   AND A1.STATUS IN ('00', '01') /* 00:PROCESS, 01:APPROVAL */
+   AND A1.PROD_DATE = REPLACE(${toDate}, '/', '')
+ ORDER BY A1.SYSKEY
+         ,A2.MATER_SEQ
+		]]>
+    </statement>  
+
+
+
+
+    <statement name="retrieveProductionApproval02List">
+        <![CDATA[
+/*  productionApprovalSql.xml >  retrieveProductionApproval02List : Rawmix Production */      
+SELECT A1.COMPANY_CD
+      ,A1.SYSKEY
+      ,A1.PROD_DATE
+      ,A2.MATER_SEQ
+      ,A2.MATER_CD
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A2.MATER_CD, NULL) MATER_NM
+      ,A2.PROD_OUT_QTY AS USE_QTY
+      ,A2.PROD_OUT_QTY / A1.RAWMIX_QTY * 100 AS USE_RATE
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A3.MATER_CD, NULL) PROD_MATER_NM
+      ,A1.RAWMIX_QTY AS PROD_QTY
+      ,A1.STATUS
+      ,LGIUSF.F_GETCOMMNAME('COMM', A1.COMPANY_CD, 'en', '2315', A1.STATUS) AS STATUS_NM
+  FROM TB_RAWMIX_PROD_MASTER A1
+      ,TB_RAWMIX_PROD_OUTPUT A2
+      ,TB_RAWMIX_PROD_INPUT  A3
+ WHERE A1.COMPANY_CD = A2.COMPANY_CD
+   AND A1.SYSKEY = A2.SYSKEY
+   AND A1.COMPANY_CD = A3.COMPANY_CD
+   AND A1.SYSKEY = A3.SYSKEY
+   AND A1.COMPANY_CD = 'GA00'
+   AND A1.DELETE_FLAG = 'N'
+   AND A1.STATUS IN ('00', '01') /* 00:PROCESS, 01:APPROVAL */
+   AND A1.PROD_DATE = REPLACE(${toDate}, '/', '')
+ ORDER BY A1.SYSKEY
+         ,A2.MATER_SEQ
+		]]>
+    </statement>  
+
+
+
+
+    <statement name="retrieveProductionApproval03List">
+        <![CDATA[
+/*  productionApprovalSql.xml >  retrieveProductionApproval03List : 3. Clinker Production */      
+SELECT A1.COMPANY_CD
+      ,A1.SYSKEY
+      ,A1.PROD_DATE
+      ,A2.MATER_SEQ
+      ,A2.MATER_CD
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A2.MATER_CD, NULL) MATER_NM
+      ,A2.PROD_OUT_QTY AS USE_QTY
+      ,A2.PROD_OUT_QTY / A1.CLINKER_QTY * 100 AS USE_RATE
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A3.MATER_CD, NULL) PROD_MATER_NM
+      ,A1.CLINKER_QTY AS PROD_QTY
+      ,A1.STATUS
+      ,LGIUSF.F_GETCOMMNAME('COMM', A1.COMPANY_CD, 'en', '2315', A1.STATUS) AS STATUS_NM
+  FROM TB_CLINKER_PROD_MASTER A1
+      ,TB_CLINKER_PROD_OUTPUT A2
+      ,TB_CLINKER_PROD_INPUT  A3
+ WHERE A1.COMPANY_CD = A2.COMPANY_CD
+   AND A1.SYSKEY = A2.SYSKEY
+   AND A1.COMPANY_CD = A3.COMPANY_CD
+   AND A1.SYSKEY = A3.SYSKEY
+   AND A1.COMPANY_CD = 'GA00'
+   AND A1.DELETE_FLAG = 'N'
+   AND A1.STATUS IN ('00', '01') /* 00:PROCESS, 01:APPROVAL */
+   AND A1.PROD_DATE = REPLACE(${toDate}, '/', '')
+ ORDER BY A1.SYSKEY
+         ,A2.MATER_SEQ
+		]]>
+    </statement>  
+
+
+
+
+    <statement name="retrieveProductionApproval04List">
+        <![CDATA[
+/*  productionApprovalSql.xml >  retrieveProductionApproval04List : 4. Cement Production */      
+SELECT A1.COMPANY_CD
+      ,A1.SYSKEY
+      ,A1.PROD_DATE
+      ,A2.MATER_SEQ
+      ,A2.MATER_CD
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A2.MATER_CD, NULL) MATER_NM
+      ,A2.PROD_OUT_QTY AS USE_QTY
+      ,A2.PROD_OUT_QTY / A1.CEMENT_QTY * 100 AS USE_RATE
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A3.MATER_CD, NULL) PROD_MATER_NM
+      ,A1.CEMENT_QTY AS PROD_QTY
+      ,A1.STATUS
+      ,LGIUSF.F_GETCOMMNAME('COMM', A1.COMPANY_CD, 'en', '2315', A1.STATUS) AS STATUS_NM
+  FROM TB_CEMENT_PROD_MASTER A1
+      ,TB_CEMENT_PROD_OUTPUT A2
+      ,TB_CEMENT_PROD_INPUT  A3
+ WHERE A1.COMPANY_CD = A2.COMPANY_CD
+   AND A1.SYSKEY = A2.SYSKEY
+   AND A1.COMPANY_CD = A3.COMPANY_CD
+   AND A1.SYSKEY = A3.SYSKEY
+   AND A1.COMPANY_CD = 'GA00'
+   AND A1.DELETE_FLAG = 'N'
+   AND A1.STATUS IN ('00', '01') /* 00:PROCESS, 01:APPROVAL */
+   AND A1.PROD_DATE = REPLACE(${toDate}, '/', '')
+ ORDER BY A1.SYSKEY
+         ,A2.MATER_SEQ
+		]]>
+    </statement>  
+
+
+
+
+    <statement name="retrieveProductionApproval05List">
+        <![CDATA[
+/*  productionApprovalSql.xml >  retrieveProductionApproval05List : 5. Cement Packing */      
+SELECT A1.COMPANY_CD
+      ,A1.SYSKEY
+      ,A1.PROD_DATE
+      ,A2.MATER_SEQ
+      ,A2.MATER_CD
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A2.MATER_CD, NULL) MATER_NM
+      ,A2.PROD_OUT_QTY AS USE_QTY
+      ,A2.PROD_OUT_QTY / A1.CEMENT_BAG_QTY * 100 AS USE_RATE
+      ,LGIUSF.F_GETCOMMNAME('MATER', A1.COMPANY_CD, 'en', A3.MATER_CD, NULL) PROD_MATER_NM
+      ,A1.CEMENT_BAG_QTY AS PROD_QTY
+      ,A1.STATUS
+      ,LGIUSF.F_GETCOMMNAME('COMM', A1.COMPANY_CD, 'en', '2315', A1.STATUS) AS STATUS_NM
+  FROM TB_CEMENT_BAG_PROD_MASTER A1
+      ,TB_CEMENT_BAG_PROD_OUTPUT A2
+      ,TB_CEMENT_BAG_PROD_INPUT  A3
+ WHERE A1.COMPANY_CD = A2.COMPANY_CD
+   AND A1.SYSKEY = A2.SYSKEY
+   AND A1.COMPANY_CD = A3.COMPANY_CD
+   AND A1.SYSKEY = A3.SYSKEY
+   AND A1.COMPANY_CD = 'GA00'
+   AND A1.DELETE_FLAG = 'N'
+   AND A1.STATUS IN ('00', '01') /* 00:PROCESS, 01:APPROVAL */
+   AND A1.PROD_DATE = REPLACE(${toDate}, '/', '')
+ ORDER BY A1.SYSKEY
+         ,A2.MATER_SEQ
+		]]>
+    </statement>  
+    
+
+
+
+
+
+
+    
+    
+
+
+    <statement name="cudProductionApproval01UpdateStatus">
+        <![CDATA[
+/*  productionApprovalSql.xml >  cudProductionApproval01UpdateStatus */      
+UPDATE TB_LIMESTONE_PROD_MASTER
+   SET STATUS     = ${status} /* 01:approval, 00: reject(progress) */
+      ,MODID         = ${userId} /* 수정자 */
+      ,MODDATE       = TO_CHAR(SYSDATE,'YYYYMMDD') /* 수정일자 */
+      ,MODTIME       = TO_CHAR(SYSDATE,'HH24MMSS') /* 수정시간 */
+ WHERE COMPANY_CD = ${companyCd}
+   AND SYSKEY = ${syskey}
+		]]>     
+    </statement>     
+    
+    
+
+
+    <statement name="cudProductionApproval02UpdateStatus">
+        <![CDATA[
+/*  productionApprovalSql.xml >  cudProductionApproval02UpdateStatus */      
+UPDATE TB_RAWMIX_PROD_MASTER
+   SET STATUS     = ${status} /* 01:approval, 00: reject(progress) */
+      ,MODID         = ${userId} /* 수정자 */
+      ,MODDATE       = TO_CHAR(SYSDATE,'YYYYMMDD') /* 수정일자 */
+      ,MODTIME       = TO_CHAR(SYSDATE,'HH24MMSS') /* 수정시간 */
+ WHERE COMPANY_CD = ${companyCd}
+   AND SYSKEY = ${syskey}
+		]]>     
+    </statement>     
+    
+    
+
+
+    <statement name="cudProductionApproval03UpdateStatus">
+        <![CDATA[
+/*  productionApprovalSql.xml >  cudProductionApproval03UpdateStatus */      
+UPDATE TB_CLINKER_PROD_MASTER
+   SET STATUS     = ${status} /* 01:approval, 00: reject(progress) */
+      ,MODID         = ${userId} /* 수정자 */
+      ,MODDATE       = TO_CHAR(SYSDATE,'YYYYMMDD') /* 수정일자 */
+      ,MODTIME       = TO_CHAR(SYSDATE,'HH24MMSS') /* 수정시간 */
+ WHERE COMPANY_CD = ${companyCd}
+   AND SYSKEY = ${syskey}
+		]]>     
+    </statement>     
+    
+    
+
+
+    <statement name="cudProductionApproval04UpdateStatus">
+        <![CDATA[
+/*  productionApprovalSql.xml >  cudProductionApproval04UpdateStatus */      
+UPDATE TB_CEMENT_PROD_MASTER
+   SET STATUS     = ${status} /* 01:approval, 00: reject(progress) */
+      ,MODID         = ${userId} /* 수정자 */
+      ,MODDATE       = TO_CHAR(SYSDATE,'YYYYMMDD') /* 수정일자 */
+      ,MODTIME       = TO_CHAR(SYSDATE,'HH24MMSS') /* 수정시간 */
+ WHERE COMPANY_CD = ${companyCd}
+   AND SYSKEY = ${syskey}
+		]]>     
+    </statement>     
+    
+    
+
+
+    <statement name="cudProductionApproval05UpdateStatus">
+        <![CDATA[
+/*  productionApprovalSql.xml >  cudProductionApproval05UpdateStatus */      
+UPDATE TB_CEMENT_BAG_PROD_MASTER
+   SET STATUS     = ${status} /* 01:approval, 00: reject(progress) */
+      ,MODID         = ${userId} /* 수정자 */
+      ,MODDATE       = TO_CHAR(SYSDATE,'YYYYMMDD') /* 수정일자 */
+      ,MODTIME       = TO_CHAR(SYSDATE,'HH24MMSS') /* 수정시간 */
+ WHERE COMPANY_CD = ${companyCd}
+   AND SYSKEY = ${syskey}
+		]]>     
+    </statement>     
+
+    
+</statements>

@@ -39,5 +39,9 @@
     <action-name name="fi.ar.cudCostTotLedgerTransValidation">
     	<command>fi.ar.cmd.CudCostTotLedgerTransValidationCmd</command>
 	</action-name>
+	
+	<action-name name="fi.ar.retrieveCostTotLedgerValidationVatVCombo">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerVatVComboCmd</command>
+	</action-name>	
 		
 </navigation-mapper>

@@ -125,11 +125,17 @@ function f_cancel()
 		alert("<%=source.getMessage("dev.warn.com.chkHeaderCount")%>");
 		return;
 	}
-	
+
+ 	if(ds_main.NameValue(ds_main.RowPosition, "postDate") > ds_main.NameValue(ds_main.RowPosition, "cancelPostDate")){
+		alert("Cancel Posting Date should be a date later than Posting Date." );
+		return;	
+	}
+ 	
 	if(ds_main.NameValue(ds_main.RowPosition, "status") != '03' ){
 		alert("<%=source.getMessage("dev.msg.po.statusCheck", "IV Success" )%>" );
 		return;	
 	}
+
 	
 	if(confirm("<%=source.getMessage("dev.cfm.com.cancel")%>")){         
 	    g_flug=true;	    
@@ -363,11 +369,11 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 </script> 
  
 <script language=JavaScript for=gr_main event=OnPopup(row,colid,data)>
- 	if ( colid == "deliDate") {
+ 	if ( colid == "cancelPostDate") {
 	 	h_date.value ="";
 		gf_calendarExClean(h_date); 
-		ds_main.NameValue(row,"deliDate") =funcReplaceStrAll(h_date.value,"/","");	
-	}	
+		ds_main.NameValue(row,"cancelPostDate") = funcReplaceStrAll(h_date.value,"/","");		 	
+ 	}	
 </script>
 
 <script language=JavaScript for=gr_detail event=OnPopup(row,colid,data)>
@@ -523,28 +529,29 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 							<param name="Format"            
 							value="
 							<FC>id='chk'         width='25'  align='center'   edit='true',  Editstyle='check'    </FC>				            							
-							<FC>id='poNo'          name='P/O No.'              width='80'  align='center' edit='none'                                  </FC>
-							<C>id='sapPoNo'        name='SAP P/O No.'          width='80'  align='center' edit='none'                                  </C>					
+							<FC>id='poNo'          name='P/O No.'              width='85'  align='center' edit='none'                                  </FC>
+							<C>id='sapPoNo'        name='SAP P/O No.'          width='85'  align='center' edit='none'                                  </C>					
 							<C>id='ivSeq'         name='<%=columnData.getString("po_seq") %>'            width='30'  align='center'   edit='none'       </C>                  
-							<C>id='regdate'         name='P/O Date'            width='78'  align='center'   edit='none'  mask='XXXX/XX/XX' </C>                  
-							<C>id='ivDate'         name='<%=columnData.getString("invoice_date") %>'            width='78'  align='center'   edit='none'  mask='XXXX/XX/XX' </C>                  
-							<C>id='postDate'       name='<%=columnData.getString("posting_date") %>'          width='78'  align='center'   edit='none'   mask='XXXX/XX/XX' </C>
-							<C>id='ivAmt'        name='<%=columnData.getString("amount") %>'           width='120'  align='right' edit='none'         </C>
-							<C>id='currencyCd'       name='<%=columnData.getString("currency_cd") %>'          width='40'  align='center' edit='none' Data='ds_currCd:code:name:code'  editstyle='lookup'      editstyle='PopupFix'  </C>
-							<C>id='vatCd'     name='Tax Code'        width='90'  align='left' edit='none'       Data='ds_vatCd:code:name:code'  editstyle='lookup' </C>							
+							<C>id='regdate'         name='P/O Date'            width='85'  align='center'   edit='none'  mask='XXXX/XX/XX' </C>                  
+							<C>id='ivDate'         name='<%=columnData.getString("invoice_date") %>'            width='85'  align='center'   edit='none'  mask='XXXX/XX/XX' </C>                  
+							<C>id='postDate'       name='<%=columnData.getString("posting_date") %>'          width='85'  align='center'   edit='none'   mask='XXXX/XX/XX' </C>
+							<C>id='cancelPostDate'       name='Cancel;Posting Date'          width='85'  align='center'   edit='Any' Editstyle='PopupFix'  mask='XXXX/XX/XX' </C>
+							<C>id='ivAmt'        name='<%=columnData.getString("amount") %>'           width='110'  align='right' edit='none'         </C>
+							<C>id='currencyCd'       name='<%=columnData.getString("currency_cd") %>'          width='45'  align='center' edit='none' Data='ds_currCd:code:name:code'  editstyle='lookup'      editstyle='PopupFix'  </C>
+							<C>id='vatCd'     name='Tax Code'        width='100'  align='left' edit='none'       Data='ds_vatCd:code:name:code'  editstyle='lookup' </C>							
 							<C>id='vatAmt'        name='Tax Amount'           width='90'  align='right' edit='none'       </C>		
-							<C>id='status'    name='<%=columnData.getString("status") %>'       width='100'  align='center'  edit='none'     Data='ds_status:code:name:code'  editstyle='lookup'    </C>												
+							<C>id='status'    name='<%=columnData.getString("status") %>'       width='110'  align='left'  edit='none'     Data='ds_status:code:name:code'  editstyle='lookup'    </C>												
 							<C>id='sapIvDoNo'    name='<%=columnData.getString("invoice_doc_no") %>'       width='90'  align='center'  edit='none'           </C>												
 							<C>id='sapCancelIvDoNo'    name='<%=columnData.getString("invoice_cancel_doc_no") %>'       width='105'  align='center'  edit='none'          </C>												
 							<G> name='<%=columnData.getString("invoice_creation") %>'
-								<C>id='sendDate'    name='<%=columnData.getString("date") %>'           width='76'  align='center' edit=none 	 mask='XXXX/XX/XX'</C>		
-								<C>id='sendStat'    name='<%=columnData.getString("success") %>'       width='80'  align='left'  edit='none'   Data='ds_status:code:name:code'  editstyle='lookup'      </C>												
-								<C>id='sendMsg'    name='<%=columnData.getString("cause") %>'     	 width='200'  align='left'  edit='none'        </C>												
+								<C>id='sendDate'    name='Date'           width='76'  align='center' edit=none 	 mask='XXXX/XX/XX'</C>		
+								<C>id='sendStat'    name='Success'       width='80'  align='left'  edit='none'   Data='ds_status:code:name:code'  editstyle='lookup'      </C>												
+								<C>id='sendMsg'    name='Cause'     	 width='200'  align='left'  edit='none'        </C>												
 							</G>
 							<G> name='<%=columnData.getString("invoice_cancel") %>'
-								<C>id='cancelDate'    name='<%=columnData.getString("date") %>'       	width='76'  align='center'  edit='none'   mask='XXXX/XX/XX'     </C>												
-								<C>id='cancelStat'    name='<%=columnData.getString("success") %>'       width='120'  align='left'  edit='none'   Data='ds_status:code:name:code'  editstyle='lookup'      </C>												
-								<C>id='cancelMsg'    name='<%=columnData.getString("cause") %>'       width='200'  align='left'  edit='none'        </C>												
+								<C>id='cancelDate'    name='Date'       	width='76'  align='center'  edit='none'   mask='XXXX/XX/XX'     </C>												
+								<C>id='cancelStat'    name='Success'       width='120'  align='left'  edit='none'   Data='ds_status:code:name:code'  editstyle='lookup'      </C>												
+								<C>id='cancelMsg'    name='Cause'       width='200'  align='left'  edit='none'        </C>												
 							</G>
 							<C>id='chk'     show='false'                                  </C>					"/>
 		             
@@ -570,12 +577,12 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 							<param name="Format"              
 							value="
 							<C>id='itemSeq'          name='<%=columnData.getString("po_seq") %>'            width='60' align='center'    edit='none'   </C>							            
-							<C>id='materNm'         name='<%=columnData.getString("mater_cd") %>'          width='130' align='left'      edit='true'   </C>
+							<C>id='materNm'         name='<%=columnData.getString("mater_cd") %>'          width='150' align='left'      edit='true'   </C>
 							<C>id='unit'            name='<%=columnData.getString("unit") %>'              width='30' align='center'    edit='none'   </C>
 							<C>id='qty'             name='<%=columnData.getString("po_qty") %>'               width='130' align='right'     edit='true'  </C>
 							<C>id='ivQty'      name='<%=columnData.getString("receipt_qty") %>'               width='130' align='right'     edit='true' dec='2' </C>
 							<C>id='amt'          name='<%=columnData.getString("amount") %>'            width='130' align='right'     edit='true' dec='3'    </C>	
-							<C>id='vatCd'           name='Tax Code'            width='100' align='center'      edit='true' Data='ds_vatCd:code:name:code' editstyle='lookup' </C> 
+							<C>id='vatCd'           name='Tax Code'            width='120' align='left'      edit='true' Data='ds_vatCd:code:name:code' editstyle='lookup' </C> 
 							<C>id='companyCd'           show='false' </C> 
 							<C>id='poNo'           show='false' </C> 
 							<C>id='ivSeq'           show='false' </C> 

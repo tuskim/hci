@@ -81,6 +81,14 @@ public class CudCementSalesMgntCmd implements LGauceCommandIF {
 				LData inputm = LGauceConverter.convertToLDataWithJobType(gdsm);
 				
 				biz.updateCementSalesMasterStatus(inputm,loginUser);
+			}else if("Y".equals(lData.getString("creditCheck"))){
+				LData result = null;
+				
+				LData inputm = LGauceConverter.convertToLDataWithJobType(gdsm);
+				LMultiData inputd = LGauceConverter.convertToLMultiDataWithJobType(gdsd);
+				
+				result = biz.CudCementSalesPrintCreditLimit(inputm, inputd, loginUser); //여신체크
+				
 			}else{
 				LData result = null;
 				

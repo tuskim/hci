@@ -34,7 +34,7 @@
         </append>
         
         <append where="false" condition="${materNm}.NOTEMPTY" id="#3">
-          <![CDATA[ AND M.MATER_NM_EN LIKE '%' || ${materNm} || '%' ]]>
+          <![CDATA[ AND UPPER(M.MATER_NM_EN) LIKE '%' || UPPER(${materNm}) || '%' ]]>
         </append>
         
         <append where="false" condition="${status}.NOTEMPTY" id="#4">

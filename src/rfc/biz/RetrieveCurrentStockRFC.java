@@ -327,6 +327,8 @@ public class RetrieveCurrentStockRFC extends SAPWrap {
             	rfcData.setString("costCenter", "");
             	rfcData.setString("attr1", "");
             	rfcData.setString("attr2", "");
+            	rfcData.setString("intOrder", "");
+            	rfcData.setString("intOrderNm", "");
             	rfcData.setString("chk", "F");
                 
                 resultData.addLData(rfcData);

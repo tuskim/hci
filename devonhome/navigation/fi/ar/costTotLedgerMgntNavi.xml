@@ -44,4 +44,8 @@
     	<command>fi.ar.cmd.RetrieveCostTotLedgerMstExcelListCmd</command>
 	</action-name>
 
+	<action-name name="fi.ar.retrieveCostTotLedgerVatVCombo">
+    	<command>fi.ar.cmd.RetrieveCostTotLedgerVatVComboCmd</command>
+	</action-name>
+
 </navigation-mapper>

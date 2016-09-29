@@ -69,7 +69,7 @@ function onLoad(){
 	ds_payTerm.RowPosition = ds_payTerm.NameValueRow("code","AA03");
 	
 	//Storage Loc.
-	ds_storCd.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005";
+	ds_storCd.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&attr2=P";
 	ds_storCd.Reset();
 	
 	//costomer
@@ -218,7 +218,8 @@ function f_retrieve(){
   ds_main.DataID += "&salesDateFrom="   + encodeURIComponent(salesDateFrom.value);
   ds_main.DataID += "&salesDateTo="     + encodeURIComponent(salesDateTo.value);
 	ds_main.DataID += "&orderStatus=" 		+ ds_status.nameValue(ds_status.rowPosition,"code");
- 	ds_main.DataID += "&lang="			      + "<%=g_lang%>";	
+ 	ds_main.DataID += "&lang="			      + "<%=g_lang%>";
+ 	ds_main.DataID += "&searchType="		  + "search";
 	ds_main.Reset();
 	g_flug = false;
 }
@@ -659,9 +660,18 @@ function f_print(){
 		alert("<%=source.getMessage("dev.msg.ps.statusSalesPrint")%>");
 		return;
 	}
-		
-	f_report_set(); 
-	re_report.Preview();    	
+	
+	ds_main.UserStatus(ds_main.RowPosition) = "1";  //강제 Insert로 상태 변경
+	ds_detail.UserStatus(ds_detail.RowPosition) = "1";  //강제 Insert로 상태 변경
+	
+  //여신체크 로직 추가
+	tr_reportBefore.KeyValue = "Servlet( I:IN_DS1 = ds_main, I:IN_DS2 = ds_detail )";
+	tr_reportBefore.Action   = "/sd.sm.cudCementSalesMgnt.gau?creditCheck=Y"
+	tr_reportBefore.post();
+	
+	//tr_reportBefore event=OnSuccess() 에서 처리 하도록 변경.
+	//f_report_set(); 
+	//re_report.Preview();    	
 }
 
 //Print Dataset
@@ -864,6 +874,13 @@ function f_Disable() {
 <OBJECT id=tr_report classid="<%=LGauceId.TR%>">
 	<param name="KeyName" value="toinb_dataid4">
 </OBJECT>
+<OBJECT id=tr_reportBefore classid="<%=LGauceId.TR%>">
+	<param name="KeyName" value="toinb_dataid4">
+</OBJECT>
+<object id="ds_creditCheck" classid="<%=LGauceId.DATASET%>" >
+  	<param name="SyncLoad"          value="true">
+</object> 
+
 <!-----------------------------------------------------------------------------
 		   프로그램 전용 G A U C E   C O M P O N E N T' S   E V E N T S
 ------------------------------------------------------------------------------>
@@ -902,6 +919,8 @@ function f_Disable() {
 </script>
 <script language=JavaScript for=tr_report event=OnSuccess()>	
   f_retrieve();
+  ds_main.RowPosition = g_msPos;
+  ds_detail.RowPosition= g_ddtPos;	
 </script>
 
 <!-- SAP Cancle Tr 의 트렌젝션 실행 시 -->
@@ -1109,6 +1128,30 @@ function f_Disable() {
 	tr_report.post();
 </script>
 
+
+<script language=JavaScript for=tr_reportBefore event=OnSuccess()>
+	var salesNo = ds_main.NameValue(ds_main.RowPosition,"salesNo");
+	var salesDate = ds_main.NameValue(ds_main.RowPosition,"salesDate");
+	
+  ds_creditCheck.ClearAll();
+	ds_creditCheck.DataID  = "/sd.sm.retrieveCementSalesMgnt.gau?searchType=creditCheck&salesNo="+salesNo+"&salesDate="+salesDate;
+	ds_creditCheck.Reset();
+
+	var creditCheck = ds_creditCheck.NameValue(1,"orderStatus");
+	var creditMsg = ds_creditCheck.NameValue(1,"creditMsg");
+	if(creditCheck == 1 && creditMsg.indexOf("Customer Credit Available") > -1 ){
+	  f_report_set(); 
+	  re_report.Preview();
+	}else{
+		alert("Exceed Credit Limit. Check Credit Exposure.");
+	}
+	
+	
+</script>
+
+<script language=JavaScript for=tr_reportBefore event=OnFail()>
+
+</script>
 <!-----------------------------------------------------------------------------
     화면영역 시작
 ------------------------------------------------------------------------------>

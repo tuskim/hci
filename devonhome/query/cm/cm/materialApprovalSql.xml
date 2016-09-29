@@ -97,7 +97,7 @@ USING (SELECT COMPANY_CD /*  */
              ,MATER_NM_LO /*  */
              ,MATER_TYPE /*  */
              ,UNIT /*  */
-             ,'Y' AS USEYN /*  */
+             ,${useyn} AS USEYN /*  */
              ,${userId} AS REGID /*  */
              ,TO_CHAR(SYSDATE, 'YYYYMMDD') AS REGDATE /*  */
              ,TO_CHAR(SYSDATE, 'HH24MISS') AS REGTIME /*  */
@@ -116,6 +116,7 @@ WHEN MATCHED THEN
         ,X1.MATER_NM_LO = X2.MATER_NM_LO
         ,X1.MATER_TYPE  = X2.MATER_TYPE
         ,X1.UNIT        = X2.UNIT
+        ,X1.USEYN        = X2.USEYN
         ,X1.MODID       = X2.MODID
         ,X1.MODDATE     = X2.MODDATE
         ,X1.MODTIME     = X2.MODTIME

@@ -55,7 +55,7 @@ function init(){
 	var sPostDate     = document.all.sPostDate.value;
 	var sBaselineDate = document.all.sBaselineDate.value;
 	var baselineDate  = document.all.baselineDate.value;
-	var tomorrowDate  = getTomorrow();		
+	var tomorrowDate  = "<%= currentDate %>";  //getTomorrow();		//현재 일자로 변경.
 	
 	// Posting Date 값이 없는 경우 (검색조건 필드)
 	if(sPostDate == "" || sPostDate == null){
@@ -228,17 +228,21 @@ function checkSaveData() {
 	}
 	
 	// House Bank 값이 없는 경우
-	if(houseBank == "" || houseBank == null){
-		alert('<%=msgCheckHouseBank%>');
-		document.all.sHouseBank.focus();
-		return;
-	}
-	
-	// 출금요청 통화코드와 House Bank 통화코드가 다른 경우
-	if(currCd != houseBankCurrCd){
-		alert('<%=msgCheckHouseCurrency%>');
-		document.all.sHouseBank.focus();
-		return;
+	//Bank Transfer('T')인 경우에만 체크
+	if(paymentMethod == "T"){
+			
+		if(houseBank == "" || houseBank == null){
+			alert('<%=msgCheckHouseBank%>');
+			document.all.sHouseBank.focus();
+			return;
+		}
+		
+		// 출금요청 통화코드와 House Bank 통화코드가 다른 경우
+		if(currCd != houseBankCurrCd){
+			alert('<%=msgCheckHouseCurrency%>');
+			document.all.sHouseBank.focus();
+			return;
+		}
 	}
 	
 	return true;
@@ -249,7 +253,7 @@ function checkSaveData() {
 //-------------------------------------------------------------------------		
 function f_openVendorPop() {	
 	
-	openVendorSapListWin();		
+	openVendorSapListWin('P');		
 }
 
 //-------------------------------------------------------------------------
@@ -431,6 +435,13 @@ function f_excelDown() {
   cfHideDSWaitMsg(gr_grid);//progress bar 숨기기
   cfFillGridNoDataMsg(gr_grid,"gridColLineCnt=2");//no data found   
   mode = "";
+  
+  //Payment Information 정보 초기화
+  sPaymentMethod.Index = 0;
+  partnerBankType.value = "";
+  partnerAcctNum.value = "";
+  sHouseBank.value = "";
+  houseBankAcct.value = "";
 </script>
 
 <script language=JavaScript for=ds_grid event=OnLoadError()>
@@ -499,7 +510,8 @@ function f_excelDown() {
 							</td>
 							<th><%=columnData.getString("vend_nm") %> </th>									
 							<td>
-								<input type="text" id="sVendCd" name="sVendCd" style="width:60px;" />&nbsp;
+							  <input type="hidden" id="sVendCd" name="sVendCd" />
+								<input type="text" id="sVendNm" name="sVendNm" style="width:140px;" readOnly/>&nbsp;
 					  			<img src="<%= images %>button/search_icon_2.gif"  onClick="javascript:f_openVendorPop();" style="cursor:hand"/>
 					  		</td>
 																									
@@ -545,22 +557,22 @@ function f_excelDown() {
 	
 	<!-- Open AP List GRID 영역 Start -->
 	<div>
-		<object id="gr_grid" classid="<%=LGauceId.GRID %>" style="width:100%;height:230px;" class="comn" dataName="payment request" validFeatures="ignoreStatus=no" validExp="">
+		<object id="gr_grid" classid="<%=LGauceId.GRID %>" style="width:100%;height:240px;" class="comn" dataName="payment request" validFeatures="ignoreStatus=no" validExp="">
 			<param Name="DataID" 			value='ds_grid'>
 	    	<Param name="AutoResizing"      value=true>	 
 	    	<param name="Editable"          value=True>
-	    	<Param NAME="TitleHeight"      	value="30">
+	    	<Param NAME="TitleHeight"      	value="40">
 	    	<param name="UsingOneClick"     value="1"/>
 			<param Name='Format' value='
 				<c>id="chk"    	      name="<%=columnData.getString("chk") %>"                        width="40"   Edit="true"  show="true"  {IF(returnMsg="","White","Red")}  EditStyle=CheckBox	HeadAlign=center HeadCheck=false HeadCheckShow=true  </c> 																					
-				<c>id="docNo"         name="<%=columnData.getString("doc_no") %>"     align="center"  width="100"  Edit="none"  show="true"  </c>
+				<c>id="docNo"         name="<%=columnData.getString("doc_no") %>"     align="center"  width="80"  Edit="none"  show="true"  </c>
 	        	<c>id="lineItem"      name="<%=columnData.getString("line_item") %>"  align="center"  width="90"   Edit="none"  show="false" </c>	        	
-	        	<c>id="vendCd"        name="<%=columnData.getString("vend_cd") %>"    align="center"  width="90"   Edit="none"  show="true"  </c>
-	        	<c>id="vendNm"        name="<%=columnData.getString("vend_nm2") %>"   align="left"    width="150"  Edit="none"  show="true"  </c>	        		        										        					        	 	
-	        	<c>id="acctCd"        name="<%=columnData.getString("acct_cd") %>"    align="center"  width="90"   Edit="none"  show="true"  </c> 		
-	        	<c>id="acctNm"        name="<%=columnData.getString("acct_nm") %>"    align="left"    width="150"  Edit="none"  show="true"  </c>   		
-	        	<c>id="amount"        name="<%=columnData.getString("amount") %>"     align="right"   width="130"  Edit="none"  show="true"  </c>
-	        	<c>id="currCd"        name="<%=columnData.getString("curr_cd") %>"    align="center"  width="110"  Edit="none"  show="true"  </c>
+	        	<c>id="vendCd"        name="<%=columnData.getString("vend_cd") %>"    align="center"  width="60"   Edit="none"  show="true"  </c>
+	        	<c>id="vendNm"        name="<%=columnData.getString("vend_nm2") %>"   align="left"    width="140"  Edit="none"  show="true"  </c>	        		        										        					        	 	
+	        	<c>id="acctCd"        name="<%=columnData.getString("acct_cd") %>"    align="center"  width="70"   Edit="none"  show="true"  </c> 		
+	        	<c>id="acctNm"        name="<%=columnData.getString("acct_nm") %>"    align="left"    width="140"  Edit="none"  show="true"  </c>   		
+	        	<c>id="amount"        name="<%=columnData.getString("amount") %>"     align="right"   width="110"  Edit="none"  show="true"  </c>
+	        	<c>id="currCd"        name="<%=columnData.getString("curr_cd") %>"    align="center"  width="62"  Edit="none"  show="true"  </c>
 	        	<c>id="postDate"      name="<%=columnData.getString("post_date") %>"  align="center"  width="90"   Edit="none"  show="true"  Mask="XXXX/XX/XX"  </c> 			        				    				        					        		        	 
 	        	<c>id="sapRequestNo"                                                  align="center"  width="110"  Edit="none"  show="false" </c>
 	        	<c>id="houseBank"                                                     align="center"  width="110"  Edit="none"  show="false" </c>
@@ -568,7 +580,7 @@ function f_excelDown() {
 	        	<c>id="fiscalYear"                                                    align="center"  width="110"  Edit="none"  show="false" </c>
 	        	<c>id="exchAmount"                                                    align="center"  width="110"  Edit="none"  show="false" </c>
 	        	<c>id="exchCurrCd"                                                    align="center"  width="110"  Edit="none"  show="false" </c>
-	        	<c>id="docDesc"                                                       align="center"  width="110"  Edit="none"  show="false" </c>
+	        	<c>id="docDesc"                                                       align="left"  width="110"  Edit="none"  show="false" </c>
 	        	<c>id="docDate"                                                       align="center"  width="110"  Edit="none"  show="false" </c>
 	        	<c>id="docType"                                                       align="center"  width="110"  Edit="none"  show="false" </c>
 	        	<c>id="paymentBlock"                                                  align="center"  width="110"  Edit="none"  show="false" </c>
@@ -601,7 +613,6 @@ function f_excelDown() {
 		
 		<input type="hidden" id="vendCd" name="vendCd" value="" />
 		<input type="hidden" id="currentDate" name="currentDate" value="<%= currentDate %>" />
-		<input type="hidden" id="houseBankAcct" name="houseBankAcct" />
 		<input type="hidden" id="houseBankCurrCd" name="houseBankCurrCd" />
 		
         <table width="100%" border="0" cellpadding="0" cellspacing="0" class="output_board" >
@@ -638,12 +649,14 @@ function f_excelDown() {
 	    	<tr>		  												
 		  		<th><%= columnData.getString("partner_bank_type") %></th>
 		  		<td>
-		  			<input id="partnerBankType" name="partnerBankType" type="text" style="width:140px;" readonly />&nbsp;
+		  			<input id="partnerBankType" name="partnerBankType" type="text" style="width:40px;" readonly />&nbsp;
+		  			<input id="partnerAcctNum" name="partnerAcctNum" type="text" style="width:120px;" readonly />&nbsp;
 		  			<img src="<%= images %>button/search_icon_2.gif"  onClick="javascript:f_openVendorBankAcctListPop();" style="cursor:hand"/>
 		  		</td>
 		  		<th><%= columnData.getString("house_bank") %></th>
 		  		<td>
-		  			<input id="sHouseBank" name="sHouseBank" type="text" style="width:140px;" readonly />&nbsp;
+		  			<input id="sHouseBank" name="sHouseBank" type="text" style="width:60px;" readonly />&nbsp;
+		  			<input id="houseBankAcct" name="houseBankAcct" type="text" style="width:80px;" readonly />&nbsp;
 		  			<img src="<%= images %>button/search_icon_2.gif"  onClick="javascript:f_openHouseBankPop();" style="cursor:hand"/>
 		  		</td>		  		
 			</tr>

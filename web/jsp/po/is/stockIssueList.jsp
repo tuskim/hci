@@ -46,7 +46,7 @@
 //-------------------------------------------------------------------------					
 function init(){
 	//저장소
-	ds_location.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005";
+	ds_location.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&attr2Loc=MS";
 	ds_location.Reset();
 	
 	//상태 
@@ -102,8 +102,21 @@ function f_cancel() {
 		}
 	}
 	
-	
 	//To Do 저장 validation check
+	for(var i=1; i<=ds_grid.CountRow; i++){
+		
+		if(ds_grid.NameValue(ds_grid.RowPosition,"cancelPostingDate") == ""){
+			alert("Input the Cancel Posting Date!");
+			return;
+		}
+		
+		
+		if(ds_grid.NameValue(ds_grid.RowPosition,"postingDate") > ds_grid.NameValue(ds_grid.RowPosition,"cancelPostingDate")  ){
+			alert("Cancel Posting Date is required to be greater than Posting Date.")
+			return;
+		}
+		
+	}
 	
 	//변경한 데이터가 있는지 체크한다.
 	if(confirm("<%=source.getMessage("dev.cfm.com.cancel") %>")){		
@@ -166,6 +179,39 @@ function f_excel() {
 <!-- Hub In Header 조회 DataSet -->
 <script language=JavaScript for=ds_grid event=OnLoadCompleted(rowCnt)>
   cfFillGridNoDataMsg(gr_grid,"gridColLineCnt=2");//no data found   
+</script>
+
+
+<script language=JavaScript for="ds_grid" event=OnRowPosChanged(row)>
+		
+		for(var i=1; i<=ds_grid.CountRow; i++){
+			if(i != row)
+				ds_grid.NameValue(i, "chk") = "F";
+		}
+		
+		ds_grid.UndoAll();
+		
+</script>
+		
+<script language="javascript" for="gr_grid" event="onClick( Row, Colid )">
+		if(Colid == "chk"){
+			for(var i=1; i<=ds_grid.CountRow; i++){
+				if(i != Row)
+					ds_grid.NameValue(i, "chk") = "F";
+			}
+		}else{
+			ds_grid.NameValue(ds_grid.RowPosition, "chk") = "T";
+		}
+</script>
+
+<script language="javascript"  for=gr_grid event=OnPopup(Row,Colid,data)>
+	  
+		if (Colid == "cancelPostingDate" && ds_grid.NameValue(Row,"status") == "03") {
+		 	h_date.value ="";
+			gf_calendarExClean(h_date);
+			ds_grid.NameValue(ds_grid.RowPosition,"cancelPostingDate") = funcReplaceStrAll(h_date.value,"/","");		 
+		}	
+	
 </script>
 
 
@@ -296,8 +342,11 @@ function f_excel() {
 			            <c>id="unit"    				Edit="none"   	align="center"  	width="30"     name="<%=columnData.getString("unit") %>"    			</c>
 			            <c>id="issueQty"    			Edit="none"   	align="right"  	width="90"     name="<%=columnData.getString("issue_qty") %>"  dec="2"  sumtext="@sum", sumbgcolor="#ECE6DE" sumcolor="#666666"	</c>
 			            <c>id="postingDate"  			Edit="none"   	align="center"  	width="85"     name="<%=columnData.getString("posting_date") %>" 	 mask="XXXX/XX/XX" 	</c>
+			            <C>id="cancelPostingDate"   name="Cancel Posting;Date"    width="90"  align="center" edit="RealNumeric"       mask="XXXX/XX/XX" editstyle="PopupFix"</C>
 			            <c>id="issueLoc"   			    Edit="none"   	align="left"  		width="85"     name="<%=columnData.getString("issue_loc") %>" 		EditStyle="LookUp" 	Data="ds_location:code:name"	</c>
-			            <c>id="costCenter"    		    Edit="none"   	align="left"  		width="130"     name="<%=columnData.getString("cost_center") %>" 	EditStyle="LookUp" 	Data="ds_costCenter:code:name:code" ListWidth=250 	</c>
+			            <c>id="costCenter"    		    Edit="none"   	align="left"  		width="130"     name="<%=columnData.getString("cost_center") %>" 	EditStyle="LookUp" 	Data="ds_costCenter:code:name:code" ListWidth=250 	show="false"</c>
+			            <c>id="intOrder"   		    Edit="none"   	align="left"  		width="130"     name="Internal;Order" show="false"</c>
+			            <c>id="intOrderNm"   		    Edit="none"   	align="left"  		width="130"     name="Internal;Order" </c>
 			            <c>id="attr2"    	 			Edit="none"   	align="left"    	width="110"     name="<%=columnData.getString("issue_desc") %>" 	</c> 		
 			            <c>id="sapDocNo"   			    Edit="none"   	align="center"       width="90"     name="<%=columnData.getString("sap_issue_no") %>"     	</c>
 			            <c>id="sapCancelDocNo"   	    Edit="none"   	align="center"       width="95"     name="<%=columnData.getString("sap_cancel_issue_no") %>"     	</c>
@@ -322,5 +371,6 @@ function f_excel() {
         </div>
 <!-- 버튼 E -->
 </div>
+<input type="hidden" id="h_date"/>
 </body>
 </html>

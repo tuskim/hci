@@ -46,7 +46,7 @@
 		       AND a.TRANS_DATE BETWEEN ${srtDate} AND ${endDate}
 		    </append>
 		    <append where="false" condition="${sVendor}.NOTEMPTY" id="#2">
-		       AND DECODE(${lang},'kr',c.vend_nm_kr,'en',UPPER(c.vend_nm_en), UPPER(c.vend_nm_lo)) LIKE '%'||UPPER(${sVendor})||'%'
+		    AND c.vend_cd = ${sVendor}
 		    </append>		   
             <append where="false" condition="${deptCd}.NOTEMPTY" id="#3">
 		       AND A.DELI_LOCT = ${deptCd}
@@ -187,7 +187,7 @@
 			        ,MODID  = 	${userId}
 				    ,MODDATE = TO_CHAR(SYSDATE, 'YYYYMMDD')
 				    ,MODTIME =  TO_CHAR(SYSDATE, 'HH24MISS')
-			                
+			      ,ATTR1   = ${cancelPostingDate}            
 			 WHERE company_cd = ${companyCd}
 			   AND po_no = ${poNo}
 			   AND receipt_seq = ${receiptSeq}
@@ -217,6 +217,7 @@
 		          ,SAP_CANCEL_RECEIPT_NO
 		          ,MA.SAP_IF_STATUS
 		          ,MA.SAP_RTN_MSG
+		          ,MA.ATTR1 AS CANCEL_POSTING_DATE
 			FROM TB_RECEIPT_MASTER MA, TB_PO_MASTER DE
 			WHERE MA.COMPANY_CD =  DE.COMPANY_CD
 			AND   MA.PO_NO = DE.PO_NO

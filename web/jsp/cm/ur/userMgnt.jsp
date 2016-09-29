@@ -400,20 +400,20 @@ Gauce Component Event
 <table width="768" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="768"><comment id="__NSID__"/>
-		<object	id="gr_grid" classid="<%=LGauceId.GRID%>" style="width:755px;height:135px" class="comn">
+		<object	id="gr_grid" classid="<%=LGauceId.GRID%>" style="width:810px;height:135px" class="comn">
 			<param name="DataID" value="ds_grid"/>
 			<param name="Editable" value="TRUE"/>
 			<param name="Format"
 				value='
 						<c>id="userId"    	Show="ture"  Edit="none"  			align="center"  	width="90"     name="User ID" 	   	</c>
-						<c>id="userNm"    			     Edit="none"   			align="left"  	width="120"     name="User Name"    	</c>
+						<c>id="userNm"    			     Edit="none"   			align="left"  	width="140"     name="User Name"    	</c>
 			            <c>id="deptCd"    	Show="false" Edit="none"   			align="center"  width="90"     name="deptCd" 	   	</c> 		
-			            <c>id="detailDeptCd"    	     Edit="none"   			align="left"  	width="120"     name="Department" 	   	</c>		
-			            <c>id="business"    			 Edit="none"   			align="left"  	width="130"     name="Job(Role)"     	</c>   		
+			            <c>id="detailDeptCd"    	     Edit="none"   			align="left"  	width="150"     name="Department" 	   	</c>		
+			            <c>id="business"    			 Edit="none"   			align="left"  	width="140"     name="Job(Role)"     	</c>   		
 			            <c>id="detailAuthCd"    		 Edit="none"   			align="left" 	width="110"     name="<%=columnData.getString("auth_cd") %>"  		</c> 		
 			            <c>id="email"     			   	 Edit="none"  			align="left"    width="150"	   name="<%=columnData.getString("email") %>" show="false"	</c>			    
 			            <C>id="loginErrorCount"			 Edit="none"			align="center"  width="107"	   name="Login Error Count" DECIMAL="#"</C>
-			            <c>id="useyn"    				 Edit="none"   			align="center"  width="60"     name="<%=columnData.getString("useyn")%>" 		</c>       
+			            <c>id="useyn"    				 Edit="none"   			align="center"  width="55"     name="<%=columnData.getString("useyn")%>" 		</c>       
 			            <c>id="companyCd"  	Show="false" Edit="none"  			align="center"  width="110"    name="companyCd"  </c>
 			            <c>id="systemId"  	Show="false" Edit="none"  			align="center"  width="110"    name="systemId"  </c>
 						'></param>

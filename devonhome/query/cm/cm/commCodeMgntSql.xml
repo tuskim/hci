@@ -241,6 +241,7 @@
                AND cd.group_cd   = ${groupCd}
                AND cd.useyn      = 'Y'
                {#2}
+               {#3}
 			   
 		]]> 
 		<append where="false" condition="${firstVal}.NOTEMPTY" 	id="#1">
@@ -253,6 +254,10 @@
         
         <append where="false" condition="${attr2}.NOTEMPTY" 	id="#2">
 			AND cd.ATTR2      = ${attr2}
+        </append>
+
+        <append where="false" condition="${attr2Loc}.NOTEMPTY" 	id="#3">
+			AND cd.ATTR2    in  ('M','S')
         </append>
     </statement>
      
@@ -363,6 +368,7 @@
     <!--자재코드 필수항목 조회-->
     <statement name="retrieveMaterialMasterList">
         <![CDATA[
+        	/* commCodeMgntSql.xml > retrieveMaterialMasterList */
 			SELECT company_cd,
        			   mater_cd,
        			   mater_type mater_type2,
@@ -382,6 +388,7 @@
  			       {#1}
 			       {#2}
 				   {#3}
+				   {#4}
 			 ORDER BY mater_cd  
         ]]> 
 	    <append condition="${materType}.NOTEMPTY" id="#1">       
@@ -393,6 +400,9 @@
 	    <append condition="${useyn}.NOTEMPTY" id="#3">       
 			   AND useyn like '%'||${useyn}||'%'
 	    </append>	    
+	    <append condition="${materNmEn}.NOTEMPTY" id="#4">       
+ 		       AND UPPER(mater_nm_en) like '%'||UPPER(${materNmEn})||'%'
+	    </append>
     </statement> 
        
     <!-- 자재코드 필수항목 수정-->

@@ -144,15 +144,15 @@
         ]]>
 
 	    <append condition="${vendNm}.NOTEMPTY&amp;${lang}.EQ.kr" id="#1">
-			   AND UPPER(vend_nm_kr) like '%'||${vendNm}||'%'
+			   AND UPPER(vend_nm_kr) like '%'||UPPER(${vendNm})||'%'
 	    </append>
 
 	    <append condition="${vendNm}.NOTEMPTY&amp;${lang}.EQ.en" id="#1">
-			   AND UPPER(vend_nm_en) like '%'||${vendNm}||'%'
+			   AND UPPER(vend_nm_en) like '%'||UPPER(${vendNm})||'%'
 	    </append>
 
 	    <append condition="${vendNm}.NOTEMPTY&amp;${lang}.EQ.lo" id="#1">
-			   AND UPPER(vend_nm_lo) like '%'||${vendNm}||'%'
+			   AND UPPER(vend_nm_lo) like '%'||UPPER(${vendNm})||'%'
 	    </append>
 
 	    <append condition="${vendCd}.NOTEMPTY" id="#2">       

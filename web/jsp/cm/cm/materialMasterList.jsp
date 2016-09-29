@@ -54,8 +54,8 @@ function keyLogin(evt){
 function f_search(){ 
 	var condition = "?";
 	    condition += "materCd=" + encodeURIComponent(document.aForm.seekMaterCd.value);
+	    condition += "&materNmEn=" + encodeURIComponent(document.aForm.seekMaterNm.value);
 	    condition += "&materType=" + ds_maType.nameValue(ds_maType.rowPosition,"code");
-	    
 	 	condition += "&useyn=" +ds_yn.nameValue(ds_yn.rowPosition,"code");
   
 	ds_grid.DataID = "/cm.cm.retrieveMaterialMasterList.gau" +condition;
@@ -189,8 +189,6 @@ function f_excel() {
 				<param name=index           	value=0>
 				</object></comment><script>__WS__(__NSID__); </script>
 			</td>	
-			<th><%=columnData.getString("mater_cd") %> : </th>
-			<td><input type="text" name="seekMaterCd" id="seekMaterCd" onkeydown="keyLogin(event)" size="20" class="input_Licon"  maxlength="20"></td>
 			
 			<th><%=columnData.getString("useyn") %> : </th> 
 			<td><comment id="__NSID__"><object id="lx_yn"  classid="<%=LGauceId.LUXECOMBO%>" width="80">
@@ -203,7 +201,15 @@ function f_excel() {
 			     
 
 		   	</object></comment><script>__WS__(__NSID__); </script>
-		   	</td>					
+		   	</td>
+		</tr>					
+		<tr>
+			<th><%=columnData.getString("mater_cd") %> : </th>
+			<td><input type="text" name="seekMaterCd" id="seekMaterCd" onkeydown="keyLogin(event)" size="20" class="input_Licon"  maxlength="20"></td>
+			
+			<th>Material Name : </th>
+			<td><input type="text" name="seekMaterNm" id="seekMaterNm" onkeydown="keyLogin(event)" size="20" class="input_Licon"  maxlength="20"></td>
+		</tr>					
 	</table>
 	</dt>
 	<dd class="btnseat1">

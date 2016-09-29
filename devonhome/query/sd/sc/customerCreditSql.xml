@@ -6,7 +6,7 @@
     <!-- WEB 주문 내역 조회-->
     <statement name="retrieveCustomerSalesAmount">
         <![CDATA[
-		SELECT NVL(sum(de.sales_amt), 0) sales_amount				
+		SELECT NVL(sum(de.total_amt), 0) sales_amount				
   		FROM  tb_cement_sales_master ma, 
   		      tb_cement_sales_detail de
  		WHERE ma.company_cd = de.company_cd

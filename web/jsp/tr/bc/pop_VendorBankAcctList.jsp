@@ -58,8 +58,11 @@ function f_select(row,colid) {
         
     if(row>0){
         var partnerBankType = ds_grid.NameValue(row , "partnerBankType" );
+        var acctNum = ds_grid.NameValue(row , "acctNum" );
         
-        window.returnValue = partnerBankType;
+        window.returnValue = acctNum + ";" 
+					       + partnerBankType + ";"
+					       ;
         self.close(); 
     }
 }

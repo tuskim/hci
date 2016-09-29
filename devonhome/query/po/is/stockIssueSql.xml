@@ -29,7 +29,8 @@
 					     modtime,
 					     cost_center,
 					     attr1,
-					     attr2
+					     attr2,
+					     attr3
 					     )
 				 VALUES
 					   ( ${companyCd}, 
@@ -61,7 +62,8 @@
 					     TO_CHAR(SYSDATE, 'HH24MISS'),
 					     ${costCenter},
 					     ${attr1},
-					     ${attr2}
+					     ${attr2},
+					     ${intOrder}
 					     )
 	    ]]>
     </statement>
@@ -106,6 +108,7 @@
 			     ,MODID  = 	${userId}
 				 ,MODDATE = TO_CHAR(SYSDATE, 'YYYYMMDD')
 				 ,MODTIME =  TO_CHAR(SYSDATE, 'HH24MISS')
+				 ,ATTR1   = ${cancelPostingDate}
 			WHERE COMPANY_CD = ${companyCd} 
 				AND  ISSUE_NO  = ${issueNo} 
 				AND  MATER_CD = ${materCd}
@@ -115,58 +118,60 @@
     <statement name="retrieveIssueRequestList">
         <![CDATA[
 			SELECT  'F' as chk
-						,COMPANY_CD
-						,ISSUE_NO
-						,MATER_CD
+						,I.COMPANY_CD
+						,I.ISSUE_NO
+						,I.MATER_CD
 						,(SELECT MATER_NM_EN 
 						  FROM TB_MATER_INFO M
-						  WHERE M.MATER_CD = TB_ISSUE_LIST.MATER_CD
+						  WHERE M.MATER_CD = I.MATER_CD
 						  and company_cd = ${companyCd} ) AS MATER_NM
-						,UNIT
-						,ISSUE_QTY
-						,ISSUE_DATE
-						,ISSUE_LOC
-						,ISSUE_DESC
-						,COST_CENTER
-						,AREA_CD
-						,DIV_CD
-						,BLOCK_CD
-						,BLOCK_CD2
-						,YEAR_CD
-						,TM_TBM
-						,POSTING_DATE
-						,WERKS AS PLANT_CD
-						,SAP_DOC_NO
-						,SAP_CANCEL_DOC_NO
-						,STATUS
-						,SAP_RTN_MSG
-						,ATTR1            -- Vendor
-						,ATTR2			 -- Description
-			FROM TB_ISSUE_LIST 
-			WHERE COMPANY_CD = ${companyCd}
+						,I.UNIT
+						,I.ISSUE_QTY
+						,I.ISSUE_DATE
+						,I.ISSUE_LOC
+						,I.ISSUE_DESC
+						,I.COST_CENTER
+						,I.AREA_CD
+						,I.DIV_CD
+						,I.BLOCK_CD
+						,I.BLOCK_CD2
+						,I.YEAR_CD
+						,I.TM_TBM
+						,I.POSTING_DATE
+						,I.WERKS AS PLANT_CD
+						,I.SAP_DOC_NO
+						,I.SAP_CANCEL_DOC_NO
+						,I.STATUS
+						,I.SAP_RTN_MSG
+						,I.ATTR1   AS CANCEL_POSTING_DATE
+						,I.ATTR2			 -- Description
+						,I.ATTR3 AS INT_ORDER
+						,(SELECT TRIM(M.IO_NAME) AS IO_NAME FROM TB_IO_MASTER M WHERE M.COMPANY_CD = I.COMPANY_CD AND M.IO_CD = I.ATTR3 AND M.USE_YN = 'Y') AS INT_ORDER_NM
+			FROM TB_ISSUE_LIST I 
+			WHERE I.COMPANY_CD = ${companyCd}
 			{#1}
 			{#2}
 			{#3}
 			{#4}			
 			{#5}			
-			ORDER BY ISSUE_NO DESC
+			ORDER BY I.ISSUE_NO DESC
 	    ]]>
 
 	    <append where="false" condition="${issue_loc}.NOTEMPTY"   id="#1">
-	               		and ISSUE_LOC = ${issue_loc}
+	               		and I.ISSUE_LOC = ${issue_loc}
 	    </append>  
 	    <append where="false" condition="${materCd}.NOTEMPTY"   id="#2">
-	               		and MATER_CD = ${materCd}
+	               		and I.MATER_CD = ${materCd}
 	    </append>  
 	    <append where="false" condition="${status}.NOTEMPTY"   id="#3">
-	               		and STATUS = ${status}
+	               		and I.STATUS = ${status}
 	    </append>  
 	    <append where="false" condition="${posting_date_from}.NOTEMPTY"   id="#4">
-	               and POSTING_DATE	>= ${posting_date_from}
+	               and I.POSTING_DATE	>= ${posting_date_from}
 	    </append>  
 	    <append where="false" condition="${posting_date_to}.NOTEMPTY"   id="#5">
 	       	  <![CDATA[ 
-             		and POSTING_DATE	<= ${posting_date_to}
+             		and I.POSTING_DATE	<= ${posting_date_to}
            	  ]]>          	
 
 	    </append>  

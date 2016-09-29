@@ -225,14 +225,14 @@ public class InvoiceRegBiz {
 				for(int i=0;i<mDataMst.getDataCount();i++) {
 							
 					LData cudlData = mDataMst.getLData(i);
+					
+					cudlData.setString("companyCd", inputData.getString("companyCd"));
 					 		
 					LData plantCd = dao.executeQueryForSingle("cm/cm/commCodeMgntSql/retrievePlant", inputData);
 					LData ivSeq = dao.executeQueryForSingle("po/ir/InvoiceRegSql/retrieveIvSeq", cudlData);
 					LData xmlNo = dao.executeQueryForSingle("cm/cm/commCodeMgntSql/retireveXmlDocNo", inputData);
 					
-
 					LLog.info.println(inputData);
-					cudlData.setString("companyCd", inputData.getString("companyCd"));
 					cudlData.setString("ivSeq",    ivSeq.getString("ivSeq"));	
 					cudlData.setString("ivDate",    inputData.getString("invoiceDate"));
 					cudlData.setString("postDate",    inputData.getString("postingDate"));
@@ -267,7 +267,7 @@ public class InvoiceRegBiz {
 						cudlDataDtl.setString("poNo",    cudlData.getString("poNo"));
 						cudlDataDtl.setString("ivSeq",     ivSeq.getString("ivSeq"));
 						//cudlDataDtl.setString("vatCd",     inputData.getString("vatCd"));  Line Item 별로 다르게 
-						cudlDataDtl.setString("receiptQty",    cudlDataDtl.getString("previousQty"));
+						cudlDataDtl.setString("receiptQty",    cudlDataDtl.getString("qty"));
 						cudlDataDtl.setString("attr1",    cudlDataDtl.getString("tranTaxAmt"));
 	
 						
@@ -404,6 +404,8 @@ public class InvoiceRegBiz {
 				
 				cudlData.setString("ivAmt",    format.format(cudlData.getDouble("ivAmt")));
 				cudlData.setString("vatAmt",    format.format(cudlData.getDouble("vatAmt")));
+				cudlData.setString("postDate",    cudlData.getString("cancelPostDate"));
+				LLog.info.println("postDate: " + cudlData.getString("postDate"));
 				
 		        // Detail CUD
 				for(int j=mDataDtl.getDataCount()-1 ;j>=0;j--) {
@@ -449,14 +451,17 @@ public class InvoiceRegBiz {
 
 				
 				if (resultMsg.getString("returnType").equals("99")){
+					LLog.info.println("fail");
 					cudlData.setString("sendStat", "03");                  // 취소 실패시 I/V성공 상태로 변경함
 				}
 				
+				LLog.info.println("returnType: " + resultMsg.getString("returnType"));
 				dao.add ("/po/ir/InvoiceRegSql/cudInvoiceAfterSapCancelSuccess", cudlData ); 
 				dao.executeUpdate();
 				
 				if (resultMsg.getString("returnType").equals("06")) {            // 전체 성공 
 					//취소 성공시 update
+					LLog.info.println("all success");
 					cudlData.setString("stat", "N");
 					dao.add ("/po/ir/InvoiceRegSql/cudIvClose", cudlData ); 
 					dao.executeUpdate();

@@ -170,13 +170,13 @@ function f_delete() {
 <!-- 입고/출고 저장소 combo DataSet -->
 <object id="ds_issuelocation"	classid="<%=LGauceId.DATASET%>">
 	<param name="SyncLoad"  value="true">
-	<param name="DataID"    value="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005">
+	<param name="DataID"    value="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&attr2=M">
 </object>
 
 <!-- 입고/출고 저장소 combo DataSet -->
 <object id="ds_recelocation"	classid="<%=LGauceId.DATASET%>">
 	<param name="SyncLoad"  value="true">
-	<param name="DataID"    value="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&firstVal=Total">
+	<param name="DataID"    value="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&firstVal=Total&attr2=M">
 </object>
 
 <!-- status combo DataSet -->

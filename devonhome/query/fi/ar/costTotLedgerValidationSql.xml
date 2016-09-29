@@ -602,6 +602,27 @@
 			   AND doc_seq    = ${docSeq}
 		]]>     
     </statement>
+    
+    
+    <statement name="retrieveCostTotLedgerValidationVatVCombo">
+        <![CDATA[
+        /* costTotLedgerValidationSql.xml > retrieveCostTotLedgerValidationVatVCombo */
+            SELECT cd.detail_cd code,
+                   decode(${lang},'kr',cd.detail_cd_nm_kr,
+                                  'en',cd.detail_cd_nm_en, cd.detail_cd_nm_lo) name,
+                   TO_NUMBER(sort) sort     
+              FROM lgiusf.tb_comm_cd_master cm,
+                   lgiusf.tb_comm_cd_detail cd
+             WHERE cm.company_cd = cd.company_cd  
+               AND cm.company_cd = ${companyCd} 
+               AND cm.group_cd   = cd.group_cd
+               AND cm.useyn      = 'Y' 
+               AND cd.group_cd   = '2007'
+               AND cd.useyn      = 'Y'
+               AND cd.detail_cd  LIKE 'V%'
+             ORDER BY SORT
+		]]> 	       		
+    </statement>       
 
         
 </statements>

@@ -42,13 +42,14 @@
 <link rel="stylesheet" type="text/css" href="../sys/css/sub_style.css" />
 </head>
 <script type="text/javascript">
+parent.centerFrame.cols='220,*';
 //-------------------------------------------------------------------------
 //콤보박스
 //-------------------------------------------------------------------------					
 function init(){
 
 	//저장소
-	ds_location.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005";
+	ds_location.DataId="/cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&attr2Loc=MS";
 	ds_location.Reset();
 	
 	//품목
@@ -170,16 +171,24 @@ function f_save() {
 			alert('<%=source.getMessage("dev.warn.com.required", "Issue Qty" ) %>' );
 			gr_grid.SetColumn("issueQty");
 			return;
+		<%--
 		}else if(ds_grid.RowStatus(i) != 0 && ds_grid.NameValue(i,"costCenter")==""){
 			ds_grid.RowPosition=i;
 			alert('<%=source.getMessage("dev.warn.com.required", "Cost Center" ) %>' );
 			gr_grid.SetColumn("costCenter");
 			return;
-		}else if(ds_grid.RowStatus(i) != 0 && ds_grid.NameValue(i,"attr1")=="" && ds_grid.NameValue(i,"attr2")==""){
+		--%>
+		
+		//Description 필수 여부 삭제
+		/*
+		}
+		else if(ds_grid.RowStatus(i) != 0 && ds_grid.NameValue(i,"attr1")=="" && ds_grid.NameValue(i,"attr2")==""){
 			ds_grid.RowPosition=i;
 			alert('<%=source.getMessage("dev.warn.com.required", "Description" ) %>' );
 			gr_grid.SetColumn("attr2");
 			return;
+		*/
+		
 		}else 	if(ds_grid.RowStatus(i) != 0 && ds_grid.NameValue(i,"issueQty")=="0"){
 			ds_grid.RowPosition=i;
 			alert('<%=source.getMessage("dev.msg.ps.greaterZero", "issueQty" ) %>'  );     
@@ -191,6 +200,26 @@ function f_save() {
 			gr_grid.SetColumn("issueQty");       
 			return;
 		}
+		
+		//Data 저장/수정 시 - Cost Center, I/O 필드 정보 중 하나의 정보만 저장/수정 가능
+		var center = ds_grid.NameValue(i,"costCenter");
+		var intOrder = ds_grid.NameValue(i,"intOrder");
+		
+		if (ds_grid.RowStatus(i) != 0 &&  center == "" && intOrder == "") {
+			alert('<%=source.getMessage("dev.warn.com.inputIoCost")%>');			
+			ds_grid.RowPosition = i;
+			ds_grid.SetColumn("costCenter");
+			return;
+		}
+		
+		if (ds_grid.RowStatus(i) != 0 &&  center != "" && intOrder != "") {
+			alert('<%=source.getMessage("dev.warn.com.chooseIoCost")%>');
+			ds_grid.RowPosition = i;
+			ds_grid.SetColumn("costCenter");
+			return;
+		}
+			
+			
 	}
 	
 	
@@ -301,6 +330,12 @@ function f_save() {
 	}
 </script>
 
+<script language=JavaScript for=gr_grid event=OnPopup(row,colid,data)>
+  if ( colid == "intOrderNm") {
+	  openInternalOrderCodeListGridWin(row, ds_grid, "intOrder", "intOrderNm");
+  }
+</script>
+
 <script language=JavaScript for= lc_mater event=OnKeyDown(kcode)>
     if(kcode != 8 && kcode != 13 && kcode != 27 && kcode != 33 && kcode != 34 && kcode != 35 &&
         kcode != 36 && kcode != 37 && kcode != 38 && kcode != 39 && kcode != 40 && kcode != 45 &&
@@ -343,10 +378,8 @@ function f_save() {
 												<param name="BindColumn"    	value="materCd">
 											    <param name=ListExprFormat		value="materNm^0^180,materCd^0^70">
 											    <param name=index           	value=0>
-											    <%-- 
 											    <param name=ComboStyle  value="2">											    
 											    <param name=WantSelChgEvent	value=true>	
-											    --%>
 											</object></comment><script>__WS__(__NSID__); </script></td>
 										</tr>
 								</table>
@@ -411,13 +444,15 @@ function f_save() {
 					value='
 						<fc>id="chk"			Edit="true"       width="30"	  EditStyle=CheckBox	</fc>
 			            <fc>id="materCd"    	Edit="none"		align="center"  	width="90"     name="<%=columnData.getString("mater_cd") %>" 	   	</fc> 
-			            <fc>id="MAKTX"      Edit="none"  	align="left"    	width="160"     name="<%=columnData.getString("mater_nm") %>"		</fc>
-			            <fc>id="MEINS"    	Edit="none"   	align="center"  	width="30"     name="<%=columnData.getString("unit") %>"    	</fc>
-			            <fc>id="LABST"    	Edit="none"   	align="right"  		width="85"     name="<%=columnData.getString("curr_qty") %>"  dec="2"  	</fc>
-			            <c>id="issueQty"   Edit="true"   	align="right"  		width="85"     name="<%=columnData.getString("issue_qty") %>" 	dec="2"	</c>
-			            <c>id="costCenter"    	Edit="true"   	align="left"  		width="130"     name="<%=columnData.getString("cost_center") %>" 	EditStyle="LookUp" 	Data="ds_costCenter:code:name:code" ListWidth=250 </c>
-			            <c>id="attr1"    	show="false" Edit="true"   	align="left"  		width="90"     name="<%=columnData.getString("vendor") %>" 	 EditStyle="LookUp" 	Data="ds_vendor:code:name:code"	ListWidth=270  	</c>
-			            <c>id="attr2"    	Edit="true"   	align="left"  		width="140"     name="<%=columnData.getString("issue_desc") %>" 		</c>
+			            <fc>id="MAKTX"      Edit="none"  	align="left"    	width="150"     name="<%=columnData.getString("mater_nm") %>"		</fc>
+			            <fc>id="MEINS"    	Edit="none"   	align="center"  	width="40"     name="<%=columnData.getString("unit") %>"    	</fc>
+			            <fc>id="LABST"    	Edit="none"   	align="right"  		width="90"     name="<%=columnData.getString("curr_qty") %>"  dec="2"  	</fc>
+			            <c>id="issueQty"   Edit="true"   	align="right"  		width="80"     name="<%=columnData.getString("issue_qty") %>" 	dec="2"	</c>
+			            <c>id="costCenter"    	Edit="true"   	align="left"  		width="200"     name="<%=columnData.getString("cost_center") %>" 	EditStyle="LookUp" 	 Searchlookup=true  Data="ds_costCenter:code:name:code" ListWidth=230 show="false"</c>
+                  <c>id=intOrder       name="Internal Order"     	      align="center"  width="70"  show="false"  </c>
+                  <c>id=intOrderNm     name="Internal Order"     	      align="left"  width="160"   Edit="AlphaNum"    show="true"   EditStyle=PopupFix  </c>
+			            <c>id="attr1"    	show="false" Edit="true"   	align="left"  		width="140"     name="<%=columnData.getString("vendor") %>" 	 EditStyle="LookUp" 	Data="ds_vendor:code:name:code"	ListWidth=270  	</c>
+			            <c>id="attr2"    	Edit="true"   	align="left"  		width="120"     name="<%=columnData.getString("issue_desc") %>" 		</c>
 			            
 				'/>
 			     </object>

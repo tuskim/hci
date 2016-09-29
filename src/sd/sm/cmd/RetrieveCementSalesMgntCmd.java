@@ -66,7 +66,11 @@ public class RetrieveCementSalesMgntCmd  implements LGauceCommandIF {
 		lData.setString("deptCd", loginUser.getString("deptCd"));
 
 		LMultiData result = new LMultiData();
-		result= biz.retrieveCementSalesMgntList(lData);
+		if(lData.getString("searchType").equals("creditCheck")){
+			result= biz.retrieveCementSalesCreditCheckResult(lData);
+		}else{
+			result= biz.retrieveCementSalesMgntList(lData);
+		}
 		
 		gauceResponse.enableFirstRow( dsMain );
 		LGauceConverter.extractToGauceDataSet( result,dsMain );

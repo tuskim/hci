@@ -38,6 +38,11 @@
   	<action-name name="po.is.cmd.cudReceiptSAPCancelCmd">
 		<command>po.is.cmd.CudReceiptSAPCancelCmd</command>
 	</action-name>
+	
+	<!--입고 List 엑셀 다운로드-->
+   	<action-name name="po.is.retrieveReceiptExcelDownList"> 
+    	<command>po.is.cmd.RetrieveReceiptExcelDownListCmd</command>
+   	</action-name>
 
    	
 </navigation-mapper>

@@ -101,7 +101,7 @@ public class RetrievePaymentRequestCmd implements LGauceCommandIF  {
         gds.addDataColumn( new GauceDataColumn( "fiscalYear"      , GauceDataColumn.TB_STRING   , 10   ) );
         gds.addDataColumn( new GauceDataColumn( "exchAmount"      , GauceDataColumn.TB_DECIMAL  , 13, 2) );
         gds.addDataColumn( new GauceDataColumn( "exchCurrCd"      , GauceDataColumn.TB_STRING   , 10   ) );
-        gds.addDataColumn( new GauceDataColumn( "docDesc"         , GauceDataColumn.TB_STRING   , 10   ) );
+        gds.addDataColumn( new GauceDataColumn( "docDesc"         , GauceDataColumn.TB_STRING   , 50   ) );
         gds.addDataColumn( new GauceDataColumn( "docDate"         , GauceDataColumn.TB_STRING   , 10   ) );
         gds.addDataColumn( new GauceDataColumn( "docType"         , GauceDataColumn.TB_STRING   , 10   ) );
         gds.addDataColumn( new GauceDataColumn( "paymentBlock"    , GauceDataColumn.TB_STRING   , 10   ) );

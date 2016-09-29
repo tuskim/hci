@@ -92,11 +92,13 @@ public class IssueBiz {
 		            cnt = dao.executeUpdate();       	   
 					if(cnt > 0){
 						getMessage = "OK";					
-					}				            
-
+					}
+					
+					mData.modifyString("postingDate", i, mData.getLData(i).getString("cancelPostingDate"));
 				}
+
 		        GMM03 gmm03 = new GMM03();
-		        inputData.setString("status", "04");					// 04 : 취소요청 
+		        inputData.setString("status", "04");					// 04 : 취소요청
 		        gmm03.GMM03_out(mData, inputData);   		// XI로 출고 내역 전송(비동기)
 				
 				dao.commit();	

@@ -634,15 +634,15 @@ function f_RetrieveCostCenter() {
                 <C> id=companyCd   		name="<%= columnData.getString("company_cd") %>"     	 align="center"   width="70"    Edit="none"   show="false" </C>
                 <C> id=deptCd      		name="<%= columnData.getString("dept_cd") %>"     		 align="center"   width="40"    Edit="none"   show="false" </C>
                 <C> id=deptNm      		name="<%= columnData.getString("dept_cd") %>"     		 align="left"     width="70"    Edit="none"   show="false" </C>
-                <C> id=docYm       		name="<%= columnData.getString("doc_ym") %>"     		 align="center"   width="70"    Edit="none"   show="true" </C>
-                <C> id=docSeq      		name="<%= columnData.getString("doc_seq") %>"     		 align="center"   width="70"    Edit="none"   show="true" </C>
-                <C> id=amount      		name="<%= columnData.getString("amount") %>"     		 align="right"    width="120"   Edit="none"   show="true"  sumbgcolor="#ECE6DE" sumcolor="#666666" DisplayFormat ="#,###.00"</C>
-                <C> id=currencyCd    	name="<%= columnData.getString("currency_cd") %>"   	 align="center"   width="50"    Edit="none"   show="true" </C>
+                <C> id=docYm       		name="<%= columnData.getString("doc_ym") %>"     		 align="center"   width="65"    Edit="none"   show="true" </C>
+                <C> id=docSeq      		name="<%= columnData.getString("doc_seq") %>"     		 align="center"   width="65"    Edit="none"   show="true" </C>
+                <C> id=amount      		name="<%= columnData.getString("amount") %>"     		 align="right"    width="110"   Edit="none"   show="true"  sumbgcolor="#ECE6DE" sumcolor="#666666" DisplayFormat ="#,###.00"</C>
+                <C> id=currencyCd    	name="<%= columnData.getString("currency_cd") %>"   	 align="center"   width="45"    Edit="none"   show="true" </C>
                 <C> id=docType     		name="<%= columnData.getString("doc_type") %>"     	     align="center"   width="70"    Edit="none"   show="false" </C>
                 <C> id=progStatus  		name="<%= columnData.getString("prog_status") %>"     	 align="center"   width="70"    Edit="none"   show="false" </C>
-                <C> id=progStatusNm 	name="<%= columnData.getString("prog_status_nm") %>"     align="left"     width="95"    Edit="none"   show="true" </C>
+                <C> id=progStatusNm 	name="<%= columnData.getString("prog_status_nm") %>"     align="left"     width="90"    Edit="none"   show="true" </C>
                 <C> id=attr2 				name="<%= columnData.getString("attr2") %>"      	 align="left"     width="74"    Edit="none"   show="false" EditStyle="LookUp" 	Data="ds_attr2:Code:NAME"  </C>
-                <C> id=sapDocSeq  		name="<%= columnData.getString("sap_doc_seq") %>"     	 align="center"   width="90"    Edit="none"   show="true" </C>
+                <C> id=sapDocSeq  		name="<%= columnData.getString("sap_doc_seq") %>"     	 align="center"   width="87"    Edit="none"   show="true" </C>
                 <C> id=createDate  		name="<%= columnData.getString("create_date") %>"     	 align="center"   width="80"    Edit="none"   show="true" Mask="XXXX/XX/XX"</C>
                 <C> id=docDate     		name="<%= columnData.getString("doc_date") %>"     	     align="center"   width="80"    Edit="none"   show="true" Mask="XXXX/XX/XX"</C>
                 <C> id=postDate    		name="<%= columnData.getString("post_date") %>"     	 align="center"   width="80"    Edit="none"   show="true" Mask="XXXX/XX/XX"</C>

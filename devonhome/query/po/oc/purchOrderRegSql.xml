@@ -12,7 +12,7 @@
                    pm.pur_dept_cd,
                    DECODE(${lang},'kr',pd.detail_cd_nm_kr,'en',pd.detail_cd_nm_en,pd.detail_cd_nm_lo)  pur_dept_nm, 
                    pm.vend_cd,  
-                   lgiusf.F_GETCOMMNAME('VEND',pm.company_cd ,${lang},pm.vend_cd,'')  vend_nm,
+                   NVL(lgiusf.F_GETCOMMNAME('VEND',pm.company_cd ,${lang},pm.vend_cd,'') , pm.vend_cd) vend_nm,
                    pm.currency_cd,
                    lgiusf.F_GETCOMMNAME('COMM',pm.company_cd ,${lang},'2004',pm.currency_cd)  currency_nm,
                    cu.attr1 curr_type,  
@@ -61,7 +61,8 @@
                    pd.attr4 pur_dept3,
                    pd.attr5 pur_dept4,
                    pd.attr6 pur_dept5,
-                   pd.attr7 pur_dept6
+                   pd.attr7 pur_dept6,
+                   pm.print_date
                    
               FROM lgiusf.tb_po_master pm,     
                    lgiusf.tb_comm_cd_detail pd,
@@ -163,7 +164,11 @@
                    aa.attr1 curr_Type,                      
                    pd.receipt_qty,
                    pd.receipt_cls_yn, 
-                   decode(pd.receipt_qty,rd.receipt_qty,'T','F') qty_chk,
+                   --decode(pd.receipt_qty,rd.receipt_qty,'T','F')  qty_chk,
+                   case when pm.status = '03'
+                        then 'T'
+                        else 'F'
+                    end close_chk,
                    sap_price
               FROM lgiusf.tb_po_detail pd,
                    lgiusf.tb_po_master pm,
@@ -324,14 +329,28 @@
 			        sap_if_status     =     ${sapIfStatus},
 			        discount_amt      =     ${discountAmt},
 			        pr_no             =     ${prNo}, 
-				    reference_no	  =     ${refNo},
-				    iv_close	      =     ${ivClose},
-				    attr2    	      =     ${poType}
+				      reference_no	    =     ${refNo},
+				      iv_close	        =     ${ivClose},
+				      attr2    	        =     ${poType},
+				      print_date        =     null
 			  WHERE company_cd        =     ${companyCd}
 			    AND po_no             =     ${poNo}
 		]]>     
     </statement>
  
+     <statement name="cudPurchOrderUpdatePrintDate">
+        <![CDATA[
+			UPDATE tb_po_master
+			   SET  print_date        =     null,
+			        modid             =     ${userId},
+			        moddate           =     TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        modtime           =     TO_CHAR(SYSDATE,'HH24MMSS')
+			  WHERE company_cd        =     ${companyCd}
+			    AND po_no             =     ${poNo}
+		]]>     
+    </statement>
+    
+    
     <!-- P/O RegsiTration Cud -->
     <statement name="cudPurchOrderRegMainDel">
         <![CDATA[
@@ -550,7 +569,7 @@
 		               regdate                     
 		          FROM lgiusf.tb_mater_info
 		         WHERE useyn='Y'
-		           AND mater_type='3400' 
+		           AND mater_type in ('3110', '3400') 
 		           AND company_cd = ${companyCd}
 		         ORDER BY mater_nm ASC
 		]]>
@@ -813,5 +832,45 @@
               AND cd.group_cd   = '2004'
               AND cd.useyn      = 'Y' 
 		]]>     
-    </statement>                   
+    </statement>
+
+    <!-- P/O Printdate update -->
+    <statement name="updatePurchOrderPrintdate">
+        <![CDATA[
+			UPDATE tb_po_master
+			   SET  print_date    =  TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        modid         =  ${userId},
+			        moddate       =  TO_CHAR(SYSDATE,'YYYYMMDD'),
+			        modtime       =  TO_CHAR(SYSDATE,'HH24MMSS')
+			  WHERE company_cd    =  ${companyCd}
+			    AND po_no         =  ${poNo}
+		]]>     
+    </statement>
+    
+    <!--P/O Closing  Update -->
+    <statement name="cudPurchOrderClosingUpdate">
+        <![CDATA[
+            UPDATE lgiusf.tb_po_detail    
+               SET receipt_cls_yn   =   ${receiptClsYn},
+			             modid            =   ${userId},
+			             moddate          =   TO_CHAR(SYSDATE,'YYYYMMDD'),
+			             modtime          =   TO_CHAR(SYSDATE,'HH24MMSS')
+             WHERE company_cd       =   ${companyCd}
+               AND po_no            =   ${poNo}
+               AND po_seq            =  ${poSeq} 
+		]]> 	       		
+    </statement>
+    
+    <!--P/O Closing  Update -->
+    <statement name="cudPurchOrderClosingSapSend">
+        <![CDATA[
+            UPDATE lgiusf.tb_po_master    
+               SET sap_rtn_msg      =   ${sapRtnMsg},
+			             modid            =   ${userId},
+			             moddate          =   TO_CHAR(SYSDATE,'YYYYMMDD'),
+			             modtime          =   TO_CHAR(SYSDATE,'HH24MMSS')
+             WHERE company_cd       =   ${companyCd}
+               AND po_no            =   ${poNo}
+		]]> 	       		
+    </statement>
 </statements>

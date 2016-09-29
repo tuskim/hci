@@ -397,8 +397,8 @@ function f_save()
 							<param name="Format"              value="
 							<C>id='NO'		   name=''				    value={CurRow} width=30		align=center BgColor='#EDF1F6' </c>
 							<C>id='groupCd'    name='<%=columnData.getString("group_cd") %>'         EditLimitText=4 EditLimit=4   edit={IF(CHK=0,'false','true')}, width='64' align='center' sort=true  </c>
-							<C>id='groupNm'    name='<%=columnData.getString("group_nm") %>'         EditLimitText=30  EditLimit=30    Edit='true'  width='170' align='left' sort=true    </c>
-							<C>id='msRemark'   name='<%=columnData.getString("ms_remark") %>'        EditLimitText=100 EditLimit=100    Edit='true'  width='220' align='left' sort=true   </c>
+							<C>id='groupNm'    name='<%=columnData.getString("group_nm") %>'         EditLimitText=30  EditLimit=30    Edit='true'  width='180' align='left' sort=true    </c>
+							<C>id='msRemark'   name='<%=columnData.getString("ms_remark") %>'        EditLimitText=100 EditLimit=100    Edit='true'  width='250' align='left' sort=true   </c>
 							<C>id='msRegnm'    name='<%=columnData.getString("ms_regnm") %>'         Edit='none'    width='90' align='center' sort=true  </c>
 							<C>id='msRegdate'  name='<%=columnData.getString("ms_regdate") %>'       Edit='none'  width='95' align='center'    Mask='XXXX/XX/XX' sort=true</c>
 							<C>id='msYn'       name='<%=columnData.getString("ms_yn") %>'    Data='ds_msUseyn:code:name'    EditStyle=Lookup          Edit='true'  width='71' align='center'   </c>"/>

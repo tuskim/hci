@@ -30,6 +30,8 @@
 /RetrieveCostTotLedgerMstMgntCmd.java/1.1/Thu Jul 21 01:07:48 2016//
 /RetrieveCostTotLedgerMstValidationCmd.java/1.1/Thu Jul 21 07:22:48 2016//
 /RetrieveCostTotLedgerUploadCmd.java/1.1/Thu Jul 21 01:26:54 2016//
+/RetrieveCostTotLedgerValidationVatVComboCmd.java/1.1/Wed Sep 21 01:12:08 2016//
+/RetrieveCostTotLedgerVatVComboCmd.java/1.1/Wed Sep 21 00:49:43 2016//
 /RetrieveCountDocClosingListCmd.java/1.1/Thu Aug  2 05:33:44 2012//
 /RetrieveDocBargeListCmd.java/1.1/Thu Aug  2 05:33:44 2012//
 /RetrieveDocHistoryListCmd.java/1.1/Thu Aug  2 05:33:44 2012//

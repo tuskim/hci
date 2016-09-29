@@ -182,6 +182,7 @@ SELECT '0' CHK
       ,LGIUSF.F_GETCOMMNAME('COMM', A1.COMPANY_CD, 'en', '2005', A1.STOR_LOCT) STOR_LOCT_NM
       ,A1.PLANT_CD /* plant code */
       ,A1.ATTR1 /* 속성1 */
+      ,0 AS RATE
   FROM TB_RAWMIX_PROD_OUTPUT A1
       ,TB_MATER_INFO         A2
  WHERE A1.COMPANY_CD = A2.COMPANY_CD
@@ -319,6 +320,7 @@ SELECT '' AS SYSKEY
        , 0 AS PROD_OUT_QTY
        ,'1002' AS STOR_LOCT
        ,'' AS ATTR1       
+       ,0 AS RATE
   FROM TB_MATER_INFO M
  WHERE COMPANY_CD = ${companyCd}
    AND MATER_CD = '63202402'
@@ -331,9 +333,10 @@ SELECT '' AS SYSKEY
        , 0 AS PROD_OUT_QTY
        ,'2001' AS STOR_LOCT
        ,'' AS ATTR1
+       ,0 AS RATE
   FROM TB_MATER_INFO M
  WHERE COMPANY_CD = ${companyCd}
-   AND MATER_CD = '61000451'
+   AND MATER_CD = '61000452'
 UNION ALL
 SELECT '' AS SYSKEY
        ,'30' AS MATER_SEQ
@@ -343,9 +346,10 @@ SELECT '' AS SYSKEY
        , 0 AS PROD_OUT_QTY
        ,'2001' AS STOR_LOCT
        ,'' AS ATTR1
+       ,0 AS RATE
   FROM TB_MATER_INFO M
  WHERE COMPANY_CD = ${companyCd}
-   AND MATER_CD = '61000452'
+   AND MATER_CD = '61000453'
 UNION ALL
 SELECT '' AS SYSKEY
        ,'40' AS MATER_SEQ
@@ -355,9 +359,10 @@ SELECT '' AS SYSKEY
        , 0 AS PROD_OUT_QTY
        ,'2001' AS STOR_LOCT
        ,'' AS ATTR1
+       ,0 AS RATE
   FROM TB_MATER_INFO M
  WHERE COMPANY_CD = ${companyCd}
-   AND MATER_CD = '61000453'
+   AND MATER_CD = '61000451'
     	]]>
     </statement>
      
@@ -650,6 +655,7 @@ UPDATE TB_RAWMIX_PROD_MASTER
 /*  rawmixProductionSql.xml >  cudRawmixProductionDetailUpdate */      
 UPDATE TB_RAWMIX_PROD_OUTPUT
    SET PROD_OUT_QTY = ${prodOutQty} /* 생산수량 */
+      ,STOR_LOCT    = ${storLoct} /* store location */
       ,ATTR1       = ${attr1} /* 속성1 */
       ,MODID        = ${userId} /* 수정자 */
       ,MODDATE      = TO_CHAR(SYSDATE,'YYYYMMDD') /* 수정일자 */
@@ -659,7 +665,6 @@ UPDATE TB_RAWMIX_PROD_OUTPUT
    AND MATER_SEQ = ${materSeq} 
 		]]>     
     </statement>     
-    
     
     
     
@@ -705,5 +710,15 @@ UPDATE TB_RAWMIX_PROD_MASTER
     </statement>           
      
 
+
+    <statement name="cudRawmixProductionDetailDel">
+    	<![CDATA[
+/*  rawmixProductionSql.xml >  cudRawmixProductionDetailDel */      
+DELETE FROM TB_RAWMIX_PROD_OUTPUT
+ WHERE COMPANY_CD   = ${companyCd}
+   AND SYSKEY       = ${syskey}
+   AND MATER_SEQ    = ${materSeq}
+        ]]>
+    </statement>
     
 </statements>

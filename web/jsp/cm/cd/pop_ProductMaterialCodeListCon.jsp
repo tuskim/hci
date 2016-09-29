@@ -194,7 +194,7 @@ function f_select(row,colid) {
 			        value='
 			              <FC> id="no"            name="No"            align="center" Edit="none" width="35" Value={CurRow} </FC>
 			              <C> id="materCd"        name="Code"     		align="center" Edit="none" width="75" sort=true</C>
-			              <C> id="materNm"        name="Name"     		align="left"   Edit="none" width="220" sort=true  </C>
+			              <C> id="materNm"        name="Name"     		align="left"   Edit="none" width="215" sort=true  </C>
 			              <C> id="unit"           name="Unit"           align="center"   Edit="none" width="60" sort=true </C>
 			              <C> id="materType"      name="Type"           align="center" Edit="none" width="60" sort=true </C> 
 			              <C> id="useyn"          name="Use"        align="center" Edit="none" width="55" sort=true </C>

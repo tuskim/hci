@@ -576,12 +576,12 @@ function checkSaveData() {
 		var accountCodeF = accountCode.substring(0,1);            // Account Code 첫자리
 		
 		// Account Code 첫자리가 '8' 인 경우 Cost center 만 입력 가능
+		// 상업 생산 시점 까지
 		if(accountCodeF == "8"){
 			
-			/*
 			// Cost center 값이 없는 경우
 			if(ds_costTotDtl.NameValue(i,"costCenter") == "") {
-				alert('<%=source.getMessage("dev.warn.com.input", columnData.getString("cost_center"))%>');
+				alert('<%=source.getMessage("dev.warn.com.input", columnData.getString("cost_center").replaceAll(";", " "))%>');
 				ds_costTotDtl.RowPosition = i;
 				gr_costTotDtl.SetColumn("costCenter");
 				return false;
@@ -589,21 +589,20 @@ function checkSaveData() {
 			
 			// CIP & DEC 값이 있는 경우
 			if(ds_costTotDtl.NameValue(i,"intOrderNm") != "") {
-				alert('<%=source.getMessage("dev.warn.com.notRequired", columnData.getString("order").replaceAll("&&", "&"))%>');
+				alert('<%=source.getMessage("dev.warn.com.notRequired", columnData.getString("order").replaceAll(";", " "))%>');
 				ds_costTotDtl.RowPosition = i;
 				gr_costTotDtl.SetColumn("intOrderNm");
 				return false;
 			}
-			*/
 		}
 		
 		// Account Code 첫자리가 '9' 인 경우 CIP & DEC (I/O) 만 입력 가능
+		// 상업 생산 시점 까지
 		if(accountCodeF == "9"){
 			
-			/*
 			// Cost center 값이 있는 경우
 			if(ds_costTotDtl.NameValue(i,"costCenter") != "") {
-				alert('<%=source.getMessage("dev.warn.com.notRequired", columnData.getString("cost_center"))%>');
+				alert('<%=source.getMessage("dev.warn.com.notRequired", columnData.getString("cost_center").replaceAll(";", " "))%>');
 				ds_costTotDtl.RowPosition = i;
 				gr_costTotDtl.SetColumn("costCenter");
 				return false;
@@ -611,15 +610,14 @@ function checkSaveData() {
 			
 			// CIP & DEC 값이 없는 경우
 			if(ds_costTotDtl.NameValue(i,"intOrderNm") == "") {
-				alert('<%=source.getMessage("dev.warn.com.input", columnData.getString("order").replaceAll("&&", "&"))%>');
+				alert('<%=source.getMessage("dev.warn.com.input", columnData.getString("order").replaceAll(";", " "))%>');
 				ds_costTotDtl.RowPosition = i;
 				gr_costTotDtl.SetColumn("intOrderNm");
 				return false;
-			*/
 			
 			//9번대 계정 아닌데 IO 코드 있는 경우
 		} else if (  accountCodeF != "9" && ds_costTotDtl.NameValue(i,"intOrderNm") != ""){
-			alert("CIP / DEC cannot allowed on this account code\n" + accountCode+"xxxxxx");
+			alert("CIP / DEC cannot allowed on this account code\n" + accountCode+"");
 			ds_costTotDtl.RowPosition = i;
 			gr_costTotDtl.SetColumn("intOrderNm");
 			return false;
@@ -828,7 +826,7 @@ function f_Init() {
 	//f_Disable()
 	deptCd.Enable = false;
 //	docDiv.Enable = false;	 //전표구분
-	cfDsUnionBlank(ds_vat, "code", "name","");
+//	cfDsUnionBlank(ds_vat, "code", "name","");
 
 }
 
@@ -931,7 +929,7 @@ function f_RetrieveCostCenter() {
 <!-- Vat combo DataSet -->
 <object id="ds_vat"	classid="<%=LGauceId.DATASET%>">
 	<param name="SyncLoad"        value="true">
-	<param name="DataID"          value="cm.cm.retrieveCommCodeCombo.gau?groupCd=2007">
+	<param name="DataID"          value="fi.ar.retrieveCostTotLedgerValidationVatVCombo.gau">
 </object>
 
 <!-- Vat combo DataSet   원천세 계정 리스트-->

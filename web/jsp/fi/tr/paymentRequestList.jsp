@@ -508,7 +508,7 @@ function f_openVendorPop() {
 			<param Name="DataID" 			value='ds_gridMst'>
 	    	<Param name="AutoResizing"      value=true>	 
 	    	<param name="Editable"          value=True>
-	    	<Param NAME="TitleHeight"      	value="30">
+	    	<Param NAME="TitleHeight"      	value="40">
 			<param Name='Format' value='
 				<c>id="chk"    	         name="<%=columnData.getString("chk") %>"                                width="40"   Edit="true"  show="true"  {IF(returnMsg="","White","Red")}  EditStyle=CheckBox	HeadAlign=center HeadCheck=false HeadCheckShow=true  </c> 																					
 				<c>id="requestNo"        name="<%=columnData.getString("request_no") %>"         align="center"  width="110"  Edit="none"  show="true"  </c>
@@ -540,13 +540,13 @@ function f_openVendorPop() {
 			<param Name="DataID" 			value='ds_gridDtl'>
 	    	<Param name="AutoResizing"      value=true>	 
 	    	<param name="Editable"          value=True>
-	    	<Param NAME="TitleHeight"      	value="30">
+	    	<Param NAME="TitleHeight"      	value="40">
 			<param Name='Format' value='				 																					
 				<c>id="docNo"     name="<%=columnData.getString("doc_no") %>"     align="center"  width="100"  Edit="none"  show="true"  </c>
 				<c>id="acctCd"    name="<%=columnData.getString("acct_cd") %>"    align="center"  width="80"   Edit="none"  show="true"  </c>   		
-	        	<c>id="acctNm"    name="<%=columnData.getString("acct_nm") %>"    align="left" 	  width="205"  Edit="none"  show="true"  </c>
-				<c>id="amount"    name="<%=columnData.getString("amount") %>"     align="right"   width="140"  Edit="none"  show="true"  </c>
-				<c>id="docDesc"   name="<%=columnData.getString("doc_desc") %>"   align="left"    width="120"  Edit="none"  show="true"  </c>								
+	        	<c>id="acctNm"    name="<%=columnData.getString("acct_nm") %>"    align="left" 	  width="190"  Edit="none"  show="true"  </c>
+				<c>id="amount"    name="<%=columnData.getString("amount") %>"     align="right"   width="120"  Edit="none"  show="true"  </c>
+				<c>id="docDesc"   name="<%=columnData.getString("doc_desc") %>"   align="left"    width="125"  Edit="none"  show="true"  </c>								
 	        	<c>id="docDate"   name="<%=columnData.getString("doc_date") %>"   align="center"  width="90"   Edit="none"  show="true"  Mask="XXXX/XX/XX"  </c>	        										        					        	 		
 	        	<c>id="postDate"  name="<%=columnData.getString("post_date") %>"  align="center"  width="90"   Edit="none"  show="true"  Mask="XXXX/XX/XX"  </c> 			        	 			        				    				        					        		        		        		        	
 	        	<c>id="lineItem"  name="<%=columnData.getString("line_item") %>"  align="center"  width="90"   Edit="none"  show="false" </c>
@@ -592,91 +592,92 @@ function f_openVendorPop() {
 			<param name="PageSkip"          value="true">
 		 	<param name=Format			    value="	 		 
 		 		 		
-		 		<B>id=Header ,left=0,top=0 ,right=2000 ,bottom=1984 ,face='Tahoma' ,size=10 ,penwidth=1
-					<T>id='Payment Request' ,left=484 ,top=11 ,right=1413 ,bottom=156 ,face='Tahoma' ,size=19 ,bold=true ,underline=true ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
-					<T>id='Fin. And' ,left=976 ,top=476 ,right=1124 ,bottom=537</T>
-					<L> left=966 ,top=471 ,right=1942 ,bottom=471 </L>
-					<T>id='Biz.' ,left=976 ,top=349 ,right=1124 ,bottom=468</T>
-					<L> left=966 ,top=265 ,right=1939 ,bottom=265 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
-					<L> left=968 ,top=344 ,right=1942 ,bottom=344 </L>
-					<T>id='S.MGR' ,left=1630 ,top=275 ,right=1778 ,bottom=336</T>
-					<T>id='MGR' ,left=1468 ,top=275 ,right=1617 ,bottom=336</T>
-					<T>id='A.M' ,left=1304 ,top=275 ,right=1453 ,bottom=336</T>
-					<T>id='By' ,left=1140 ,top=275 ,right=1289 ,bottom=336</T>
-					<T>id='Class' ,left=974 ,top=275 ,right=1122 ,bottom=336</T>
-					<L> left=966 ,top=611 ,right=1939 ,bottom=611 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
-					<L> left=1783 ,top=265 ,right=1783 ,bottom=611 </L>
-					<L> left=966 ,top=265 ,right=966 ,bottom=611 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
-					<L> left=1622 ,top=265 ,right=1622 ,bottom=611 </L>
-					<L> left=1130 ,top=265 ,right=1130 ,bottom=611 </L>
-					<L> left=1296 ,top=265 ,right=1296 ,bottom=611 </L>
-					<T>id='Acc.' ,left=979 ,top=542 ,right=1127 ,bottom=603</T>
-					<L> left=45 ,top=786 ,right=45 ,bottom=1984 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
-					<L> left=325 ,top=786 ,right=325 ,bottom=1984 </L>
-					<C>id='bankAcct', left=339, top=1664, right=1934, bottom=1744</C>
-					<T>id='Description' ,left=61 ,top=1886 ,right=320 ,bottom=1969</T>
-					<T>id='House bank' ,left=58 ,top=1775 ,right=318 ,bottom=1857</T>
-					<T>id='Bank A/C' ,left=58 ,top=1662 ,right=318 ,bottom=1744</T>
-					<T>id='Bank code' ,left=556 ,top=1548 ,right=984 ,bottom=1630</T>
-					<T>id='Swift' ,left=58 ,top=1548 ,right=318 ,bottom=1630</T>
-					<C>id='bankCode', left=1005, top=1550, right=1934, bottom=1630</C>
-					<C>id='paymentType', left=1511, top=1431, right=1934, bottom=1513</C>
-					<C>id='exchRate', left=1005, top=1434, right=1267, bottom=1516</C>
-					<T>id='Ex. Rate' ,left=556 ,top=1434 ,right=984 ,bottom=1516</T>
-					<L> left=325 ,top=1307 ,right=1947 ,bottom=1307 </L>
-					<T>id='Invoice No.' ,left=58 ,top=897 ,right=318 ,bottom=979</T>
-					<T>id='Payment Terms' ,left=58 ,top=1434 ,right=318 ,bottom=1516</T>
-					<T>id='Total Amount' ,left=61 ,top=1207 ,right=318 ,bottom=1410</T>
-					<T>id='Street / Town' ,left=61 ,top=1103 ,right=318 ,bottom=1185</T>
-					<T>id='Vendor' ,left=58 ,top=1000 ,right=318 ,bottom=1082</T>
-					<T>id='Personnel' ,left=58 ,top=794 ,right=318 ,bottom=876</T>
-					<T>id='Local' ,left=339 ,top=1323 ,right=534 ,bottom=1405</T>
-					<T>id='Foreign' ,left=339 ,top=1212 ,right=532 ,bottom=1294</T>
-					<C>id='vendAddr', left=336, top=1103, right=1265, bottom=1183</C>
-					<C>id='vendor', left=339, top=1000, right=1265, bottom=1080</C>
-					<C>id='personnel', left=336, top=794, right=982, bottom=876</C>
-					<T>id='Type' ,left=1289 ,top=1476 ,right=1495 ,bottom=1521</T>
-					<T>id='Payment' ,left=1289 ,top=1426 ,right=1495 ,bottom=1471</T>
-					<L> left=1500 ,top=1418 ,right=1500 ,bottom=1529 </L>
-					<T>id='Country' ,left=1289 ,top=1103 ,right=1487 ,bottom=1185</T>
-					<L> left=1278 ,top=1418 ,right=1278 ,bottom=1529 </L>
-					<L> left=992 ,top=1199 ,right=992 ,bottom=1646 </L>
-					<L> left=542 ,top=1196 ,right=542 ,bottom=1643 </L>
-					<C>id='exchTotalAmount', left=1003, top=1323, right=1931, bottom=1402</C>
-					<C>id='totalAmount', left=1005, top=1214, right=1934, bottom=1294</C>
-					<C>id='exchCurrCd', left=556, top=1323, right=984, bottom=1405</C>
-					<C>id='mstCurrCd', left=553, top=1212, right=982, bottom=1294</C>
-					<C>id='country', left=1505, top=1103, right=1934, bottom=1185</C>
-					<C>id='paymentMethod', left=1505, top=997, right=1934, bottom=1082</C>
-					<T>id='Method' ,left=1281 ,top=1042 ,right=1487 ,bottom=1087</T>
-					<T>id='Payment' ,left=1281 ,top=992 ,right=1487 ,bottom=1037</T>
-					<T>id='Shipment Date' ,left=1003 ,top=894 ,right=1267 ,bottom=976</T>
-					<C>id='baselineDate', left=1289, top=794, right=1934, bottom=876</C>
-					<T>id='Baseline Date' ,left=1003 ,top=794 ,right=1265 ,bottom=876</T>
-					<L> left=1275 ,top=783 ,right=1275 ,bottom=1196 </L>
-					<L> left=45 ,top=884 ,right=1945 ,bottom=884 </L>
-					<L> left=48 ,top=1984 ,right=1947 ,bottom=1984 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
-					<L> left=45 ,top=1871 ,right=1945 ,bottom=1871 </L>
-					<L> left=45 ,top=1757 ,right=1945 ,bottom=1757 </L>
-					<L> left=45 ,top=1643 ,right=1945 ,bottom=1643 </L>
-					<L> left=45 ,top=1529 ,right=1945 ,bottom=1529 </L>
-					<L> left=45 ,top=1416 ,right=1945 ,bottom=1416 </L>
-					<L> left=45 ,top=1196 ,right=1945 ,bottom=1196 </L>
-					<L> left=45 ,top=1090 ,right=1945 ,bottom=1090 </L>
-					<L> left=45 ,top=987 ,right=1945 ,bottom=987 </L>
-					<L> left=45 ,top=783 ,right=1945 ,bottom=783 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
-					<T>id='MD' ,left=1794 ,top=275 ,right=1926 ,bottom=336</T>
-					<L> left=1461 ,top=265 ,right=1461 ,bottom=611 </L>
-					<L> left=1939 ,top=267 ,right=1939 ,bottom=614 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
-					<L> left=1947 ,top=783 ,right=1947 ,bottom=1982 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
-					<L> left=990 ,top=783 ,right=990 ,bottom=987 </L>
-					<T>id='Request No :' ,left=74 ,top=706 ,right=318 ,bottom=773 ,align='right', MargineX=3</T>
-					<T>id='Request Date :' ,left=1453 ,top=706 ,right=1717 ,bottom=773 ,align='right', MargineX=3</T>
-					<C>id='RequestDate', left=1720, top=706, right=1931, bottom=773, align='left', MargineX=3</C>
-					<C>id='requestNo', left=320, top=706, right=611, bottom=773, align='left', MargineX=3</C>
-					<L> left=1495 ,top=990 ,right=1495 ,bottom=1199 </L>
-					<C>id='houseBank', left=339, top=1778, right=1934, bottom=1857</C>
-				</B>
+		 		<B>id=Header ,left=0,top=0 ,right=1999 ,bottom=1984 ,face='Tahoma' ,size=10 ,penwidth=1
+	<T>id='Payment Request' ,left=483 ,top=10 ,right=1413 ,bottom=156 ,face='Tahoma' ,size=19 ,bold=true ,underline=true ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
+	<T>id='Fin. And' ,left=976 ,top=475 ,right=1124 ,bottom=538</T>
+	<L> left=966 ,top=470 ,right=1941 ,bottom=470 </L>
+	<T>id='Biz.' ,left=976 ,top=350 ,right=1124 ,bottom=468</T>
+	<L> left=966 ,top=264 ,right=1939 ,bottom=264 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
+	<L> left=968 ,top=345 ,right=1941 ,bottom=345 </L>
+	<T>id='S.MGR' ,left=1630 ,top=274 ,right=1778 ,bottom=337</T>
+	<T>id='MGR' ,left=1469 ,top=274 ,right=1617 ,bottom=337</T>
+	<T>id='A.M' ,left=1305 ,top=274 ,right=1454 ,bottom=337</T>
+	<T>id='By' ,left=1139 ,top=274 ,right=1290 ,bottom=337</T>
+	<T>id='Class' ,left=973 ,top=274 ,right=1122 ,bottom=337</T>
+	<L> left=966 ,top=611 ,right=1939 ,bottom=611 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
+	<L> left=1783 ,top=264 ,right=1783 ,bottom=611 </L>
+	<L> left=966 ,top=264 ,right=966 ,bottom=611 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
+	<L> left=1622 ,top=264 ,right=1622 ,bottom=611 </L>
+	<L> left=1129 ,top=264 ,right=1129 ,bottom=611 </L>
+	<L> left=1295 ,top=264 ,right=1295 ,bottom=611 </L>
+	<T>id='Acc.' ,left=978 ,top=543 ,right=1127 ,bottom=604</T>
+	<L> left=45 ,top=787 ,right=45 ,bottom=1984 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
+	<L> left=324 ,top=787 ,right=324 ,bottom=1984 </L>
+	<C>id='bankAcct', left=340, top=1665, right=1934, bottom=1743</C>
+	<T>id='Description' ,left=60 ,top=1886 ,right=319 ,bottom=1969</T>
+	<T>id='House bank' ,left=58 ,top=1775 ,right=317 ,bottom=1856</T>
+	<T>id='Bank A/C' ,left=58 ,top=1662 ,right=317 ,bottom=1743</T>
+	<T>id='Bank code' ,left=556 ,top=1549 ,right=983 ,bottom=1630</T>
+	<T>id='Swift' ,left=58 ,top=1549 ,right=317 ,bottom=1630</T>
+	<C>id='bankCode', left=1006, top=1549, right=1934, bottom=1630</C>
+	<C>id='paymentType', left=1511, top=1431, right=1934, bottom=1514</C>
+	<C>id='exchRate', left=1006, top=1433, right=1267, bottom=1516</C>
+	<T>id='Ex. Rate' ,left=556 ,top=1433 ,right=983 ,bottom=1516</T>
+	<L> left=324 ,top=1308 ,right=1946 ,bottom=1308 </L>
+	<T>id='Invoice No.' ,left=58 ,top=898 ,right=317 ,bottom=978</T>
+	<T>id='Total Amount' ,left=60 ,top=1207 ,right=317 ,bottom=1411</T>
+	<T>id='Street / Town' ,left=60 ,top=1104 ,right=317 ,bottom=1184</T>
+	<T>id='Vendor' ,left=58 ,top=1001 ,right=317 ,bottom=1081</T>
+	<T>id='Personnel' ,left=58 ,top=795 ,right=317 ,bottom=875</T>
+	<T>id='Local' ,left=340 ,top=1323 ,right=533 ,bottom=1406</T>
+	<T>id='Currency' ,left=340 ,top=1212 ,right=533 ,bottom=1295</T>
+	<C>id='vendAddr', left=337, top=1104, right=1265, bottom=1182</C>
+	<C>id='vendor', left=340, top=1001, right=1265, bottom=1079</C>
+	<C>id='personnel', left=337, top=795, right=981, bottom=875</C>
+	<T>id='Type' ,left=1290 ,top=1476 ,right=1494 ,bottom=1521</T>
+	<T>id='Payment' ,left=1290 ,top=1426 ,right=1494 ,bottom=1471</T>
+	<L> left=1499 ,top=1418 ,right=1499 ,bottom=1529 </L>
+	<T>id='Country' ,left=1290 ,top=1104 ,right=1486 ,bottom=1184</T>
+	<L> left=1278 ,top=1418 ,right=1278 ,bottom=1529 </L>
+	<L> left=991 ,top=1200 ,right=991 ,bottom=1647 </L>
+	<L> left=543 ,top=1197 ,right=543 ,bottom=1642 </L>
+	<C>id='exchTotalAmount', left=1003, top=1323, right=1931, bottom=1401</C>
+	<C>id='totalAmount', left=1006, top=1215, right=1934, bottom=1295</C>
+	<C>id='exchCurrCd', left=556, top=1323, right=983, bottom=1406</C>
+	<C>id='mstCurrCd', left=553, top=1212, right=981, bottom=1295</C>
+	<C>id='country', left=1504, top=1104, right=1934, bottom=1184</C>
+	<C>id='paymentMethod', left=1504, top=996, right=1934, bottom=1081</C>
+	<T>id='Method' ,left=1280 ,top=1041 ,right=1486 ,bottom=1086</T>
+	<T>id='Payment' ,left=1280 ,top=991 ,right=1486 ,bottom=1036</T>
+	<T>id='Shipment Date' ,left=1003 ,top=893 ,right=1267 ,bottom=976</T>
+	<C>id='baselineDate', left=1290, top=795, right=1934, bottom=875</C>
+	<T>id='Baseline Date' ,left=1003 ,top=795 ,right=1265 ,bottom=875</T>
+	<L> left=1275 ,top=782 ,right=1275 ,bottom=1197 </L>
+	<L> left=45 ,top=885 ,right=1944 ,bottom=885 </L>
+	<L> left=48 ,top=1984 ,right=1946 ,bottom=1984 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
+	<L> left=45 ,top=1871 ,right=1944 ,bottom=1871 </L>
+	<L> left=45 ,top=1758 ,right=1944 ,bottom=1758 </L>
+	<L> left=45 ,top=1642 ,right=1944 ,bottom=1642 </L>
+	<L> left=45 ,top=1529 ,right=1944 ,bottom=1529 </L>
+	<L> left=45 ,top=1416 ,right=1944 ,bottom=1416 </L>
+	<L> left=45 ,top=1197 ,right=1944 ,bottom=1197 </L>
+	<L> left=45 ,top=1089 ,right=1944 ,bottom=1089 </L>
+	<L> left=45 ,top=986 ,right=1944 ,bottom=986 </L>
+	<L> left=45 ,top=782 ,right=1944 ,bottom=782 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
+	<T>id='MD' ,left=1793 ,top=274 ,right=1926 ,bottom=337</T>
+	<L> left=1461 ,top=264 ,right=1461 ,bottom=611 </L>
+	<L> left=1939 ,top=267 ,right=1939 ,bottom=614 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
+	<L> left=1946 ,top=782 ,right=1946 ,bottom=1982 ,penstyle=solid ,penwidth=5 ,pencolor=#000000 </L>
+	<L> left=991 ,top=782 ,right=991 ,bottom=986 </L>
+	<T>id='Request No :' ,left=73 ,top=707 ,right=317 ,bottom=772 ,align='right', MargineX=3</T>
+	<T>id='Request Date :' ,left=1454 ,top=707 ,right=1718 ,bottom=772 ,align='right', MargineX=3</T>
+	<C>id='RequestDate', left=1720, top=707, right=1931, bottom=772, align='left', MargineX=3</C>
+	<C>id='requestNo', left=319, top=707, right=611, bottom=772, align='left', MargineX=3</C>
+	<L> left=1494 ,top=991 ,right=1494 ,bottom=1200 </L>
+	<C>id='houseBank', left=340, top=1778, right=1934, bottom=1856</C>
+	<C>id='swiftCd' ,left=340 ,top=1549 ,right=533 ,bottom=1632</T>
+</B>
+
 				<B>id=DHeader ,left=0,top=0 ,right=2000 ,bottom=103 ,face='Tahoma' ,size=10 ,penwidth=1
 					<L> left=1945 ,top=0 ,right=1945 ,bottom=103 </L>
 					<L> left=1640 ,top=0 ,right=1640 ,bottom=103 </L>

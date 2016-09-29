@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<navigation-mapper>
+
+<!--Production Approval  -->
+
+
+
+   	<!--Production Approval  -->  
+	<action-name name="productionApproval">
+  		<command>cm.lo.cmd.RetrievePageInfoCmd</command>
+    	<return-url>/jsp/ps/dp/productionApproval.jsp</return-url>
+   	</action-name>
+
+
+
+
+
+   	
+   	<!--Production Approval Retrieve -->  
+	<action-name name="ps.dp.retrieveProductionApproval">
+    	<command>ps.dp.cmd.RetrieveProductionApprovalCmd</command> 
+   	</action-name>   
+
+
+
+
+
+   	<!--Production Approval Cud -->  
+	<action-name name="ps.dp.cudProductionApprovalStatus">
+    	<command>ps.dp.cmd.CudProductionApprovalStatusCmd</command> 
+   	</action-name>       
+
+   	   	    
+</navigation-mapper>

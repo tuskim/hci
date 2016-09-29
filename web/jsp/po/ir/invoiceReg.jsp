@@ -64,11 +64,25 @@ function f_setData(){
 	ds_currCd.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2004";
 	ds_currCd.Reset();	
 	
+	//ds_currencyCd DataSet에 ds_currCd DataSet 내용을 복사
+	ds_currencyCd.SetDataHeader(ds_currCd.DataHeader);
+	ds_currencyCd.ImportData(ds_currCd.ExportData(1,ds_currCd.CountRow,false));
+	
+	//ds_currencyCd.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2004";
+	//ds_currencyCd.Reset();	
+	
 	ds_purDept.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2001";
 	ds_purDept.Reset();
+	
+	//ds_gridPurDept DataSet에 ds_purDept DataSet 내용을 복사
+	ds_gridPurDept.SetDataHeader(ds_purDept.DataHeader);
+	ds_gridPurDept.ImportData(ds_purDept.ExportData(1,ds_purDept.CountRow,false));
+	
 	ds_purDept.RowPosition = ds_purDept.NameValueRow("code","<%=g_deptCd%>");
-	ds_gridPurDept.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2001";
-	ds_gridPurDept.Reset();
+	
+	//ds_gridPurDept.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2001";
+	//ds_gridPurDept.Reset();
+	
 	//ds_purDept 값 복사	 
 	//cfCopyDataSet(ds_purDept,ds_gridPurDept,"copyHeader=true");   
 	
@@ -85,13 +99,14 @@ function f_setData(){
 	ds_vatCd.Reset();	 	
  	 
 	ds_gridVendor.DataId="cm.cm.retrieveCommComboVendorList.gau";
-	ds_gridVendor.Reset();	 	 
+	ds_gridVendor.Reset();	
 	
-	ds_vendor.DataId="cm.cm.retrieveCommComboVendorList.gau";
-	ds_vendor.Reset();	
+	//ds_vendor DataSet에 ds_purDept DataSet 내용을 복사
+	ds_vendor.SetDataHeader(ds_gridVendor.DataHeader);
+	ds_vendor.ImportData(ds_gridVendor.ExportData(1,ds_gridVendor.CountRow,false));
 	
-	ds_currencyCd.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2004";
-	ds_currencyCd.Reset();	
+	//ds_vendor.DataId="cm.cm.retrieveCommComboVendorList.gau";
+	//ds_vendor.Reset();	
 	
 	var strHeader  = "code:STRING(50),name:STRING(50)";
     ds_return.SetDataHeader(strHeader); 
@@ -122,6 +137,11 @@ function f_save()
 
 	if(document.all.invoiceDate.value > document.all.postingDate.value){
  		alert("<%=source.getMessage("dev.msg.po.invoiceDateCheck")%>");
+		return; 			
+	}
+
+	if(document.all.dueDate.value < document.all.postingDate.value){
+ 		alert("Due Date can\'t be smaller than Posting Date");
 		return; 			
 	}
 
@@ -192,10 +212,9 @@ function f_save()
 function calcFunc(){
 	var sum = 0;
 	for(var i=1; i<=ds_detail.CountRow; i++){
-		if (ds_detail.NameValue(i, "vatCd") == "VM") {
-			sum += ds_detail.NameValue(i, "amount") ;
-		}
-	}		
+		sum += ds_detail.NameValue(i, "amount") ;
+	}	
+	
 	//VAT AMOUNT계산
 	if(lc_vatCd.BindColVal == "VM"){
 		document.all.vatAmt.text = Math.round(parseFloat(sum) * 0.05);
@@ -204,8 +223,12 @@ function calcFunc(){
 		document.all.vatAmt.text = '0.00';
 		document.all.vatAmt.ReadOnly = true;
 	}
+	
 	//부가세와 합해진 AMOUNT
 	document.all.itmAmount.text = sum + parseFloat(document.all.vatAmt.text);
+	
+	//Material 금액
+	//document.all.itmAmount.text = sum;
 				
 }
  
@@ -708,24 +731,25 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 			<table width="100%" border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td>
-						<object id="gr_main" classid="<%=LGauceId.GRID %>" style="width:100%;height:140px;" class="comn">
+						<object id="gr_main" classid="<%=LGauceId.GRID %>" style="width:100%;height:123px;" class="comn">
 							<param name="DataID"            value="ds_main"/> 
 							<param name="Editable"          value="true"/>
 							<Param name="AutoResizing"      value=true>
-							<param name="TitleHeight"          value="35"/>
+							<param name="TitleHeight"          value="30"/>
 							<param name="UrlImages"         value="<I>Type='PopupBotton', Url='/sys/images/button/search_icon_2.gif', Fit='AutoFit', Flat='True'</I>">
 							<param name="Format"            
 							value="
-							<FC>id='poNo'          name='<%=columnData.getString("po_no") %>'              width='80'  align='center' edit='none'                                  </FC>
-							<C>id='poType'         name='<%=columnData.getString("po_type") %>'            width='60'  align='left'   edit='none'  show='false'     Data='ds_return:code:name:code' editstyle='lookup' ListWidth=80  </C>                  
-							<C>id='vendNm'         name='<%=columnData.getString("vend_cd") %>'            width='150'  align='left'   edit='none'       Data='ds_gridVendor:code:name:code' editstyle='lookup' ListWidth=200   </C>                  
-							<C>id='delivyPlaName'       name='<%=columnData.getString("deli_loct") %>'          width='80'  align='left'   edit='none'       Data='ds_deliLoct:code:name:code' editstyle='lookup' ListWidth=200 </C>
-							<C>id='regdate'        name='P/O Date'           width='80'  align='center' edit='none'                                  mask='XXXX/XX/XX'  </C>
-							<C>id='deliDate'       name='<%=columnData.getString("deli_date") %>'          width='80'  align='center' edit='none'       editstyle='PopupFix' mask='XXXX/XX/XX'  </C>
-							<C>id='currencyCd'     name='<%=columnData.getString("currency_cd") %>'        width='70'  align='center' edit='none'       Data='ds_currCd:code:name:code'  editstyle='lookup' </C>							
+							<FC>id='poNo'          name='P/O No.'              width='90'  align='center' edit='none'                                  </FC>
+							<C>id='vendNm'         name='<%=columnData.getString("vend_cd") %>'            width='160'  align='left'   edit='none'       Data='ds_gridVendor:code:name:code' editstyle='lookup' ListWidth=200   </C>                  
+							<C>id='delivyPlaName'  show='false' name='<%=columnData.getString("deli_loct") %>'          width='80'  align='left'   edit='none'       Data='ds_deliLoct:code:name:code' editstyle='lookup' ListWidth=200 </C>
+							<C>id='regdate'        name='P/O Date'           width='90'  align='center' edit='none'                                  mask='XXXX/XX/XX'  </C>
+							<C>id='deliDate'       name='<%=columnData.getString("deli_date") %>'          width='90'  align='center' edit='none'       editstyle='PopupFix' mask='XXXX/XX/XX'  </C>
+							<C>id='currencyCd'     name='<%=columnData.getString("currency_cd") %>'        width='70'  align='center' edit='none'       Data='ds_currCd:code'  editstyle='lookup' </C>							
 							<C>id='payTerm'        name='<%=columnData.getString("pay_term") %>'           width='120'  align='center' edit='none'       Data='ds_payTerm:code:name:code' editstyle='lookup' </C>		
-							<C>id='discountAmt'    name='Discount;Amount'       width='95'  align='right'  edit='none'       dec={if(currencyCd='MMK',0,3)}      </C>												
-							<C>id='sapPoNo'        name='<%=columnData.getString("sap_po_no") %>'          width='80'  align='center' edit='none'                                  </C>					
+							<C>id='absgr'          name='P/O Type'            width='80'  align='left'   edit='none'  show='true'    </C>
+							<C>id='poType'         name='<%=columnData.getString("po_type") %>'            width='60'  align='left'   edit='none'  show='false'     Data='ds_return:code:name:code' editstyle='lookup' ListWidth=80  </C>
+							<C>id='discountAmt'    name='Discount;Amount'       width='95'  align='right'  show='false' edit='none'       dec={if(currencyCd='MMK',0,3)}      </C>												
+							<C>id='sapPoNo'        name='<%=columnData.getString("sap_po_no") %>'          width='90'  align='center' edit='none'                                  </C>					
 							<C>id='chk'     show='false'                                  </C>					"/>
 		             
 						</object>
@@ -781,7 +805,7 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 			<table width="100%" border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td>
-						<object id="gr_detail" classid="<%=LGauceId.GRID %>" style="width:100%;height:100px;" class="comn">
+						<object id="gr_detail" classid="<%=LGauceId.GRID %>" style="width:100%;height:113px;" class="comn">
 							<param name="DataID"            value="ds_detail"/> 
 							<param name="Editable"          value="true"/>
 						    <param name="UsingOneClick"     value=1>
@@ -789,17 +813,17 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 							<param name="Format"              
 							value="
 							<C>id='poSeq'          name='<%=columnData.getString("po_seq") %>'            width='45' align='center'    edit='none'   </C>							            
-							<C>id='materNm'         name='<%=columnData.getString("mater_cd") %>'          width='150' align='left'      edit='none' editstyle='popupfix'  </C>
-							<C>id='unit'            name='<%=columnData.getString("unit") %>'              width='30' align='center'    edit='none'   </C>
-							<C>id='price'            name='<%=columnData.getString("price") %>'              width='90' align='right'    edit='none'   </C>
-							<C>id='sapPrice'            name='<%=columnData.getString("net_price") %>'              width='90' align='right'    edit='none'   </C>
-							<C>id='qty'             name='<%=columnData.getString("po_qty") %>'               width='80' align='right'     edit='none'  </C>
-							<C>id='previousQty'    name='Received Qty.'               width='85' align='right'     edit='none'  </C>
-							<C>id='receiptQty'      name='Received Qty.'               width='85' align='right'    edit={IF( receiptClsYn='N','true','false')} dec='2' show='false' </C>
-							<C>id='amount'          name='<%=columnData.getString("amount") %>'            width='110' align='right'     edit='true' dec='0'    </C>	
+							<C>id='materNm'         name='<%=columnData.getString("mater_cd") %>'          width='170' align='left'      edit='none' editstyle='popupfix'  </C>
+							<C>id='unit'            name='<%=columnData.getString("unit") %>'              width='45' align='center'    edit='none'   </C>
+							<C>id='qty'             name='<%=columnData.getString("po_qty") %>'               width='85' align='right'     edit='none'  </C>
+							<C>id='previousQty'    name='Received Qty.'               width='95' align='right'     edit='none'  </C>
+							<C>id='receiptQty'      name='Received Qty.'               width='85' align='right'    edit={IF( receiptClsYn='N','true','false')} dec='3' show='false' </C>
+							<C>id='price'            name='<%=columnData.getString("price") %>'              width='105' align='right'    edit='none'   </C>
+							<C>id='sapPrice'         name='<%=columnData.getString("net_price") %>'              width='95' align='right'    edit='none' show='false'  </C>
+							<C>id='amount'          name='<%=columnData.getString("amount") %>'            width='115' align='right'     edit='true' dec='0'    </C>	
    						    <C>id='receiptClsYn'    name='<%=columnData.getString("receipt_cls_yn") %>'    width='47'  align='center'    edit='true' EditStyle=Lookup  data='ds_receiptClsYn:code:name:code'  show='false' </C>
    						    <C>id='materCd'   show='false' </C>  
-   						    <C>id='vatCd'   name='Tax Code'  width='70' align='center'     edit='true'  EditStyle=Lookup data='ds_vatCd:code'  </C>
+   						    <C>id='vatCd'   name='Tax Code'  width='130' align='left'     edit='true'  EditStyle=Lookup data='ds_vatCd:code:name:code' ListWidth=140 </C>
    						    "/>
 						
 						</object>
@@ -820,7 +844,7 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 		                        <col width=""/>
 		              </colgroup>
 		                     <tr>
-		     		   <th><%= columnData.getString("vat") %></th>
+		     		   <th>Tax Code</th>
     					<td>
     					<comment id="__NSID__"><object id="lc_vatCd"  classid="<%=LGauceId.LUXECOMBO%>" width="190">
 						<param name="ComboDataID"       value="ds_vatCd">
@@ -831,7 +855,7 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 						<param name=index           	value=0>
 						</object></comment><script>__WS__(__NSID__); </script>
 						</td>
-                        <th><%= columnData.getString("vat_amount") %></th>
+                        <th>Tax Amount</th>
                         <td>
                         <object id=vatAmt name="vatAmt" class="input_text" classid="<%=LGauceId.EMEDIT%>"	 height=20 width=150  onBlur="f_setAmt();f_sumItemAmount()">
 	          			<PARAM NAME="Border"   					VALUE="true"/>
@@ -886,15 +910,13 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 		        <div id="output_board_area">
 		            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="output_board" >
 		                <colgroup>
-		                        <col width="15%"/>
-		                        <col width="15%"/>
-		                        <col width="15%"/>
-		                        <col width=""/>
+		                        <col width="20%"/>
+		                        <col width="80%"/>
 		              </colgroup>
 		                     <tr>
-		                        <th><%= columnData.getString("item_amount") %></th>
-		                        <td>
-                                 <object id=itmAmount name="itmAmount" class="input_text" classid="<%=LGauceId.EMEDIT%>"	height=20 width=114  >
+		                        <th><%= columnData.getString("grand_total") %></th>
+		                        <td colspan="3">
+                                 <object id=itmAmount name="itmAmount" class="input_text" classid="<%=LGauceId.EMEDIT%>"	height=20 width=150  >
 			          			<PARAM NAME="Border"   					VALUE="true"/>
 			          			<PARAM NAME="ReadOnly"   				VALUE="true"/>
 			          			<PARAM NAME="Alignment"     			VALUE="2">
@@ -905,9 +927,12 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 								<PARAM NAME="ReadOnlyBackColor" value="#f1f1f1"/>
 			            		 </object>   
 								</td>	
+								<!-- 
 								<th><%= columnData.getString("grand_total") %></th>
-		                        <td>
-                                 <object id=grandTotal name="grandTotal" class="input_text" classid="<%=LGauceId.EMEDIT%>"	height=20 width=114  >
+		                        <td>                                
+								</td>
+								 -->
+								<object id=grandTotal name="grandTotal" class="input_text" classid="<%=LGauceId.EMEDIT%>"	height=20 width=114 style="display:none" >
 			          			<PARAM NAME="Border"   					VALUE="true"/>
 			          			<PARAM NAME="ReadOnly"   				VALUE="true"/>
 			          			<PARAM NAME="Alignment"     			VALUE="2">
@@ -916,8 +941,7 @@ G A U C E   C O M P O N E N T' S   E V E N T S
 								<PARAM NAME="VisibleMaxDecimal" 		VALUE="True"/>
 								<PARAM NAME="VAlign" value="2"/>
 								<PARAM NAME="ReadOnlyBackColor" value="#f1f1f1"/>
-			            		 </object>   
-								</td>					
+			            		 </object>   					
 							</tr>   
 		            </table>
 				</div>

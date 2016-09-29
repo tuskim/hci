@@ -78,7 +78,7 @@ public class GMM03 {
                item.setMBLNR    (util.nullToString(data.getString("sapDocNo")));   //Document No.(문서번호)                                                    
                item.setATTR1    (util.nullToString(data.getString("attr1")));          //    
                item.setATTR2    (util.nullToString(data.getString("attr2")));          //    
-               item.setATTR3    (util.nullToString(data.getString("attr3")));          //    
+               item.setATTR3    (util.nullToString(data.getString("intOrder")));          //    Internal Oredr
                item.setATTR4    (util.nullToString(data.getString("attr4")));          //    
                item.setATTR5    (util.nullToString(data.getString("attr5")));          //    
                item.setATTR6    (util.nullToString(data.getString("attr6")));          //    

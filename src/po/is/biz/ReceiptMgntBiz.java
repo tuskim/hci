@@ -254,6 +254,7 @@ public class ReceiptMgntBiz {
 	        
 	        GMM03 gmm03 = new GMM03();
 	        inputData.setString("status", "02");					// 02 : 전송 
+	        
 	        gmm03.GMM03_out(mData, inputData);   		// XI로 출고 내역 전송(비동기)
 	        
 			for(int i=0;i<mData.getDataCount();i++) {
@@ -482,7 +483,7 @@ public class ReceiptMgntBiz {
 	        
 	        inputDataMst.setString("recStatus", "04");
 	        inputDataMst.setString("recDate",   inputDataMst.getString("receiptDate"));
-	        inputDataMst.setString("postDate",   inputDataMst.getString("postingDate"));
+	        inputDataMst.setString("postDate",   inputDataMst.getString("cancelPostingDate"));
 	        inputDataMst.setString("recNo", 	inputDataMst.getString("receiptSeq"));
 			inputDataMst.setString("zxmldocno", util.getPlainDateTime("yyyyMMddHHmmss"));			 //INTERFACE ID				
 			inputDataMst.setString("plantCd", result_plant.getString("plant"));									//plant(O110. pam, M110. mge)	
@@ -566,5 +567,30 @@ public class ReceiptMgntBiz {
         return list;
         
 	}
+	
+	/**
+     * Request Receipt Excel Download List
+     *
+     * @param inputData Command로 부턴 전달받은 input LDataProtocol
+     * 
+     * @return LMultiData 조회된 리스트 결과.
+     * @exception LException 메소드 수행시 발생한 모든 에러.
+     */
+    public LMultiData RetrieveReceiptExcelDownList(LData inputData) throws LException {
+        LMultiData list = null;
+
+        try {
+        																
+            LCommonDao dao = new LCommonDao("/po/is/receiptMgntSql/retrieveReceiptExcelDownList", inputData);
+ 
+            list = dao.executeQuery();
+            
+        } catch (LException le) {
+            LLog.err.write(this.getClass().getName() + "." + "RetrieveReceiptExcelDownList()" + "=>" + le.getMessage());
+            throw new LBizException("cm.cm.com.retrieve");
+        }
+        return list;
+
+    }
 	
 }

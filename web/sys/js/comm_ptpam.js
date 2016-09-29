@@ -745,14 +745,16 @@ function openVendorSapListWin(gubun) {
 	var tgOneSelect         = "?tgOneSelect="   + "T";                      // 한 건인 경우 자동선택
 	var popType             = "&popType="       + "ptpam_" + popupId;
 
-	var intLeft  = screen.width / 2 - 400 / 2;
-	var intTop  = screen.height / 2 - 375 / 2;
+	//var intLeft  = screen.width / 2 - 400 / 2;
+	//var intTop  = screen.height / 2 - 375 / 2;
+	var popupWidth          = "dialogWidth="    + "495px";
+    var popupHeight         = ";dialogHeight="  + "375px";
 
 	var aiScroll	= ( aiScroll == null ) ? "no" : aiScroll;
-	var win	= ( win == null ) ? window : win;
+	//var win	= ( win == null ) ? window : win;
 	opt = "center:yes; help:no; status:no; scroll:no; resizable:no; menubar=no;location=no;";
 
-	result = window.showModalDialog( popupStr + tgOneSelect + popType, '', "dialogLeft:2000px;dialogTop:"+intTop+"px;dialogWidth:495px;dialogHeight:368px;"+opt + ";scroll:" + aiScroll  );
+	result = window.showModalDialog( popupStr + tgOneSelect + popType, popupId, popupWidth + popupHeight +opt + ";scroll:" + aiScroll  );
 
 	if (result == -1 || result == null || result == "") {
 		// Asset (Vendor)
@@ -766,7 +768,10 @@ function openVendorSapListWin(gubun) {
 			// 초기화
 			document.saveForm.customerCd.value = "";
 			document.saveForm.customerNm.value = "";
-				
+	    	//Payment
+		}else if(gubun == "P"){
+			document.all.sVendCd.value = "";
+			document.all.sVendNm.value = "";
 		// Payment
 		}else{
 			// 초기화
@@ -775,7 +780,7 @@ function openVendorSapListWin(gubun) {
 	} else {
 		
 		firstList = result.split(";");
-		
+
 		// Asset (Vendor)
 		if(gubun == "A"){			
 			document.aForm.vendCd.value = firstList[0];
@@ -785,7 +790,10 @@ function openVendorSapListWin(gubun) {
 		}else if(gubun == "A2"){
 			document.saveForm.customerCd.value = firstList[0];
 			document.saveForm.customerNm.value = firstList[1];
-			
+    	//Payment
+		}else if(gubun == "P"){
+			document.all.sVendCd.value = firstList[0];
+			document.all.sVendNm.value = firstList[1];
 		// Payment
 		}else{			
 			document.all.sVendCd.value = firstList[0];
@@ -955,14 +963,16 @@ function openVendorBankAcctListWin() {
 	var win	= ( win == null ) ? window : win;
 	opt = "center:yes; help:no; status:no; scroll:no; resizable:no; menubar=no;location=no;";
 
-	result = window.showModalDialog( popupStr + vendCd + tgOneSelect + popType, '', "dialogLeft:2000px;dialogTop:"+intTop+"px;dialogWidth:680px;dialogHeight:303px;"+opt + ";scroll:" + aiScroll  );
+	result = window.showModalDialog( popupStr + vendCd + tgOneSelect + popType, '', "dialogTop:"+intTop+"px;dialogWidth:680px;dialogHeight:303px;"+opt + ";scroll:" + aiScroll  );
 	    
 	if (result == -1 || result == null || result == "") {
+		document.all.partnerAcctNum.value = "";  // 초기화		
 		document.all.partnerBankType.value = "";  // 초기화		
 	    return;
 	} else {
 		firstList = result.split(";");
-	 	document.all.partnerBankType.value = firstList[0];	 	
+	 	document.all.partnerAcctNum.value = firstList[0];	 	
+	 	document.all.partnerBankType.value = firstList[1];	 	
 	}
 
 }
@@ -987,7 +997,7 @@ function openPaymentBankAcctListWin() {
 	var win	= ( win == null ) ? window : win;
 	opt = "center:yes; help:no; status:no; scroll:no; resizable:no; menubar=no;location=no;";
 
-	result = window.showModalDialog( popupStr + tgOneSelect + popType, '', "dialogLeft:2000px;dialogTop:"+intTop+"px;dialogWidth:680px;dialogHeight:303px;"+opt + ";scroll:" + aiScroll  );
+	result = window.showModalDialog( popupStr + tgOneSelect + popType, '', "dialogTop:"+intTop+"px;dialogWidth:680px;dialogHeight:303px;"+opt + ";scroll:" + aiScroll  );
 	    
 	if (result == -1 || result == null || result == "") {
 		document.all.sHouseBank.value = "";  // 초기화

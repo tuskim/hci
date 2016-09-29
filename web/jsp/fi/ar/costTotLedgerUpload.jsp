@@ -50,15 +50,15 @@
                      + ",creditAmt"    + ":STRING(100)"
                      + ",currencyCd"   + ":STRING(3)"
                      + ",vat"          + ":STRING(50)"
-                     + ",base"         + ":STRING(50)"                     
-                     + ",docDesc"      + ":STRING(50)"
-                     + ",costCenter"   + ":STRING(50)"                     
-                     + ",intOrder"     + ":STRING(50)"                                          
+                     + ",costCenter"   + ":STRING(50)"    
+                     + ",intOrder"     + ":STRING(50)"             
                      + ",sapAcctV"     + ":STRING(10)"
-                     + ",sapAcctC"     + ":STRING(10)"                                                               
+                     + ",sapAcctC"     + ":STRING(10)"    
+                     + ",docDesc"      + ":STRING(50)"
+                     + ",spglNo"       + ":STRING(1)"         
+                     + ",base"         + ":STRING(50)" 
                      + ",code"         + ":STRING(50)"
                      + ",rate"         + ":STRING(50)"
-                     + ",spglNo"       + ":STRING(1)"                     
                      + ",createDate"   + ":STRING(8)"
                      + ",returnMsg "   + ":STRING(100)"
 					 + ",companyCd"    + ":STRING(4)"
@@ -246,9 +246,9 @@ function f_sampleDown(){
 	///data1/bea81/weblogic81/domains/ptmgedomain/applications/mge/devonhome/sample
 	
 	var fileReal = "";
-	fileReal = "Doc_UPLOAD-LAYOUT_Sample.xls";
+	fileReal = "Cost Price Sample.xlsx";
 	//filePath = "/data1/bea81/weblogic81/domains/ptmgedomain/applications/mge/devonhome/sample/";
-	var fileName = "Doc_UPLOAD-LAYOUT_Sample.xls";
+	var fileName = "Cost Price Sample.xlsx";
 	
 	var frm = document.fileForm;
 	frm.filename.value = fileName;
@@ -406,17 +406,18 @@ function f_sampleDown(){
 	            <C> id=creditAmt   	name="<%= columnData.getString("credit_amt") %>" 	align="right"    width="100"   Edit="none"   show="true"  </C>
 	            <C> id=currencyCd  	name="<%= columnData.getString("currency_cd") %>" 	align="center"   width="70"    Edit="none"   show="true"  </C>	            	            
 	            <C> id=vat      	name="Tax Code" 	    	align="center"     width="70"    Edit="none"   show="true"  </C>
-	            <C> id=base      	name="<%= columnData.getString("base") %>" 	    	align="left"     width="70"    Edit="none"   show="false"  </C>
-	            <C> id=docDesc     	name="<%= columnData.getString("doc_desc") %>" 	    align="left"     width="180"   Edit="none"   show="true"  </C>
-	            <C> id=costCenter  	name="<%= columnData.getString("cost_center") %>" 	align="left"     width="120"   Edit="none"   show="true"  </C>	            
+	            <C> id=costCenter  	name="<%= columnData.getString("cost_center") %>" 	align="left"     width="120"   Edit="none"   show="true"  </C>
 	            <C> id=intOrder     name="<%= columnData.getString("order") %>"     	align="center"   width="70"    Edit="none"   show="true"  </C>
 	            <C> id=sapAcctV    	name="<%= columnData.getString("sap_acct_v") %>" 	align="left"     width="70"    Edit="none"   show="true"  </C>
-	            <C> id=sapAcctC    	name="<%= columnData.getString("sap_acct_c") %>" 	align="left"     width="70"    Edit="none"   show="true"  </C>	            	            
+	            <C> id=sapAcctC    	name="<%= columnData.getString("sap_acct_c") %>" 	align="left"     width="70"    Edit="none"   show="true"  </C>
+	            <C> id=docDesc     	name="<%= columnData.getString("doc_desc") %>" 	    align="left"     width="180"   Edit="none"   show="true"  </C>
+	            <C> id=spglNo      	name="<%= columnData.getString("spgl_no") %>" 	    align="left"     width="70"    Edit="none"   show="true"  </C>
+	            <C> id=base      	name="<%= columnData.getString("base") %>" 	    	align="left"     width="70"    Edit="none"   show="false"  </C>
 	            <C> id=acctNm      	name="<%= columnData.getString("acct_nm") %>" 	    align="left"     width="120"   Edit="none"   show="false" </C>
 	            <C> id=docNum      	name="<%= columnData.getString("doc_num") %>" 	    align="center"   width="70"    Edit="none"   show="false" </C>	            	            	            	            	            	            	            	            	            	            
 	            <C> id=code      	name="<%= columnData.getString("code") %>" 	    	align="left"     width="70"    Edit="none"   show="false" </C>
 	            <C> id=rate      	name="<%= columnData.getString("rate") %>" 	    	align="left"     width="70"    Edit="none"   show="false" </C>
-	            <C> id=spglNo      	name="<%= columnData.getString("spgl_no") %>" 	    align="left"     width="70"    Edit="none"   show="true"  </C>	            	            
+	            	            	            
 	      '>
 	</object>
  	</div>

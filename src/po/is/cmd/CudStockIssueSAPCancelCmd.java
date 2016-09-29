@@ -68,8 +68,12 @@ public class CudStockIssueSAPCancelCmd implements LGauceCommandIF {
 		LLog.debug.println("CudStockIssueSAPCancelCmd inputData--------------- =>\n " + mData.toString());
 	
 		IssueBiz biz = new IssueBiz();
-		resultData = biz.stockIssueSapCancel(mData, inputData); 
 		
+		for(int i=0; i<mData.getDataCount(); i++){
+			if(mData.getString("chk", i).equals("T")){			// 취소는 Single로 하므로 하나만 전달함
+				resultData = biz.stockIssueSapCancel(mData, inputData);		
+			}
+		}
 		getErrorCode = resultData.getLong("getErrorCode");
 		getMessage	 = resultData.getString("getMessage");
 		

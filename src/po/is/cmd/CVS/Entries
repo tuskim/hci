@@ -1,7 +1,7 @@
 /CudReceiptMgntCmd.java/1.1/Thu Aug  2 05:33:50 2012//
 /CudReceiptSAPCancelCmd.java/1.2/Thu Aug 11 02:12:45 2016//
 /CudStockIssueListCmd.java/1.1/Thu Aug  2 05:33:50 2012//
-/CudStockIssueSAPCancelCmd.java/1.1/Thu Aug  2 05:33:50 2012//
+/CudStockIssueSAPCancelCmd.java/1.2/Mon Sep 12 05:12:57 2016//
 /CudStockMoveCancelCmd.java/1.1/Thu Aug  2 05:33:50 2012//
 /CudStockMoveConfirmCmd.java/1.1/Tue Jul  8 08:58:10 2014//
 /CudStockMoveListCmd.java/1.1/Thu Aug  2 05:33:50 2012//
@@ -13,6 +13,7 @@
 /RetrieveMovingQtyCmd.java/1.1/Tue Jul  8 08:58:10 2014//
 /RetrievePoListGauCmd.java/1.2/Thu Aug 11 02:12:43 2016//
 /RetrieveReceiptDtlListGauCmd.java/1.1/Thu Aug  2 05:33:50 2012//
+/RetrieveReceiptExcelDownListCmd.java/1.1/Mon Sep 12 06:08:28 2016//
 /RetrieveReceiptMstListGauCmd.java/1.1/Thu Aug  2 05:33:50 2012//
 /RetrieveStockExcelDownListCmd.java/1.1/Tue Jul  8 08:58:10 2014//
 /RetrieveStockIssueRequestListCmd.java/1.1/Thu Aug  2 05:33:50 2012//

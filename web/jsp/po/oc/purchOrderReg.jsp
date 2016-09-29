@@ -48,16 +48,18 @@ var msg="";
 /*초기 세팅
 /***************************************************************************************************/
 function init(){
-	//권한 삭제 요청 2010.9.9 강병용 
-	/*if(<%=columnData.getString("authType")%>){
+	//권한 삭제 요청 2010.9.9 강병용
+	<%--
+	if(<%=columnData.getString("authType")%>){
 		lc_purDept.enable="true";
-	}*/
+	}
+	--%>
 	f_setData(); 
 }
 
 // Ds 초기화
 function f_setData(){
-	ds_deliLoct.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005";
+	ds_deliLoct.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2005&attr2Loc=MS";
 	ds_deliLoct.Reset();
 	
 	ds_currCd.DataId="po.oc.retrievePurchOrderRegCurrList.gau";
@@ -75,12 +77,12 @@ function f_setData(){
 	//ds_gridPurDept.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2001";
 	//ds_gridPurDept.Reset();  
 	
-	ds_status.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2203";
-	ds_status.Reset();
+	ds_poStatus.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2203";
+	ds_poStatus.Reset();
 	
 	//ds_poStatus DataSet에 ds_status DataSet 내용을 복사
-	ds_poStatus.SetDataHeader(ds_status.DataHeader);
-	ds_poStatus.ImportData(ds_status.ExportData(1,ds_status.CountRow,false));
+	ds_status.SetDataHeader(ds_poStatus.DataHeader);
+	ds_status.ImportData(ds_poStatus.ExportData(1,ds_poStatus.CountRow,false));
 	
 	//ds_poStatus.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2203";
 	//ds_poStatus.Reset();  
@@ -101,12 +103,12 @@ function f_setData(){
 	ds_vatCd.DataId="po.oc.retrievePurchOrderRegVatVCombo.gau?groupCd=2007";
 	ds_vatCd.Reset();	 	
  	 
-	ds_gridVendor.DataId="cm.cm.retrieveCommComboVendorList.gau";
-	ds_gridVendor.Reset();	 	 
+	//ds_vendor.DataId="cm.cm.retrieveCommComboVendorList.gau";
+	//ds_vendor.Reset();	 	 
 	
 	//ds_poStatus DataSet에 ds_status DataSet 내용을 복사
-	ds_vendor.SetDataHeader(ds_gridVendor.DataHeader);
-	ds_vendor.ImportData(ds_gridVendor.ExportData(1,ds_gridVendor.CountRow,false));
+	//ds_gridVendor.SetDataHeader(ds_vendor.DataHeader);
+	//ds_gridVendor.ImportData(ds_vendor.ExportData(1,ds_vendor.CountRow,false));
 	
 	//ds_vendor.DataId="cm.cm.retrieveCommComboVendorList.gau";
 	//ds_vendor.Reset();	 
@@ -114,7 +116,7 @@ function f_setData(){
 	ds_poType.DataId="cm.cm.retrieveCommCodeCombo.gau?groupCd=2018";
 	ds_poType.Reset();	
 	
-	cfUnionBlank(ds_vendor,lc_vendor,"code","name","--Total--"); 	
+	//cfUnionBlank(ds_vendor,lc_vendor,"code","name","--Total--"); 	
  
 	cfAddYn(ds_receiptClsYn,"code"); 
 	cfAddYn(ds_ivClsYn,"code");
@@ -123,8 +125,10 @@ function f_setData(){
     
     //f_wtList();
     
-    gr_tax.Editable="false";
-    f_totalSet();
+  gr_tax.Editable="false";
+  //f_totalSet();
+  document.all.grandTotal.text="0";  
+    
 }
 
 // return Po Grid ComboBox Set
@@ -141,7 +145,8 @@ function f_returnPoSet(){
     ds_return.NameValue(ds_return.RowPosition, "name") = "Return";	
 }
 
-//total Amount Grid/Ds 초기화    
+<%--
+//total Amount Grid/Ds 초기화
 function f_totalSet(){    
 	var strHeader = "title1"    + ":STRING(20)"
 					+",value1"  + ":DECIMAL(13.2)"
@@ -177,6 +182,7 @@ function f_totalSet(){
 	ds_total.NameValue(ds_total.RowPosition,"title3")="<%=columnData.getString("grand_total") %>";
 	ds_total.NameValue(ds_total.RowPosition,"value3")=0;    
 }
+--%>
 
 /***************************************************************************************************/
 /*조회
@@ -188,7 +194,8 @@ function f_retrieve(){
 	v_url.Add("fromDate",encodeURIComponent(fromDate.value));
 	v_url.Add("toDate"  ,encodeURIComponent(toDate.value));
 	v_url.Add("deliLoct",ds_deliLoct.NameValue(ds_deliLoct.RowPosition,"code"));
-	v_url.Add("vendCd",ds_vendor.NameValue(ds_vendor.RowPosition,"code"));			
+	//v_url.Add("vendCd",ds_vendor.NameValue(ds_vendor.RowPosition,"code"));
+	v_url.Add("vendCd",document.all.sVendCd.value);
 	v_url.Add("purDept",ds_purDept.NameValue(ds_purDept.RowPosition,"code"));
 	v_url.Add("pstatus",ds_poStatus.NameValue(ds_poStatus.RowPosition,"code"));	
 	v_url.SetPage("po.oc.retrievePurchOrderRegMainList.gau");
@@ -229,9 +236,10 @@ function f_wtList(_poNo){
 // Total Amount 계산
 function f_caculation(){
 
-    var strSubTot=0; 
-    var strGrandTot=0;
-    var strVat=0;    
+  var strSubTot=0; 
+  var strGrandTot=0;
+  var strVat=0;
+  
 	for(var i=1;i<=ds_detail.CountRow; i++){
 	
 		strSubTot+=Number(ds_detail.NameValue(i,"amount"));	 
@@ -245,7 +253,7 @@ function f_caculation(){
 		} 
 		*/	
 	} 
- 
+ <%--
  	ds_total.ClearData();
 	ds_total.AddRow();  
 	ds_total.NameValue(ds_total.RowPosition,"title1")="<%=columnData.getString("sub_total") %>";
@@ -254,6 +262,9 @@ function f_caculation(){
 	ds_total.NameValue(ds_total.RowPosition,"value2")= funcRound(Number(strSubTot)-Number(ds_main.NameValue(ds_main.RowPosition,"discountAmt")),3) ;
 	ds_total.NameValue(ds_total.RowPosition,"title3")="<%=columnData.getString("grand_total") %>";
 	ds_total.NameValue(ds_total.RowPosition,"value3")= funcRound(Number(strGrandTot)-Number(ds_main.NameValue(ds_main.RowPosition,"discountAmt"))+Number(ds_tax.NameValue(1,"wtTaxAmt"))   ,3) ;
+	--%>
+	
+	document.all.grandTotal.text = funcRound(Number(strGrandTot)-Number(ds_main.NameValue(ds_main.RowPosition,"discountAmt"))+Number(ds_tax.NameValue(1,"wtTaxAmt"))   ,3) ;
 }
 
 
@@ -263,6 +274,11 @@ function f_caculation(){
 // Save
 function f_save()
 {
+	if(ds_main.NameValue(ds_main.RowPosition,"pstatus") =="03"){
+		alert("<%=source.getMessage("dev.msg.po.cantsend")%>");
+		return;
+	}
+		
 	if(!ds_main.IsUpdated && !ds_detail.IsUpdated && !ds_tax.IsUpdated && !ds_approval.IsUpdated) {
 		alert("<%=source.getMessage("dev.inf.com.nochange")%>");
 		return;
@@ -270,7 +286,7 @@ function f_save()
 	for(var i=1;i<=ds_main.CountRow;i++){
 		if(ds_main.NameValue(i,"vendCd")==""){
 			ds_main.RowPosition=i;
-			gr_main.SetColumn("vendCd");
+			gr_main.SetColumn("vendNm");
 			alert("<%=source.getMessage("dev.warn.com.select",columnData.getString("vend_cd"))%>");
 			return;
 		} 	
@@ -578,6 +594,7 @@ function f_delRowDetail(){
 }
 
 // Vendor App Add
+<%--
 function f_addRowApp(){ 
 	if(ds_main.CountRow==0){
 		return;
@@ -606,6 +623,7 @@ function f_addRowApp(){
 	ds_approval.NameValue(ds_approval.RowPosition,"vendType")     = ds_gridVendor.NameValue(arow,"vendType");		
 	ds_approval.NameValue(ds_approval.RowPosition,"mainYn"      ) ="F";   
 }
+--%>
 
 // Vendor App del
 function f_delRowApp(){
@@ -627,6 +645,10 @@ function f_sapSend(){
  
 	if(ds_main.NameValue(ds_main.RowPosition,"poNo")==""){
 		alert("<%=source.getMessage("dev.msg.po.savecontinue")%>");
+		return;
+	}	 
+	if(ds_main.NameValue(ds_main.RowPosition,"printDate")==""){
+		alert("Please print out P/O first.");
 		return;
 	}	 
 	if((ds_main.IsUpdated) || ds_detail.IsUpdated || ds_approval.IsUpdated){
@@ -783,9 +805,9 @@ function f_gridEditMode(_row){
 	 		gr_tax.ColumnProp('wtBaseAmt',      'dec')   = "0";
 	 		gr_tax.ColumnProp('wtTaxAmt',       'dec')   = "0";			
 	 		
-	 		gr_total.ColumnProp('value1',       'dec')   = "0";	 
-	 		gr_total.ColumnProp('value2',       'dec')   = "0";	 
-	 		gr_total.ColumnProp('value3',       'dec')   = "0";	 	
+	 		//gr_total.ColumnProp('value1',       'dec')   = "0";	 
+	 		//gr_total.ColumnProp('value2',       'dec')   = "0";	 
+	 		//gr_total.ColumnProp('value3',       'dec')   = "0";	 	
 			for(var j=1; j<= ds_detail.CountRow;j++){		 
 				ds_detail.NameValue(j,"currType") = ds_currCd.NameValue(arow,"attr1"); 
 	 		} 
@@ -813,9 +835,9 @@ function f_gridEditMode(_row){
 	 		gr_tax.ColumnProp('wtBaseAmt',      'dec')   = "2";
 	 		gr_tax.ColumnProp('wtTaxAmt',       'dec')   = "2";
 	 		
-	 		gr_total.ColumnProp('value1',       'dec')   = "3";	 
-	 		gr_total.ColumnProp('value2',       'dec')   = "3";	 
-	 		gr_total.ColumnProp('value3',       'dec')   = "3";		 		
+	 		//gr_total.ColumnProp('value1',       'dec')   = "3";	 
+	 		//gr_total.ColumnProp('value2',       'dec')   = "3";	 
+	 		//gr_total.ColumnProp('value3',       'dec')   = "3";		 		
 			for(var j=1; j<= ds_detail.CountRow;j++){		 
 				ds_detail.NameValue(j,"currType") = ds_currCd.NameValue(arow,"attr1"); 
 	 		} 
@@ -846,9 +868,9 @@ function f_gridEditMode(_row){
 	 		gr_tax.ColumnProp('wtTaxAmt',       'dec')   = "0";			
 	 		gr_tax.ColumnProp('wtCd',           'Edit')  = "true";
 	 	
-	 		gr_total.ColumnProp('value1',       'dec')   = "0";	 
-	 		gr_total.ColumnProp('value2',       'dec')   = "0";	 
-	 		gr_total.ColumnProp('value3',       'dec')   = "0";	 	
+	 		//gr_total.ColumnProp('value1',       'dec')   = "0";	 
+	 		//gr_total.ColumnProp('value2',       'dec')   = "0";	 
+	 		//gr_total.ColumnProp('value3',       'dec')   = "0";	 	
 			for(var j=1; j<= ds_detail.CountRow;j++){		 
 				ds_detail.NameValue(j,"currType") = ds_currCd.NameValue(arow,"attr1"); 
 	 		} 
@@ -866,9 +888,9 @@ function f_gridEditMode(_row){
 	 		gr_tax.ColumnProp('wtTaxAmt',       'dec')   = "2";
 	 		gr_tax.ColumnProp('wtCd',           'Edit')  = "true";
 	 			 	
-	 		gr_total.ColumnProp('value1',       'dec')   = "3";	 
-	 		gr_total.ColumnProp('value2',       'dec')   = "3";	 
-	 		gr_total.ColumnProp('value3',       'dec')   = "3";		 		
+	 		//gr_total.ColumnProp('value1',       'dec')   = "3";	 
+	 		//gr_total.ColumnProp('value2',       'dec')   = "3";	 
+	 		//gr_total.ColumnProp('value3',       'dec')   = "3";		 		
 			for(var j=1; j<= ds_detail.CountRow;j++){		 
 				ds_detail.NameValue(j,"currType") = ds_currCd.NameValue(arow,"attr1"); 
 	 		} 
@@ -980,6 +1002,40 @@ function f_report_set(){
 		ds_report_dtl.DeleteRow(s);
 	}	
 }
+
+//  P/O Closing(SAP I/F)
+function f_poCloing(){
+	
+	if(ds_main.NameValue(ds_main.RowPosition,"poNo")=="" || ds_main.NameValue(ds_main.RowPosition,"sapPoNo")==""){
+		alert("<%=source.getMessage("dev.msg.po.savecontinue")%>");
+		return;
+	}	
+ 
+	if(ds_main.NameValue(ds_main.RowPosition,"pstatus")=="03"){
+		if(!confirm("Are you sure to P/O item Closing?")){
+			return;
+		}
+		ds_main.UserStatus(ds_main.RowPosition)=2;// Master data 전송을 위하여 강제로 DATA SET Row 상태 'Delete(2)' 변경
+		ds_detail.UseChangeInfo="false"; 
+		f_setCondition();
+		g_flug="true";
+		tr_cudMaster.Action   = "po.oc.cudPurchOrderClosingSapSend.gau?";		
+		msg="successfully P/O item closing.";
+		tr_cudMaster.post();		
+	}else{
+		alert("You may not transfer in current status.");
+		return;
+	}
+	
+}
+
+//-------------------------------------------------------------------------
+//Vendor 조회 팝업
+//-------------------------------------------------------------------------		
+function f_openVendorPop() {	
+	
+	openVendorSapListWin('P');		
+}
 </script>
 <!-----------------------------------------------------------------------------
 T R A N S A C T I O N   C O M P O N E N T S   D E C L A R A T I O N
@@ -991,7 +1047,10 @@ T R A N S A C T I O N   C O M P O N E N T S   D E C L A R A T I O N
 	<param name="KeyValue"  value="JSP(I:ds_main=ds_main,I:ds_detail=ds_detail,I:ds_tax=ds_tax,I:ds_approval=ds_approval)">
 	<param name="ServerIP"  value=""> 
 </OBJECT>
- 
+
+<OBJECT id=tr_report classid="<%=LGauceId.TR%>">
+	<param name="KeyName" value="toinb_dataid4">
+</OBJECT>
 <!-----------------------------------------------------------------------------
 D A T A S E T   C O M P O N E N T S   D E C L A R A T I O N
 ------------------------------------------------------------------------------>
@@ -1060,13 +1119,16 @@ D A T A S E T   C O M P O N E N T S   D E C L A R A T I O N
 	<param name="SyncLoad"          value="true">
 </object>
 
+<%--
 <object id="ds_gridVendor" classid="<%=LGauceId.DATASET%>" >
 	<param name="SyncLoad"          value="true">
 </object>
-
+ --%>
+<%--
 <object id="ds_vendor" classid="<%=LGauceId.DATASET%>" >
 	<param name="SyncLoad"          value="true">
 </object>
+ --%>
  
 <object id="ds_receiptClsYn" classid="<%=LGauceId.DATASET%>" >
 	<param name="SyncLoad"          value="true">
@@ -1092,11 +1154,13 @@ D A T A S E T   C O M P O N E N T S   D E C L A R A T I O N
 	<param name="SyncLoad"          value="true">
 	<param name="ViewDeletedRow"    value="false">
 </object>
- 
+
+<%--
 <object id="ds_total" classid="<%=LGauceId.DATASET%>" >
 	<param name="SyncLoad"          value="true">
 	<param name="ViewDeletedRow"    value="false">
 </object> 
+--%> 
 
 <object id="ds_report_main" classid="<%=LGauceId.DATASET%>" >
 	<param name="SyncLoad"          value="true">
@@ -1176,15 +1240,15 @@ Dataset   E V E N T S
 		ds_main.NameValue(ds_main.RowPosition,"currType") = ds_currCd.NameValue(arow,"attr1"); 
  		if(ds_main.NameValue(ds_main.RowPosition,"currType")=="N"){
 	 		gr_detail.ColumnProp('price', 'Edit') = "true";
-	 		gr_total.ColumnProp('value1', 'dec') = "0";		
-	 		gr_total.ColumnProp('value2', 'dec') = "0";
-	 		gr_total.ColumnProp('value3', 'dec') = "0";
+	 		//gr_total.ColumnProp('value1', 'dec') = "0";		
+	 		//gr_total.ColumnProp('value2', 'dec') = "0";
+	 		//gr_total.ColumnProp('value3', 'dec') = "0";
 			 
  		}else{
  			gr_detail.ColumnProp('price', 'Edit') = "true";
-	 		gr_total.ColumnProp('value1', 'dec') = "3";		
-	 		gr_total.ColumnProp('value2', 'dec') = "3";
-	 		gr_total.ColumnProp('value3', 'dec') = "3"; 			 		
+	 	  //gr_total.ColumnProp('value1', 'dec') = "3";		
+	 		//gr_total.ColumnProp('value2', 'dec') = "3";
+	 		//gr_total.ColumnProp('value3', 'dec') = "3"; 			 		
  		}	
 	}else{
 		gr_detail.ColumnProp('materNm', 'Edit') = "none";
@@ -1205,6 +1269,8 @@ Grid   E V E N T S
 ------------------------------------------------------------------------------>
 <!-- Main-------------------------------------------------------------------------------------->
 <script language=JavaScript for=gr_main event=OnCloseUp(row,colid)>
+/*
+ //Popup event로 위치 변경
 	if(colid=="vendCd"){
 		var strvendCd = ds_main.NameValue(row,"vendCd");  
 		var v_url = new cfURI();
@@ -1214,6 +1280,7 @@ Grid   E V E N T S
 		ds_approval.Reset(); 	
 		
 	} 
+*/
 	if(colid=="currencyCd"){
 		f_gridEditMode(row);
 		//ds_detail.ResetStatus();
@@ -1254,7 +1321,20 @@ Grid   E V E N T S
 	 	h_date.value ="";
 		gf_calendarExClean(h_date); 
 		ds_main.NameValue(row,"deliDate") =funcReplaceStrAll(h_date.value,"/","");	 	
-	}	
+	}
+
+    // vendor 조회 팝업 호출
+    if ( colid == "vendNm") {
+
+    	openVendorSapListGridWin(row, ds_main, "vendCd", "vendNm");
+
+			var v_url = new cfURI();
+			v_url.Add("vendCd",ds_main.NameValue(row,"vendCd")); 
+			v_url.SetPage("po.oc.retrievePurchOrderRegAppList.gau");
+			ds_approval.DataId = v_url.GetURI();
+			ds_approval.Reset();
+    }
+    
 </script> 
 
 <script language=JavaScript for=gr_main event=OnKeyUp(row,colid,keycode)>
@@ -1309,6 +1389,23 @@ Grid   E V E N T S
 </script>     
 
 <script language=JavaScript for=ds_detail event=OnColumnChanged(row,colid)>
+  if(colid == "price" || colid == "qty"){ 
+	  ds_detail.NameValue(row,"amount") = ds_detail.NameValue(row,"price")*ds_detail.NameValue(row,"qty");
+  }
+  
+  
+	if(colid=="vatCd" || colid=="amount" || colid=="price" || colid=="qty"){
+		//Tax Code = '5% Input CT(VM)인 경우 Amount*5% Calc. '
+		if(ds_detail.NameValue(row,"vatCd") == "VM"){
+			ds_detail.NameValue(row,"vatAmt") = ds_detail.NameValue(row,"amount")*0.05;
+		}else if(ds_detail.NameValue(row,"vatCd") == "VL"){
+			ds_detail.NameValue(row,"vatAmt") = 0;
+		}else{
+			ds_detail.NameValue(row,"vatAmt") = "";
+		}
+		
+	}
+	
 	if(colid=="amount" || colid=="vatAmt"|| colid=="tranTaxAmt"){
 		f_caculation();
 	} 
@@ -1331,6 +1428,17 @@ Grid   E V E N T S
 		
 	}
 </script>
+
+
+<!-- Print Complete Event --> 
+<script language=JavaScript for=re_report event=OnPrintCompleted()>
+	//프린트 완료 후 프린트 일자 업데이트 
+	f_setCondition();
+	g_flug=true;
+	tr_report.KeyValue = "Servlet( I:IN_DS1 = ds_report_main, I:IN_DS2 = ds_report_dtl )";
+	tr_report.Action   = "po.oc.cmd.cudPurchOrderUpdatePrintDateCmd.gau";
+	tr_report.post();
+</script>
 <!-----------------------------------------------------------------------------
 Tr   E V E N T S
 ------------------------------------------------------------------------------>
@@ -1343,10 +1451,10 @@ Tr   E V E N T S
 	}
 	g_flug=false;  
 	f_retrieve();
-    ds_main.RowPosition    = g_msPos;
-    ds_detail.RowPosition  = g_ddtPos;	
+  ds_main.RowPosition    = g_msPos;
+  ds_detail.RowPosition  = g_ddtPos;	
 	gr_main.SetColumn("purDeptCd");
-	gr_detail.SetColumn("materNm");   
+	gr_detail.SetColumn("materNm");
 	alert(tr_cudMaster.ErrorMsg);
 </script>
 
@@ -1354,13 +1462,22 @@ Tr   E V E N T S
 	g_flug=false;  	
 	ds_detail.UseChangeInfo="true"; 
 	f_retrieve();
-    ds_main.RowPosition    = g_msPos;
-    ds_detail.RowPosition  = g_ddtPos;		
+  ds_main.RowPosition    = g_msPos;
+  ds_detail.RowPosition  = g_ddtPos;		
 	gr_main.SetColumn("purDeptCd");
 	gr_detail.SetColumn("materNm");    	
 	alert(msg);
 </script>  
  
+<script language=JavaScript for=tr_report event=OnSuccess()>
+  g_flug=false;
+	f_retrieve();
+	ds_main.RowPosition = g_msPos;
+	ds_detail.RowPosition = g_ddtPos;		
+	ds_approval.RowPosition = g_appPos;
+</script>
+
+
 </head>
 
 <body id="cent_bg" onload="init();">
@@ -1397,6 +1514,7 @@ Tr   E V E N T S
 								<param name=index           	value=0>
 								<param name=Enable           	value="true">
 								</object></comment><script>__WS__(__NSID__); </script>
+								<%-- 
 							<th><%=columnData.getString("vend_cd") %> </th>		
 							<td><comment id="__NSID__"><object id="lc_vendor"  classid="<%=LGauceId.LUXECOMBO%>" width="150">
 								<param name="ComboDataID"       value="ds_vendor">
@@ -1407,6 +1525,13 @@ Tr   E V E N T S
 								<param name=index           	value=0>
 								</object></comment><script>__WS__(__NSID__); </script>
 							</td>						
+								--%>
+							<th><%=columnData.getString("vend_cd") %> </th>									
+							<td>
+								<input type="hidden" id="sVendCd" name="sVendCd"/>
+								<input type="text" id="sVendNm" name="sVendNm" style="width:120px;" readOnly/>&nbsp;
+					  			<img src="<%= images %>button/search_icon_2.gif"  onClick="javascript:f_openVendorPop();" style="cursor:hand"/>
+					    </td>
 						</tr>
 						<tr>
 							<th><%=columnData.getString("status") %> </th>
@@ -1444,7 +1569,7 @@ Tr   E V E N T S
 				<tr>
 					<td>
 						<comment id="__NSID__">
-						<object id="gr_main" classid="<%=LGauceId.GRID %>" style="width:100%;height:136px;" class="comn">
+						<object id="gr_main" classid="<%=LGauceId.GRID %>" style="width:100%;height:165px;" class="comn">
 							<param name="DataID"            value="ds_main"/> 
 							<param name="Editable"          value="true"/>
 							<Param name="AutoResizing"      value=true>
@@ -1454,25 +1579,32 @@ Tr   E V E N T S
 							value="
 							<FC>id='poNo'          name='WEB P/O No.'              width='90'  align='center'  edit='none'                                  </FC>
 							<C>id='purDeptCd'      name='<%=columnData.getString("pur_dept_cd") %>'      show='false'  width='60'  align='center'   edit={IF(pstatus='01','true','false')}       Data='ds_gridpurDept:code:name:code' editstyle='lookup' ListWidth=200   </C>                  
-							                  
-							<C>id='prNo'           name='P/O No.(Manual)'              width='130'  align='left' edit={IF(pstatus='01','true','false')}
-							<C>id='refNo'          name='<%=columnData.getString("ref_no") %>'             width='130'  align='left' edit={IF(pstatus='01','true','false')} 																												
-							<C>id='vendCd'         name='<%=columnData.getString("vend_cd") %>'            width='170'  align='left'   edit={IF(pstatus='01','true','false')}       Data='ds_gridVendor:code:name:code' editstyle='lookup' ListWidth=200   </C>                  
-							<C>id='absgr'          name='P/O Type'            width='80'  align='left'   edit={IF(pstatus='01','true','false')}       Data='ds_poType:code:name:code' editstyle='lookup' ListWidth=200   </C>
-							<C>id='deliLoct'       name='<%=columnData.getString("deli_loct") %>'          width='80'  align='left'   edit={IF(pstatus='01','true','false')}       Data='ds_deliLoct:code:name:code' editstyle='lookup' ListWidth=200 </C>
+							<C>id='prNo'           name='P/O No.(Manual)'              width='120'  align='left' edit={IF(pstatus='01','true','false')}
+							<C>id='refNo'          name='<%=columnData.getString("ref_no") %>'             width='120'  align='left' edit={IF(pstatus='01','true','false')}
+							<%--
+							<C>id='vendCd'         name='<%=columnData.getString("vend_cd") %>'            width='165'  align='left'   edit={IF(pstatus='01','true','false')}       Data='ds_gridVendor:code:name:code' editstyle='lookup' ListWidth=200</C>
+							--%>
+							<C>id='vendCd'         name='<%=columnData.getString("vend_cd") %>'            width='165'  align='left'   edit='none' show='false'  </C>
+							<C>id='vendNm'         name='<%=columnData.getString("vend_cd") %>'            width='165'  align='left'   edit={IF(pstatus='01','true','false')}       editstyle='PopupFix' </C>                  
+							<C>id='absgr'          name='P/O Type'            width='70'  align='left'   edit={IF(pstatus='01','true','false')}       Data='ds_poType:code:name:code' editstyle='lookup' ListWidth=200   </C>
+							<C>id='deliLoct'       name='<%=columnData.getString("deli_loct") %>'          width='85'  align='left'   edit={IF(pstatus='01','true','false')}       Data='ds_deliLoct:code:name:code' editstyle='lookup' ListWidth=200 </C>
 							
 							<C>id='deliDate'       name='<%=columnData.getString("deli_date") %>'          width='80'  align='center' edit={IF(pstatus='01','true','false')}       editstyle='Popup' mask='XXXX/XX/XX'  </C>
 							<C>id='emailSendDate'  name='<%=columnData.getString("email_send_date") %>'    show='false' width='76'  align='center' edit='none'                                  mask='XXXX/XX/XX'  </C>							
-							<C>id='currencyCd'     name='<%=columnData.getString("currency_cd") %>'        width='70'  align='center' edit={IF(pstatus='01','true','false')}       Data='ds_currCd:code:name:code'  editstyle='lookup' ListWidth=200</C>							
+							<C>id='currencyCd'     name='<%=columnData.getString("currency_cd") %>'        width='60'  align='center' edit={IF(pstatus='01','true','false')}       Data='ds_currCd:code'  editstyle='lookup' ListWidth=80</C>							
 							<C>id='payTerm'        name='<%=columnData.getString("pay_term") %>'           width='110'  align='center' edit={IF(pstatus='01','true','false')}       Data='ds_payTerm:code:name:code' editstyle='lookup' ListWidth=200</C>		
 							<C>id='discountAmt'    name='<%=columnData.getString("discount_amp") %>'       width='130'  align='right'  edit={IF(pstatus='01','true','false')}       </C>												
 							
 							<C>id='poType'         name='Return P/O'            show='true' width='70'  align='center'  edit={IF(pstatus='01','true','false')}       Data='ds_return:code:name:code' editstyle='lookup' ListWidth=80   </C>
 							<C>id='regdate'        name='P/O Create;Date'           width='100'  align='center' edit='none'                                  mask='XXXX/XX/XX'  </C>
 							<C>id='sapPoNo'        name='<%=columnData.getString("sap_po_no") %>'          width='80'  align='center' edit='none'                                  </C>
+	            			<C>id='printDate'      name='Print Date'           width='100'  align='center' edit='none'      mask='XXXX/XX/XX' show='true' </C>
 							<C>id='pstatus'        name='<%=columnData.getString("status") %>'             width='120'  align='center' edit='none'                                  Data='ds_status:code:name:code' editstyle='lookup' ListWidth=200</C>	
-	                        <C>id='ivClose'        name='<%=columnData.getString("iv_close") %>'           show='false' width='40'   align='center' edit='none' EditStyle=Lookup  data='ds_ivClsYn:code:name:code'     </C>
-	                        <C>id='sapRtnMsg'      name='<%=columnData.getString("sap_rtn_msg") %>'        width='400'  align='left'   edit='none'                                  </C> 					"/>
+	            			<C>id='ivClose'        name='<%=columnData.getString("iv_close") %>'           show='false' width='40'   align='center' edit='none' EditStyle=Lookup  data='ds_ivClsYn:code:name:code'     </C>
+	            			<C>id='sapRtnMsg'      name='<%=columnData.getString("sap_rtn_msg") %>'        width='400'  align='left'   edit='none'                                  </C>
+	            
+	            "/>
+	            
 						</object>
 						</comment><script>__WS__(__NSID__);</script>
 					</td>
@@ -1505,7 +1637,7 @@ Tr   E V E N T S
 							value="
 							<FC>id='poSeq'          name='<%=columnData.getString("po_seq") %>'            width='42' align='center'    edit='none'   </FC>							            
 							<C>id='materNm'         name='<%=columnData.getString("mater_cd") %>'          width='220' align='left'      editstyle='popupfix'  </C>
-							<C>id='unit'            name='<%=columnData.getString("unit") %>'              width='30' align='center'    edit='none'   </C>
+							<C>id='unit'            name='<%=columnData.getString("unit") %>'              width='50' align='center'    edit='none'   </C>
 							<C>id='qty'             name='<%=columnData.getString("qty") %>'               width='100' align='right'     </C>							
 							<C>id='price'           name='<%=columnData.getString("price") %>'             width='90' align='right'     </C>
 							<C>id='amount'          name='<%=columnData.getString("amount") %>'            width='100' align='right'     dec='2'    </C>	
@@ -1515,7 +1647,7 @@ Tr   E V E N T S
 							<C>id='tranTaxAmt'      name='<%=columnData.getString("tran_tax_amt") %>'      width='130' align='right'     show='false' </C>
 							<C>id='poDesc'          name='<%=columnData.getString("pr_desc") %>'           width='200' align='left'      </C>
 							<C>id='sapPrice'        name='<%=columnData.getString("sap_price") %>'         width='100' align='right'     edit='none'</C> 							
-   						    <C>id='receiptClsYn'    name='<%=columnData.getString("receipt_cls_yn") %>'    width='47'  align='center'    edit={IF(qtyChk='T','true','false')} EditStyle=Lookup  data='ds_receiptClsYn:code:name:code'     </C>"/>
+   						    <C>id='receiptClsYn'    name='<%=columnData.getString("receipt_cls_yn") %>'    width='47'  align='center'    edit={IF(closeChk='T','true','false')} EditStyle=Lookup  data='ds_receiptClsYn:code:name:code'     </C>"/>
 						</object>
 						</comment><script>__WS__(__NSID__);</script>
 					</td>
@@ -1545,6 +1677,7 @@ Tr   E V E N T S
 			</table>
 		</div>				
 		<!-- 그리드 E -->
+		<%--
 	    <div class="sub_stitle"> <p><%= columnData.getString("sub5_title") %></p>
 	    	<p class="rightbtn"></p>
 		</div>	
@@ -1553,7 +1686,7 @@ Tr   E V E N T S
 				<tr>
 					<td>
 						<comment id="__NSID__">
-						<object id="gr_total" classid="<%=LGauceId.GRID %>" style="width:100%;height:21px;">
+						<object id="gr_total" classid="<%=LGauceId.GRID %>" style="width:280px;height:21px;">
 							<param name="DataID"            value="ds_total"/> 
 							<param name="Editable"          value="true"/> 
 							<param name="ViewHeader"        value="false">  
@@ -1561,12 +1694,12 @@ Tr   E V E N T S
 							<param name="UrlImages"         value="<I>Type='PopupBotton', Url='/sys/images/button/search_icon_2.gif', Fit='AutoFit', Flat='True'</I>">	
 							<param name="Format"              
 							value="  
-							<C>id='title1',            name='title1',    width='70',  align='center',  edit='none', BgColor='#E4E9F2', Color='#6B778F' </C>
-							<C>id='value1',            name='value1',    width='170', align='right',   edit='none' </C>
-							<C>id='title2',            name='title2',    width='70',  align='center',  edit='none', BgColor='#E4E9F2' ,Color='#6B778F' </C>
-							<C>id='value2',            name='value2',    width='170', align='right',   edit='none'</C>
-							<C>id='title3',            name='title3',    width='100', align='center',  edit='none', BgColor='#E4E9F2' ,Color='#6B778F' </C>
-							<C>id='value3',            name='value3',    width='179', align='right',   edit='none'</C>
+							<C>id='title1',       show='false'     name='title1',    width='70',  align='center',  edit='none', BgColor='#E4E9F2', Color='#6B778F' </C>
+							<C>id='value1',       show='false'     name='value1',    width='170', align='right',   edit='none' </C>
+							<C>id='title2',       show='false'     name='title2',    width='70',  align='center',  edit='none', BgColor='#E4E9F2' ,Color='#6B778F' </C>
+							<C>id='value2',       show='false'     name='value2',    width='170', align='right',   edit='none'</C>
+							<C>id='title3',       name='title3',    width='100', align='center',  edit='none', BgColor='#E4E9F2' ,Color='#6B778F' </C>
+							<C>id='value3',       name='value3',    width='179', align='right',   edit='none'</C>
 							">
 						</object>
 						</comment><script>__WS__(__NSID__);</script>
@@ -1574,7 +1707,37 @@ Tr   E V E N T S
 				</tr>
 			</table>
 		</div>			
+		 --%>
 		<!-- 그리드 E --> 
+		
+		<!-- Start -->
+		<div class="sub_stitle"> <p>Total Amount</p>
+		  <div id="output_board_area">
+		    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="output_board" >
+		      <colgroup>
+		        <col width="15%"/>
+		        <col width=""/>
+		      </colgroup>
+					<tr>
+					  <th><%= columnData.getString("sub5_title") %></th>
+		        <td>
+              <object id=grandTotal name="grandTotal" class="input_text" classid="<%=LGauceId.EMEDIT%>"	height=20 width=114  >
+			          <PARAM NAME="Border"   					 VALUE="true"/>
+			          <PARAM NAME="ReadOnly"   				 VALUE="true"/>
+			          <PARAM NAME="Alignment"     		 VALUE="2">
+			          <PARAM NAME="Numeric" 					 VALUE="true"/>
+								<PARAM NAME="MaxDecimalPlace" 	 VALUE="2"/>
+								<PARAM NAME="VisibleMaxDecimal"  VALUE="True"/>
+								<PARAM NAME="VAlign"             VALUE="2"/>
+								<PARAM NAME="ReadOnlyBackColor"  VALUE="#f1f1f1"/>
+			        </object>   
+					  </td>					
+			    </tr>   
+		    </table>
+			</div>
+		</div>	
+		
+		 <!-- END -->
 		<br>
 		</br>
  
@@ -1586,7 +1749,9 @@ Tr   E V E N T S
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSave%>" onclick="f_save()"/></span>
 				<span>|</span>  								
 				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapSend%>" onclick="f_sapSend();"/></span>  
-				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapCancel%>" onclick="f_sapCancel();"/></span> 
+				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="<%=btnSapCancel%>" onclick="f_sapCancel();"/></span>
+				<span>|</span>
+				<span class="btn_r btn_l"><input type="button" onfocus="blur();" onmouseover="this.style.color='#cd1950'" onmouseout="this.style.color='#7d7f84'" value="P/O Closing" onclick="f_poCloing();"/></span>
 			</p>
 		</div>
 <!-- 버튼 E --> 
@@ -1675,36 +1840,33 @@ Tr   E V E N T S
 	</R>
 </A>
 <B>id=Footer ,left=0 ,top=1771 ,right=1999 ,bottom=2870 ,face='Tahoma' ,size=10 ,penwidth=1
-	<X>left=983 ,top=0 ,right=1924 ,bottom=367 ,border=true ,penstyle=solid ,penwidth=3</X>
 	<T>id='Prepared by,' ,left=297 ,top=523 ,right=556 ,bottom=576 ,face='Arial' ,size=9 ,bold=false ,underline=false ,italic=false ,forecolor=#000000 ,backcolor=#FFFFFF</T>
-	<T>id='Approved by,' ,left=1335 ,top=523 ,right=1594 ,bottom=576 ,face='Arial' ,size=9 ,bold=false ,underline=false ,italic=false ,forecolor=#000000 ,backcolor=#FFFFFF</T>
-	<T>id='General Manager' ,left=1335 ,top=827 ,right=1594 ,bottom=880 ,face='Arial' ,size=9 ,bold=false ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
+	<T>id='Approved by,' ,left=1285 ,top=523 ,right=1544 ,bottom=576 ,face='Arial' ,size=9 ,bold=false ,underline=false ,italic=false ,forecolor=#000000 ,backcolor=#FFFFFF</T>
 	<L> left=123 ,top=304 ,right=930 ,bottom=304 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
-	<L> left=123 ,top=367 ,right=930 ,bottom=367 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
-	<L> left=983 ,top=184 ,right=1921 ,bottom=184 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
-	<L> left=983 ,top=304 ,right=1921 ,bottom=304 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
-	<L> left=983 ,top=244 ,right=1921 ,bottom=244 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
-	<L> left=983 ,top=123 ,right=1921 ,bottom=123 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
-	<L> left=983 ,top=60 ,right=1921 ,bottom=60 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
 	<L> left=123 ,top=63 ,right=930 ,bottom=63 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
 	<L> left=123 ,top=244 ,right=930 ,bottom=244 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
 	<L> left=123 ,top=184 ,right=930 ,bottom=184 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
 	<L> left=123 ,top=123 ,right=930 ,bottom=123 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
+	<T>id='Notes' ,left=0 ,top=15 ,right=123 ,bottom=68 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
+	<T>id='Purchasing Department' ,left=241 ,top=827 ,right=609 ,bottom=880 ,face='Arial' ,size=9 ,bold=false ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
+	<X>left=983 ,top=0 ,right=1924 ,bottom=307 ,border=true ,penstyle=solid ,penwidth=3</X>
+	<C>id='gTot', left=1381, top=249, right=1919, bottom=302, align='right', face='Arial', size=9, bold=true, underline=false, italic=false, forecolor=#000000, backcolor=#FFFFFF, Decao=2</C>
+	<L> left=983 ,top=184 ,right=1921 ,bottom=184 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
+	<L> left=983 ,top=244 ,right=1921 ,bottom=244 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
+	<L> left=983 ,top=123 ,right=1921 ,bottom=123 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
+	<L> left=983 ,top=60 ,right=1921 ,bottom=60 ,penstyle=solid ,penwidth=3 ,pencolor=#000000 </L>
 	<T>id='Total' ,left=991 ,top=128 ,right=1159 ,bottom=181 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
 	<T>id='Sub Total' ,left=991 ,top=5 ,right=1159 ,bottom=58 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
-	<C>id='taxAmount', left=1381, top=249, right=1919, bottom=302, align='right', face='Arial', size=9, bold=false, underline=false, italic=false, forecolor=#000000, backcolor=#FFFFFF, Decao=2</C>
 	<C>id='tot', left=1381, top=128, right=1919, bottom=181, align='right', face='Arial', size=9, bold=false, underline=false, italic=false, forecolor=#000000, backcolor=#FFFFFF, Decao=2</C>
 	<C>id='subTot', left=1381, top=5, right=1919, bottom=58, align='right', face='Arial', size=9, bold=false, underline=false, italic=false, forecolor=#000000, backcolor=#FFFFFF, Decao=2</C>
 	<C>id='vat', left=1381, top=189, right=1919, bottom=241, align='right', face='Arial', size=9, bold=false, underline=false, italic=false, forecolor=#000000, backcolor=#FFFFFF, Decao=2</C>
 	<C>id='discount', left=1484, top=65, right=1919, bottom=118, align='right', face='Arial', size=9, bold=false, underline=false, italic=false, forecolor=#000000, backcolor=#FFFFFF, Decao=2</C>
 	<T>id='Discount' ,left=991 ,top=65 ,right=1137 ,bottom=118 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
-	<T>id='Notes' ,left=0 ,top=15 ,right=123 ,bottom=68 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
 	<T>id='Commerical Tax' ,left=991 ,top=189 ,right=1280 ,bottom=241 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
-	<T>id='Withholidng Tax' ,left=991 ,top=249 ,right=1278 ,bottom=302 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
-	<T>id='Grand Total' ,left=991 ,top=309 ,right=1197 ,bottom=362 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
-	<C>id='gTot', left=1381, top=309, right=1919, bottom=362, align='right', face='Arial', size=9, bold=true, underline=false, italic=false, forecolor=#000000, backcolor=#FFFFFF, Decao=2</C>
-	<T>id='Purchasing Department' ,left=241 ,top=827 ,right=609 ,bottom=880 ,face='Arial' ,size=9 ,bold=false ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
+	<T>id='Grand Total' ,left=991 ,top=249 ,right=1197 ,bottom=302 ,align='left' ,face='Arial' ,size=9 ,bold=true ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
+	<T>id='Purchasing Manager' ,left=1255 ,top=827 ,right=1562 ,bottom=880 ,face='Arial' ,size=9 ,bold=false ,underline=false ,italic=true ,forecolor=#000000 ,backcolor=#FFFFFF</T>
 </B>
+
 
  ">
 	</object>

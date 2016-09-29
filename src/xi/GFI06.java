@@ -69,8 +69,6 @@ public class GFI06 {
  
 			serviceLocator.setHTTP_PortEndpointAddress(util.getProp("EAI_HTTP_URL_PTPAM_GFI06_SAP"));		
 			
-			System.out.println(serviceLocator.getHTTPS_PortAddress());
- 
 			GFI06_outBindingStub bindingStub = (GFI06_outBindingStub) serviceLocator.getHTTP_Port();		
   
             bindingStub.setUsername(util.getProp("EAI_USER"));

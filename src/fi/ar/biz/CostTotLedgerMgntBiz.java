@@ -468,5 +468,18 @@ LLog.info.print("cudlData : "+cudlData.toString());
 		}
     }
 
+
+	public LMultiData retrieveCostTotLedgerVatVCombo(LData inputData) throws LSysException {
+    	LLog.debug.write("retrieveCostTotLedgerVatVCombo -----------> Start ");
+    	
+    	LCommonDao dao = new LCommonDao();
+		try{			
+			return dao.executeQuery("fi/ar/costTotLedgerMgntSql/retrieveCostTotLedgerVatVCombo", inputData);
+		} catch (Exception se) {
+			LLog.err.println(  this.getClass().getName() + "." + "retrieveCostTotLedgerVatVCombo------()" + "=>" + se.getMessage());
+			throw new LSysException("fi.ar.retrieveCostTotLedgerVatVCombo", se);
+		}
+	}
+
     
 }

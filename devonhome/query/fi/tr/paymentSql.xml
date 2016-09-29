@@ -442,7 +442,9 @@
 			      ,sub2.exch_curr_cd
 			      ,sub2.total_amount
 			      ,sub2.exch_total_amount
+			      ,round(sub2.exch_total_amount / sub2.total_amount, 4) as exch_rate
 			      ,sub2.payment_type
+			      ,sub2.swift_cd
 			      ,sub2.bank_code
 			      ,sub2.bank_acct
 			      ,sub2.house_bank || ' / ' || sub2.house_bank_desc as house_bank
@@ -490,6 +492,7 @@
 			             ,a.exch_total_amount
 			             ,a.payment_type                                  
 			             ,a.partner_bank_type
+			             ,ac.swift_cd
 			             ,ac.bank_code || ' / ' || ac.bank_name as bank_code
 			             ,ac.acct_num || ' / ' || ac.acct_owner as bank_acct
 			             ,a.house_bank 
